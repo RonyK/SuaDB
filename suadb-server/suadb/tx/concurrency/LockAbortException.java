@@ -7,6 +7,6 @@ package suadb.tx.concurrency;
  */
 @SuppressWarnings("serial")
 public class LockAbortException extends RuntimeException {
-   public LockAbortException() {
-   }
+	public LockAbortException() {
+	}
 }

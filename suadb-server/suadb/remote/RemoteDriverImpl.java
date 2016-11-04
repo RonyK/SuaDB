@@ -9,16 +9,16 @@ import java.rmi.server.UnicastRemoteObject;
  */
 @SuppressWarnings("serial")
 public class RemoteDriverImpl extends UnicastRemoteObject implements RemoteDriver {
-   public RemoteDriverImpl() throws RemoteException {
-   }
-   
-   /**
-    * Creates a new RemoteConnectionImpl object and 
-    * returns it.
-    * @see suadb.remote.RemoteDriver#connect()
-    */
-   public RemoteConnection connect() throws RemoteException {
-      return new RemoteConnectionImpl();
-   }
+	public RemoteDriverImpl() throws RemoteException {
+	}
+
+	/**
+	 * Creates a new RemoteConnectionImpl object and
+	 * returns it.
+	 * @see suadb.remote.RemoteDriver#connect()
+	 */
+	public RemoteConnection connect() throws RemoteException {
+		return new RemoteConnectionImpl();
+	}
 }
 

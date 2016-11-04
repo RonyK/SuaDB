@@ -5,10 +5,10 @@ package suadb.query;
  * @author Edward Sciore
  */
 public interface Constant extends Comparable<Constant> {
-   
-   /**
-    * Returns the Java object corresponding to this constant.
-    * @return the Java value of the constant
-    */
-   public Object  asJavaVal();
+
+	/**
+	 * Returns the Java object corresponding to this constant.
+	 * @return the Java value of the constant
+	 */
+	public Object  asJavaVal();
 }

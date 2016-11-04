@@ -9,12 +9,12 @@ import suadb.file.Page;
  * @author Edward Sciore
  */
 public interface PageFormatter {
-   /**
-    * Initializes a page, whose contents will be
-    * written to a new disk block.
-    * This method is called only during the method
-    * {@link Buffer#assignToNew}.
-    * @param p a suadb.buffer page
-    */
-   public void format(Page p);
+	/**
+	 * Initializes a page, whose contents will be
+	 * written to a new disk block.
+	 * This method is called only during the method
+	 * {@link Buffer#assignToNew}.
+	 * @param p a suadb.buffer page
+	 */
+	public void format(Page p);
 }

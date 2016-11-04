@@ -18,7 +18,7 @@ public class RID {
 	 */
 	public RID(int blknum, int id) {
 		this.blknum = blknum;
-		this.id     = id;
+		this.id	  = id;
 	}
 
 	/**

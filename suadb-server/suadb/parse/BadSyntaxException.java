@@ -7,6 +7,6 @@ package suadb.parse;
  */
 @SuppressWarnings("serial")
 public class BadSyntaxException extends RuntimeException {
-   public BadSyntaxException() {
-   }
+	public BadSyntaxException() {
+	}
 }

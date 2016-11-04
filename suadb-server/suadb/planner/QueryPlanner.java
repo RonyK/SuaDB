@@ -11,12 +11,12 @@ import suadb.parse.QueryData;
  *
  */
 public interface QueryPlanner {
-   
-   /**
-    * Creates a plan for the parsed suadb.query.
-    * @param data the parsed representation of the suadb.query
-    * @param tx the calling transaction
-    * @return a plan for that suadb.query
-    */
-   public Plan createPlan(QueryData data, Transaction tx);
+
+	/**
+	 * Creates a plan for the parsed suadb.query.
+	 * @param data the parsed representation of the suadb.query
+	 * @param tx the calling transaction
+	 * @return a plan for that suadb.query
+	 */
+	public Plan createPlan(QueryData data, Transaction tx);
 }
