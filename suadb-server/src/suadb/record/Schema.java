@@ -19,7 +19,7 @@ public class Schema {
 	private Map<String,FieldInfo> info = new HashMap<String,FieldInfo>();
 	private Map<String, DimensionInfo> dimInfo = new HashMap<>();
 	
-	/** 
+	/**
 	 * Creates an empty schema.
 	 * Field information can be added to a schema
 	 * via the five addXXX methods. 
@@ -38,6 +38,10 @@ public class Schema {
 	public void addField(String fldname, int type, int length) {
 		info.put(fldname, new FieldInfo(type, length));
 	}
+
+	public void addDimesion(String dimname, int start, int end,int chunksize) {
+		dimInfo.put(dimname, new DimensionInfo(start,end,chunksize));
+	}
 	
 	/**
 	 * Adds an integer field to the schema.
@@ -46,7 +50,7 @@ public class Schema {
 	public void addIntField(String fldname) {
 		addField(fldname, INTEGER, 0);
 	}
-	
+
 	/**
 	 * Adds a string field to the schema.
 	 * The length is the conceptual length of the field.
@@ -123,6 +127,7 @@ public class Schema {
 	public boolean hasField(String fldname) {
 		return fields().contains(fldname);
 	}
+
 	/**
 	 * Return true if the specified dimension
 	 * is in the schema
@@ -134,7 +139,7 @@ public class Schema {
 	{
 		return dimensions().contains(dimName);
 	}
-	
+
 	/**
 	 * Returns the type of the specified field, using the
 	 * constants in {@link java.sql.Types}.
