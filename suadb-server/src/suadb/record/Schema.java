@@ -39,8 +39,16 @@ public class Schema {
 		info.put(fldname, new FieldInfo(type, length));
 	}
 
-	public void addDimesion(String dimname, int start, int end,int chunksize) {
-		dimInfo.put(dimname, new DimensionInfo(start,end,chunksize));
+	/**
+	 * Adds a dimension in the schema.
+	 *
+	 * @param dimName   the name of dimension
+	 * @param start     the number of dimension start
+	 * @param end       the number of dimension end
+	 * @param chunkSize the size of chunk
+	 */
+	public void addDimesion(String dimName, int start, int end,int chunkSize) {
+		dimInfo.put(dimName, new DimensionInfo(start,end,chunkSize));
 	}
 	
 	/**
@@ -165,7 +173,7 @@ public class Schema {
 	 * Return the size of the specified dimension.
 	 *
 	 * @param dimName	the name of the dimension
-	 * @return			 the size of the specified dimension
+	 * @return			the size of the specified dimension
 	 */
 	public int chunkSize(String dimName)
 	{

@@ -1,9 +1,9 @@
 package suadb.file;
 
-import suadb.server.SuaDB;
-
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+
+import suadb.server.SuaDB;
 
 /**
  * The contents of a disk block in memory.
@@ -67,8 +67,8 @@ public class Page {
 		return INT_SIZE + (n * (int)bytesPerChar);
 	}
 
-	private ByteBuffer contents = ByteBuffer.allocateDirect(BLOCK_SIZE);
-	private FileMgr filemgr = SuaDB.fileMgr();
+	protected ByteBuffer contents = ByteBuffer.allocateDirect(BLOCK_SIZE);
+	protected FileMgr fileMgr = SuaDB.fileMgr();
 
 	/**
 	 * Creates a new page.  Although the constructor takes no arguments,
@@ -89,7 +89,7 @@ public class Page {
 	 * @param blk a reference to a disk block
 	 */
 	public synchronized void read(Block blk) {
-		filemgr.read(blk, contents);
+		fileMgr.read(blk, contents);
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class Page {
 	 * @param blk a reference to a disk block
 	 */
 	public synchronized void write(Block blk) {
-		filemgr.write(blk, contents);
+		fileMgr.write(blk, contents);
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class Page {
 	 * @return the reference to the newly-created disk block
 	 */
 	public synchronized Block append(String filename) {
-		return filemgr.append(filename, contents);
+		return fileMgr.append(filename, contents);
 	}
 
 	/**

@@ -118,6 +118,61 @@ public class FileMgr {
 	}
 
 	/**
+	 * Reads the contents of a disk chunk into a bytebuffer.
+	 * @param chunk a reference to a disk block
+	 * @param bb  the bytebuffer
+	 */
+	synchronized void read(Chunk chunk, ByteBuffer bb) {
+		try
+		{
+			bb.clear();
+			FileChannel fc = getFile(chunk.getFileName());
+			// TODO :: In array chunk, all chunks has different chunk size.
+			fc.read(bb, chunk.getChunkNum() * chunk.getChunkSize());
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException("cannot read block " + chunk);
+		}
+	}
+
+	/**
+	 * Writes the contents of a bytebuffer into a disk chunk.
+	 * @param chunk a reference to a disk block
+	 * @param bb  the bytebuffer
+	 */
+	synchronized void write(Chunk chunk, ByteBuffer bb) {
+		try
+		{
+			bb.rewind();
+			FileChannel fc = getFile(chunk.getFileName());
+			// TODO :: In array chunk, all chunks has different chunk size.
+			fc.write(bb, chunk.getChunkNum() * chunk.getChunkSize());
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException("cannot write block" + chunk);
+		}
+	}
+
+	/**
+	 * Appends the contents of a bytebuffer to the end
+	 * of the specified suadb.file.
+	 * @param filename the name of the suadb.file
+	 * @param bb  the bytebuffer
+	 * @return a reference to the newly-created block.
+	 */
+	synchronized Chunk appendToChunk(String filename, ByteBuffer bb) {
+		// TODO :: Do not use size() method.
+		// chunk number is assigned by dimension order
+		// size() method just assign block number by sequential position order of block in file
+		int newChunkNum = size(filename);
+		Chunk chunk = new Chunk(filename, newChunkNum);
+		write(chunk, bb);
+		return chunk;
+	}
+
+	/**
 	 * Returns a boolean indicating whether the suadb.file manager
 	 * had to create a new database directory.
 	 * @return true if the database is new
