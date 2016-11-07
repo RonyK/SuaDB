@@ -1,5 +1,5 @@
 import java.sql.*;
-import simpledb.remote.SimpleDriver;
+import suadb.remote.SimpleDriver;
 import java.io.*;
 
 public class SQLInterpreter {

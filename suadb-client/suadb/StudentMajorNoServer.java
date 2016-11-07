@@ -1,6 +1,6 @@
-import simpledb.tx.Transaction;
-import simpledb.query.*;
-import simpledb.server.SimpleDB;
+import suadb.tx.Transaction;
+import suadb.query.*;
+import suadb.server.SuaDB;
 
 /* This is a version of the StudentMajor program that
  * accesses the SimpleDB classes directly (instead of
@@ -15,7 +15,7 @@ public class StudentMajorNoServer {
 	public static void main(String[] args) {
 		try {
 			// analogous to the driver
-			SimpleDB.init("studentdb");
+			SuaDB.init("studentdb");
 			
 			// analogous to the connection
 			Transaction tx = new Transaction();
@@ -24,7 +24,7 @@ public class StudentMajorNoServer {
 			String qry = "select SName, DName "
 		        + "from DEPT, STUDENT "
 		        + "where MajorId = DId";	
-			Plan p = SimpleDB.planner().createQueryPlan(qry, tx);
+			Plan p = SuaDB.planner().createQueryPlan(qry, tx);
 			
 			// analogous to the result set
 			Scan s = p.open();
