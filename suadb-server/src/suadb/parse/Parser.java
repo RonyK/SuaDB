@@ -20,6 +20,9 @@ public class Parser {
 	public String field() {
 		return lex.eatId();
 	}
+	public String dimension() {
+		return lex.eatId();
+	}
 
 	public Constant constant() {
 		if (lex.matchStringConstant())
@@ -101,34 +104,21 @@ public class Parser {
 
 	private Object create() {
 		lex.eatKeyword("create");
-		if (lex.matchKeyword("table"))
-			return createTable();
+		if (lex.matchKeyword("array"))
+			return createArray();
 		else if (lex.matchKeyword("view"))
 			return createView();
 		else
 			return createIndex();
 	}
 
-// Method for parsing delete commands
-
-	public DeleteData delete() {
-		lex.eatKeyword("delete");
-		lex.eatKeyword("from");
-		String tblname = lex.eatId();
-		Predicate pred = new Predicate();
-		if (lex.matchKeyword("where")) {
-			lex.eatKeyword("where");
-			pred = predicate();
-		}
-		return new DeleteData(tblname, pred);
-	}
 
 // Methods for parsing insert commands
 
 	public InsertData insert() {
 		lex.eatKeyword("insert");
 		lex.eatKeyword("into");
-		String tblname = lex.eatId();
+		String arrayname = lex.eatId();
 		lex.eatDelim('(');
 		List<String> flds = fieldList();
 		lex.eatDelim(')');
@@ -136,7 +126,7 @@ public class Parser {
 		lex.eatDelim('(');
 		List<Constant> vals = constList();
 		lex.eatDelim(')');
-		return new InsertData(tblname, flds, vals);
+		return new InsertData(arrayname, flds, vals);
 	}
 
 	private List<String> fieldList() {
@@ -159,32 +149,21 @@ public class Parser {
 		return L;
 	}
 
-// Method for parsing modify commands
 
-	public ModifyData modify() {
-		lex.eatKeyword("update");
-		String tblname = lex.eatId();
-		lex.eatKeyword("set");
-		String fldname = field();
-		lex.eatDelim('=');
-		Expression newval = expression();
-		Predicate pred = new Predicate();
-		if (lex.matchKeyword("where")) {
-			lex.eatKeyword("where");
-			pred = predicate();
-		}
-		return new ModifyData(tblname, fldname, newval, pred);
-	}
 
 // Method for parsing create table commands
 
-	public CreateTableData createTable() {
-		lex.eatKeyword("table");
-		String tblname = lex.eatId();
-		lex.eatDelim('(');
-		Schema sch = fieldDefs();
-		lex.eatDelim(')');
-		return new CreateTableData(tblname, sch);
+	public CreateTableData createArray() {
+		Schema sch = new Schema();
+		lex.eatKeyword("array");
+		String arrayname = lex.eatId();
+		lex.eatDelim('<');
+		fieldDefs();
+		lex.eatDelim('>');
+		lex.eatDelim('[');
+		sch = dimensionDefs();
+		lex.eatDelim(']');
+		return new CreateTableData(arrayname, sch);
 	}
 
 	private Schema fieldDefs() {
@@ -198,12 +177,40 @@ public class Parser {
 	}
 
 	private Schema fieldDef() {
-		String fldname = field();
-		return fieldType(fldname);
+			String fldname = field();
+			return fieldType(fldname);
 	}
 
 	private Schema fieldType(String fldname) {
-		Schema schema = new Schema();
+		lex.eatDelim(':');
+		if (lex.matchKeyword("int")) {
+			lex.eatKeyword("int");
+			schema.addIntField(fldname);
+		}
+		else if(lex.matchKeyword("double")) {
+			lex.eatKeyword("double");
+			schema.addField(fldname,DOUBLE,0); //add double
+		}
+		return schema;
+	}
+
+
+	private Schema DimensionDefs() {
+		Schema schema = dimensionDef();
+		if (lex.matchDelim(',')) {
+			lex.eatDelim(',');
+			Schema schema2 = fieldDefs();
+			schema.addAll(schema2);
+		}
+		return schema;
+	}
+
+	private Schema dimensionDef() {
+		String fldname = dimension();
+		return dimensionType(fldname);
+	}
+
+	private Schema dimensionType(String fldname) {
 		if (lex.matchKeyword("int")) {
 			lex.eatKeyword("int");
 			schema.addIntField(fldname);
@@ -218,28 +225,5 @@ public class Parser {
 		return schema;
 	}
 
-// Method for parsing create view commands
-
-	public CreateViewData createView() {
-		lex.eatKeyword("view");
-		String viewname = lex.eatId();
-		lex.eatKeyword("as");
-		QueryData qd = query();
-		return new CreateViewData(viewname, qd);
-	}
-
-
-//  Method for parsing create suadb.index commands
-
-	public CreateIndexData createIndex() {
-		lex.eatKeyword("suadb/index");
-		String idxname = lex.eatId();
-		lex.eatKeyword("on");
-		String tblname = lex.eatId();
-		lex.eatDelim('(');
-		String fldname = field();
-		lex.eatDelim(')');
-		return new CreateIndexData(idxname, tblname, fldname);
-	}
 }
 
