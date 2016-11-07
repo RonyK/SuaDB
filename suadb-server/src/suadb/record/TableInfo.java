@@ -1,8 +1,11 @@
 package suadb.record;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static java.sql.Types.INTEGER;
-import static suadb.file.Page.*;
-import java.util.*;
+import static suadb.file.Page.INT_SIZE;
+import static suadb.file.Page.STR_SIZE;
 
 /**
  * The suadb.metadata about a table and its records.
