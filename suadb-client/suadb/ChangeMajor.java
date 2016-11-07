@@ -1,5 +1,5 @@
 import java.sql.*;
-import simpledb.remote.SimpleDriver;
+import suadb.remote.SimpleDriver;
 
 public class ChangeMajor {
     public static void main(String[] args) {
