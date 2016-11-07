@@ -31,19 +31,8 @@ public class IndexUpdatePlanner implements UpdatePlanner {
 
 		// then modify each field, inserting an suadb.index suadb.record if appropriate
 		Map<String,IndexInfo> indexes = SuaDB.mdMgr().getIndexInfo(tblname, tx);
-		Iterator<Constant> valIter = data.vals().iterator();
-		for (String fldname : data.fields()) {
-			Constant val = valIter.next();
-			System.out.println("Modify field " + fldname + " to val " + val);
-			s.setVal(fldname, val);
 
-			IndexInfo ii = indexes.get(fldname);
-			if (ii != null) {
-				Index idx = ii.open();
-				idx.insert(val, rid);
-				idx.close();
-			}
-		}
+
 		s.close();
 		return 1;
 	}

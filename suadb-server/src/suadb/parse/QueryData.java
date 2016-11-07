@@ -15,24 +15,15 @@ public class QueryData {
 	/**
 	 * Saves the field and table list and predicate.
 	 */
-	public QueryData(Collection<String> fields, Collection<String> tables, Predicate pred) {
-		this.fields = fields;
-		this.tables = tables;
+	public QueryData( Collection<String> table, Predicate pred) {
+
+		this.tables = table;
 		this.pred = pred;
 	}
 
-	/**
-	 * Returns the fields mentioned in the select clause.
-	 * @return a collection of field names
-	 */
 	public Collection<String> fields() {
-		return fields;
+		return null;
 	}
-
-	/**
-	 * Returns the tables mentioned in the from clause.
-	 * @return a collection of table names
-	 */
 	public Collection<String> tables() {
 		return tables;
 	}
@@ -47,17 +38,13 @@ public class QueryData {
 	}
 
 	public String toString() {
-		String result = "select ";
-		for (String fldname : fields)
-			result += fldname + ", ";
-		result = result.substring(0, result.length()-2); //remove final comma
-		result += " from ";
+		String result = "filter(";
 		for (String tblname : tables)
-			result += tblname + ", ";
-		result = result.substring(0, result.length()-2); //remove final comma
+			result += tblname;
+		result += ",";
 		String predstring = pred.toString();
 		if (!predstring.equals(""))
-			result += " where " + predstring;
+			result += predstring+")";
 		return result;
 	}
 }

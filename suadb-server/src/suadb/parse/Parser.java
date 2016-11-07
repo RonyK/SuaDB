@@ -4,6 +4,7 @@ import java.util.*;
 import suadb.query.*;
 import suadb.record.Schema;
 
+import static java.sql.Types.DOUBLE;
 /**
  * The SuaDB parser.
  * @author Edward Sciore
@@ -57,76 +58,44 @@ public class Parser {
 // Methods for parsing queries
 
 	public QueryData query() {
-		lex.eatKeyword("select");
-		Collection<String> fields = selectList();
-		lex.eatKeyword("from");
-		Collection<String> tables = tableList();
+		lex.eatKeyword("filter");
+		Collection<String> tables = new ArrayList<String>();
+		tables.add(field());
+		lex.eatDelim(',');
 		Predicate pred = new Predicate();
-		if (lex.matchKeyword("where")) {
-			lex.eatKeyword("where");
-			pred = predicate();
-		}
-		return new QueryData(fields, tables, pred);
+		pred = predicate();
+		return new QueryData(tables, pred);
 	}
 
-	private Collection<String> selectList() {
-		Collection<String> L = new ArrayList<String>();
-		L.add(field());
-		if (lex.matchDelim(',')) {
-			lex.eatDelim(',');
-			L.addAll(selectList());
-		}
-		return L;
-	}
-
-	private Collection<String> tableList() {
-		Collection<String> L = new ArrayList<String>();
-		L.add(lex.eatId());
-		if (lex.matchDelim(',')) {
-			lex.eatDelim(',');
-			L.addAll(tableList());
-		}
-		return L;
-	}
 
 // Methods for parsing the various update commands
 
 	public Object updateCmd() {
-		if (lex.matchKeyword("insert"))
-			return insert();
-		else if (lex.matchKeyword("delete"))
-			return delete();
-		else if (lex.matchKeyword("update"))
-			return modify();
+		if (lex.matchKeyword("input"))
+			return input();
+
 		else
 			return create();
 	}
 
 	private Object create() {
 		lex.eatKeyword("create");
-		if (lex.matchKeyword("array"))
+		lex.eatKeyword("array");
 			return createArray();
-		else if (lex.matchKeyword("view"))
-			return createView();
-		else
-			return createIndex();
 	}
 
 
-// Methods for parsing insert commands
+// Methods for parsing input commands
 
-	public InsertData insert() {
-		lex.eatKeyword("insert");
-		lex.eatKeyword("into");
+	public InsertData input() {
+		lex.eatKeyword("input");
+		lex.eatDelim('(');
 		String arrayname = lex.eatId();
-		lex.eatDelim('(');
-		List<String> flds = fieldList();
+		lex.eatDelim(',');
+		String inputfile = lex.eatId();  // 'input_file'
 		lex.eatDelim(')');
-		lex.eatKeyword("values");
-		lex.eatDelim('(');
-		List<Constant> vals = constList();
-		lex.eatDelim(')');
-		return new InsertData(arrayname, flds, vals);
+
+		return new InsertData(arrayname, inputfile);
 	}
 
 	private List<String> fieldList() {
@@ -154,34 +123,18 @@ public class Parser {
 // Method for parsing create table commands
 
 	public CreateTableData createArray() {
-		Schema sch = new Schema();
+		Schema schema = new Schema();
 		lex.eatKeyword("array");
 		String arrayname = lex.eatId();
 		lex.eatDelim('<');
-		fieldDefs();
-		lex.eatDelim('>');
-		lex.eatDelim('[');
-		sch = dimensionDefs();
+		schema = schemaDefs();
 		lex.eatDelim(']');
-		return new CreateTableData(arrayname, sch);
+		return new CreateTableData(arrayname, schema);
 	}
 
-	private Schema fieldDefs() {
-		Schema schema = fieldDef();
-		if (lex.matchDelim(',')) {
-			lex.eatDelim(',');
-			Schema schema2 = fieldDefs();
-			schema.addAll(schema2);
-		}
-		return schema;
-	}
-
-	private Schema fieldDef() {
-			String fldname = field();
-			return fieldType(fldname);
-	}
-
-	private Schema fieldType(String fldname) {
+	private Schema schemaDefs() {
+		Schema schema = new Schema();
+		String fldname = field();
 		lex.eatDelim(':');
 		if (lex.matchKeyword("int")) {
 			lex.eatKeyword("int");
@@ -189,41 +142,55 @@ public class Parser {
 		}
 		else if(lex.matchKeyword("double")) {
 			lex.eatKeyword("double");
-			schema.addField(fldname,DOUBLE,0); //add double
+			schema.addField(fldname, DOUBLE, 0); //add double
 		}
-		return schema;
-	}
-
-
-	private Schema DimensionDefs() {
-		Schema schema = dimensionDef();
-		if (lex.matchDelim(',')) {
+		while (lex.matchDelim(',')) {
 			lex.eatDelim(',');
-			Schema schema2 = fieldDefs();
-			schema.addAll(schema2);
+			fldname = field();
+			lex.eatDelim(':');
+			if (lex.matchKeyword("int")) {
+				lex.eatKeyword("int");
+				schema.addIntField(fldname);
+			}
+			else if(lex.matchKeyword("double")) {
+				lex.eatKeyword("double");
+				schema.addField(fldname, DOUBLE, 0); //add double
+			}
 		}
+
+		lex.eatDelim('>');
+		lex.eatDelim('[');
+
+		String dimname = field();
+		lex.eatDelim('=');
+		int start = lex.eatIntConstant();
+		lex.eatDelim(':');
+		int end = lex.eatIntConstant();
+		lex.eatDelim(',');
+		int chunksize = lex.eatIntConstant();
+		schema.addDimension(dimname, start, end, chunksize);
+
+//		lex.eatDelim(',');
+//		int overlap = lex.eatIntConstant();
+
+		while (lex.matchDelim(',')) {
+			lex.eatDelim(',');
+			dimname = field();
+			lex.eatDelim('=');
+			start = lex.eatIntConstant();
+			lex.eatDelim(':');
+			end = lex.eatIntConstant();
+			lex.eatDelim(',');
+			chunksize = lex.eatIntConstant();
+			schema.addDimension(dimname, start, end, chunksize);
+		}
+
 		return schema;
 	}
 
-	private Schema dimensionDef() {
-		String fldname = dimension();
-		return dimensionType(fldname);
-	}
 
-	private Schema dimensionType(String fldname) {
-		if (lex.matchKeyword("int")) {
-			lex.eatKeyword("int");
-			schema.addIntField(fldname);
-		}
-		else {
-			lex.eatKeyword("varchar");
-			lex.eatDelim('(');
-			int strLen = lex.eatIntConstant();
-			lex.eatDelim(')');
-			schema.addStringField(fldname, strLen);
-		}
-		return schema;
-	}
+
+
 
 }
 

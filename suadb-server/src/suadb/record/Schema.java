@@ -39,10 +39,8 @@ public class Schema {
 		info.put(fldname, new FieldInfo(type, length));
 	}
 
-	public void addDimesion(String dimname, int start, int end,int chunksize) {
-		dimInfo.put(dimname, new DimensionInfo(start,end,chunksize));
-	}
-	
+
+
 	/**
 	 * Adds an integer field to the schema.
 	 * @param fldname the name of the field
