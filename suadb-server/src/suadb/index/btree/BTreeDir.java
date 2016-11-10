@@ -1,12 +1,12 @@
 package suadb.index.btree;
 
-import suadb.file.Block;
+import suadb.file.Chunk;
 import suadb.tx.Transaction;
 import suadb.record.TableInfo;
 import suadb.query.Constant;
 
 /**
- * A B-tree directory block.
+ * A B-tree directory chunk.
  * @author Edward Sciore
  */
 public class BTreeDir {
@@ -17,12 +17,12 @@ public class BTreeDir {
 
 	/**
 	 * Creates an object to hold the contents of the specified
-	 * B-tree block.
-	 * @param blk a reference to the specified B-tree block
+	 * B-tree chunk.
+	 * @param blk a reference to the specified B-tree chunk
 	 * @param ti the suadb.metadata of the B-tree directory suadb.file
 	 * @param tx the calling transaction
 	 */
-	BTreeDir(Block blk, TableInfo ti, Transaction tx) {
+	BTreeDir(Chunk blk, TableInfo ti, Transaction tx) {
 		this.ti = ti;
 		this.tx = tx;
 		filename = blk.fileName();
@@ -37,13 +37,13 @@ public class BTreeDir {
 	}
 
 	/**
-	 * Returns the block number of the B-tree leaf block
+	 * Returns the chunk number of the B-tree leaf chunk
 	 * that contains the specified search key.
 	 * @param searchkey the search key value
-	 * @return the block number of the leaf block containing that search key
+	 * @return the chunk number of the leaf chunk containing that search key
 	 */
 	public int search(Constant searchkey) {
-		Block childblk = findChildBlock(searchkey);
+		Chunk childblk = findChildBlock(searchkey);
 		while (contents.getFlag() > 0) {
 			contents.close();
 			contents = new BTreePage(childblk, ti, tx);
@@ -53,17 +53,17 @@ public class BTreeDir {
 	}
 
 	/**
-	 * Creates a new root block for the B-tree.
+	 * Creates a new root chunk for the B-tree.
 	 * The new root will have two children:
-	 * the old root, and the specified block.
-	 * Since the root must always be in block 0 of the suadb.file,
-	 * the contents of the old root will get transferred to a new block.
+	 * the old root, and the specified chunk.
+	 * Since the root must always be in chunk 0 of the suadb.file,
+	 * the contents of the old root will get transferred to a new chunk.
 	 * @param e the directory entry to be added as a child of the new root
 	 */
 	public void makeNewRoot(DirEntry e) {
 		Constant firstval = contents.getDataVal(0);
 		int level = contents.getFlag();
-		Block newblk = contents.split(0, level); //ie, transfer all the records
+		Chunk newblk = contents.split(0, level); //ie, transfer all the records
 		DirEntry oldroot = new DirEntry(firstval, newblk.number());
 		insertEntry(oldroot);
 		insertEntry(e);
@@ -71,23 +71,23 @@ public class BTreeDir {
 	}
 
 	/**
-	 * Inserts a new directory entry into the B-tree block.
-	 * If the block is at level 0, then the entry is inserted there.
+	 * Inserts a new directory entry into the B-tree chunk.
+	 * If the chunk is at level 0, then the entry is inserted there.
 	 * Otherwise, the entry is inserted into the appropriate
 	 * child node, and the return value is examined.
 	 * A non-null return value indicates that the child node
 	 * split, and so the returned entry is inserted into
-	 * this block.
-	 * If this block splits, then the method similarly returns
-	 * the entry information of the new block to its caller;
+	 * this chunk.
+	 * If this chunk splits, then the method similarly returns
+	 * the entry information of the new chunk to its caller;
 	 * otherwise, the method returns null.
 	 * @param e the directory entry to be inserted
-	 * @return the directory entry of the newly-split block, if one exists; otherwise, null
+	 * @return the directory entry of the newly-split chunk, if one exists; otherwise, null
 	 */
 	public DirEntry insert(DirEntry e) {
 		if (contents.getFlag() == 0)
 			return insertEntry(e);
-		Block childblk = findChildBlock(e.dataVal());
+		Chunk childblk = findChildBlock(e.dataVal());
 		BTreeDir child = new BTreeDir(childblk, ti, tx);
 		DirEntry myentry = child.insert(e);
 		child.close();
@@ -103,15 +103,15 @@ public class BTreeDir {
 		int level = contents.getFlag();
 		int splitpos = contents.getNumRecs() / 2;
 		Constant splitval = contents.getDataVal(splitpos);
-		Block newblk = contents.split(splitpos, level);
+		Chunk newblk = contents.split(splitpos, level);
 		return new DirEntry(splitval, newblk.number());
 	}
 
-	private Block findChildBlock(Constant searchkey) {
+	private Chunk findChildBlock(Constant searchkey) {
 		int slot = contents.findSlotBefore(searchkey);
 		if (contents.getDataVal(slot+1).equals(searchkey))
 			slot++;
 		int blknum = contents.getChildNum(slot);
-		return new Block(filename, blknum);
+		return new Chunk(filename, blknum);
 	}
 }

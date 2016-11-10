@@ -1,29 +1,29 @@
 package suadb.record;
 
 import static suadb.file.Page.*;
-import suadb.file.Block;
+import suadb.file.Chunk;
 import suadb.tx.Transaction;
 
 /**
- * Manages the placement and access of records in a block.
+ * Manages the placement and access of records in a chunk.
  * @author Edward Sciore
  */
 public class RecordPage {
 	public static final int EMPTY = 0, INUSE = 1;
 
-	private Block blk;
+	private Chunk blk;
 	private TableInfo ti;
 	private Transaction tx;
 	private int slotsize;
 	private int currentslot = -1;
 
-	/** Creates the suadb.record manager for the specified block.
+	/** Creates the suadb.record manager for the specified chunk.
 	  * The current suadb.record is set to be prior to the first one.
-	  * @param blk a reference to the disk block
+	  * @param blk a reference to the disk chunk
 	  * @param ti the table's suadb.metadata
 	  * @param tx the transaction performing the operations
 	  */
-	public RecordPage(Block blk, TableInfo ti, Transaction tx) {
+	public RecordPage(Chunk blk, TableInfo ti, Transaction tx) {
 		this.blk = blk;
 		this.ti = ti;
 		this.tx = tx;
@@ -32,7 +32,7 @@ public class RecordPage {
   }
 
 	/**
-	 * Closes the manager, by unpinning the block.
+	 * Closes the manager, by unpinning the chunk.
 	 */
 	public void close() {
 		if (blk != null) {
@@ -42,7 +42,7 @@ public class RecordPage {
 	}
 
 	/**
-	 * Moves to the next suadb.record in the block.
+	 * Moves to the next suadb.record in the chunk.
 	 * @return false if there is no next suadb.record.
 	 */
 	public boolean next() {

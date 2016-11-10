@@ -1,7 +1,7 @@
 package suadb.tx;
 
+import suadb.file.Chunk;
 import suadb.server.SuaDB;
-import suadb.file.Block;
 import suadb.buffer.*;
 
 import java.util.*;
@@ -11,64 +11,64 @@ import java.util.*;
  * @author Edward Sciore
  */
 class BufferList {
-	private Map<Block,Buffer> buffers = new HashMap<Block,Buffer>();
-	private List<Block> pins = new ArrayList<Block>();
+	private Map<Chunk, ChunkBuffer> buffers = new HashMap<Chunk,ChunkBuffer>();
+	private List<Chunk> pins = new ArrayList<Chunk>();
 	private BufferMgr bufferMgr = SuaDB.bufferMgr();
 
 	/**
-	 * Returns the suadb.buffer pinned to the specified block.
+	 * Returns the suadb.buffer pinned to the specified chunk.
 	 * The method returns null if the transaction has not
-	 * pinned the block.
-	 * @param blk a reference to the disk block
-	 * @return the suadb.buffer pinned to that block
+	 * pinned the chunk.
+	 * @param chunk a reference to the disk chunk
+	 * @return the suadb.buffer pinned to that chunk
 	 */
-	Buffer getBuffer(Block blk) {
-		return buffers.get(blk);
+	ChunkBuffer getBuffer(Chunk chunk) {
+		return buffers.get(chunk);
 	}
 
 	/**
-	 * Pins the block and keeps track of the suadb.buffer internally.
-	 * @param blk a reference to the disk block
+	 * Pins the chunk and keeps track of the suadb.buffer internally.
+	 * @param chunk a reference to the disk chunk
 	 */
-	void pin(Block blk) {
-		Buffer buff = bufferMgr.pin(blk);
-		buffers.put(blk, buff);
-		pins.add(blk);
+	void pin(Chunk chunk) {
+		ChunkBuffer buff = bufferMgr.pin(chunk);
+		buffers.put(chunk, buff);
+		pins.add(chunk);
 	}
 
 	/**
-	 * Appends a new block to the specified suadb.file
+	 * Appends a new chunk to the specified suadb.file
 	 * and pins it.
 	 * @param filename the name of the suadb.file
 	 * @param fmtr the formatter used to initialize the new page
-	 * @return a reference to the newly-created block
+	 * @return a reference to the newly-created chunk
 	 */
-	Block pinNew(String filename, PageFormatter fmtr) {
-		Buffer buff = bufferMgr.pinNew(filename, fmtr);
-		Block blk = buff.block();
-		buffers.put(blk, buff);
-		pins.add(blk);
-		return blk;
+	Chunk pinNew(String filename, PageFormatter fmtr, int chunkSize) {
+		ChunkBuffer buff = bufferMgr.pinNew(filename, fmtr, chunkSize);
+		Chunk chunk = buff.chunk();
+		buffers.put(chunk, buff);
+		pins.add(chunk);
+		return chunk;
 	}
 
 	/**
-	 * Unpins the specified block.
-	 * @param blk a reference to the disk block
+	 * Unpins the specified chunk.
+	 * @param chunk a reference to the disk chunk
 	 */
-	void unpin(Block blk) {
-		Buffer buff = buffers.get(blk);
+	void unpin(Chunk chunk) {
+		ChunkBuffer buff = buffers.get(chunk);
 		bufferMgr.unpin(buff);
-		pins.remove(blk);
-		if (!pins.contains(blk))
-			buffers.remove(blk);
+		pins.remove(chunk);
+		if (!pins.contains(chunk))
+			buffers.remove(chunk);
 	}
 
 	/**
 	 * Unpins any buffers still pinned by this transaction.
 	 */
 	void unpinAll() {
-		for (Block blk : pins) {
-			Buffer buff = buffers.get(blk);
+		for (Chunk chunk : pins) {
+			ChunkBuffer buff = buffers.get(chunk);
 			bufferMgr.unpin(buff);
 		}
 		buffers.clear();

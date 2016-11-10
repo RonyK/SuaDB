@@ -1,6 +1,6 @@
 package suadb.record;
 
-import suadb.file.Block;
+import suadb.file.Chunk;
 import suadb.tx.Transaction;
 
 /**
@@ -115,8 +115,8 @@ public class RecordFile {
 	/**
 	 * Inserts a new, blank suadb.record somewhere in the suadb.file
 	 * beginning at the current suadb.record.
-	 * If the new suadb.record does not fit into an existing block,
-	 * then a new block is appended to the suadb.file.
+	 * If the new suadb.record does not fit into an existing chunk,
+	 * then a new chunk is appended to the suadb.file.
 	 */
 	public void insert() {
 		while (!rp.insert()) {
@@ -149,14 +149,16 @@ public class RecordFile {
 		if (rp != null)
 			rp.close();
 		currentblknum = b;
-		Block blk = new Block(filename, currentblknum);
+		Chunk blk = new Chunk(filename, currentblknum);
 		rp = new RecordPage(blk, ti, tx);
 	}
 
+	// TODO :: Change Block to chunk
 	private boolean atLastBlock() {
 		return currentblknum == tx.size(filename) - 1;
 	}
 
+	// TODO :: Change to appendChunk
 	private void appendBlock() {
 		RecordFormatter fmtr = new RecordFormatter(ti);
 		tx.append(filename, fmtr);

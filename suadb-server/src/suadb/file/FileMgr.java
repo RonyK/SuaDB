@@ -16,8 +16,8 @@ import static suadb.file.Page.BLOCK_SIZE;
  * The SuaDB suadb.file manager.
  * The database system stores its data as files within a specified directory.
  * The suadb.file manager provides methods for reading the contents of
- * a suadb.file block to a Java byte suadb.buffer,
- * writing the contents of a byte suadb.buffer to a suadb.file block,
+ * a suadb.file chunk to a Java byte suadb.buffer,
+ * writing the contents of a byte suadb.buffer to a suadb.file chunk,
  * and appending the contents of a byte suadb.buffer to the end of a suadb.file.
  * These methods are called exclusively by the class {@link suadb.file.Page Page},
  * and are thus package-private.
@@ -57,8 +57,8 @@ public class FileMgr {
 	}
 
 	/**
-	 * Reads the contents of a disk block into a bytebuffer.
-	 * @param blk a reference to a disk block
+	 * Reads the contents of a disk chunk into a bytebuffer.
+	 * @param blk a reference to a disk chunk
 	 * @param bb  the bytebuffer
 	 */
 	synchronized void read(Block blk, ByteBuffer bb) {
@@ -68,13 +68,13 @@ public class FileMgr {
 			fc.read(bb, blk.number() * BLOCK_SIZE);
 		}
 		catch (IOException e) {
-			throw new RuntimeException("cannot read block " + blk);
+			throw new RuntimeException("cannot read chunk " + blk);
 		}
 	}
 
 	/**
-	 * Writes the contents of a bytebuffer into a disk block.
-	 * @param blk a reference to a disk block
+	 * Writes the contents of a bytebuffer into a disk chunk.
+	 * @param blk a reference to a disk chunk
 	 * @param bb  the bytebuffer
 	 */
 	synchronized void write(Block blk, ByteBuffer bb) {
@@ -84,7 +84,7 @@ public class FileMgr {
 			fc.write(bb, blk.number() * BLOCK_SIZE);
 		}
 		catch (IOException e) {
-			throw new RuntimeException("cannot write block" + blk);
+			throw new RuntimeException("cannot write chunk" + blk);
 		}
 	}
 
@@ -93,7 +93,7 @@ public class FileMgr {
 	 * of the specified suadb.file.
 	 * @param filename the name of the suadb.file
 	 * @param bb  the bytebuffer
-	 * @return a reference to the newly-created block.
+	 * @return a reference to the newly-created chunk.
 	 */
 	synchronized Block append(String filename, ByteBuffer bb) {
 		int newblknum = size(filename);
@@ -115,61 +115,6 @@ public class FileMgr {
 		catch (IOException e) {
 			throw new RuntimeException("cannot access " + filename);
 		}
-	}
-
-	/**
-	 * Reads the contents of a disk chunk into a bytebuffer.
-	 * @param chunk a reference to a disk block
-	 * @param bb  the bytebuffer
-	 */
-	synchronized void read(Chunk chunk, ByteBuffer bb) {
-		try
-		{
-			bb.clear();
-			FileChannel fc = getFile(chunk.getFileName());
-			// TODO :: In array chunk, all chunks has different chunk size.
-			fc.read(bb, chunk.getChunkNum() * chunk.getChunkSize());
-		}
-		catch (IOException e)
-		{
-			throw new RuntimeException("cannot read block " + chunk);
-		}
-	}
-
-	/**
-	 * Writes the contents of a bytebuffer into a disk chunk.
-	 * @param chunk a reference to a disk block
-	 * @param bb  the bytebuffer
-	 */
-	synchronized void write(Chunk chunk, ByteBuffer bb) {
-		try
-		{
-			bb.rewind();
-			FileChannel fc = getFile(chunk.getFileName());
-			// TODO :: In array chunk, all chunks has different chunk size.
-			fc.write(bb, chunk.getChunkNum() * chunk.getChunkSize());
-		}
-		catch (IOException e)
-		{
-			throw new RuntimeException("cannot write block" + chunk);
-		}
-	}
-
-	/**
-	 * Appends the contents of a bytebuffer to the end
-	 * of the specified suadb.file.
-	 * @param filename the name of the suadb.file
-	 * @param bb  the bytebuffer
-	 * @return a reference to the newly-created block.
-	 */
-	synchronized Chunk appendToChunk(String filename, ByteBuffer bb) {
-		// TODO :: Do not use size() method.
-		// chunk number is assigned by dimension order
-		// size() method just assign block number by sequential position order of block in file
-		int newChunkNum = size(filename);
-		Chunk chunk = new Chunk(filename, newChunkNum);
-		write(chunk, bb);
-		return chunk;
 	}
 
 	/**

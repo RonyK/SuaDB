@@ -47,7 +47,7 @@ public class IndexJoinPlan implements Plan {
 	}
 
 	/**
-	 * Estimates the number of block accesses to compute the join.
+	 * Estimates the number of chunk accesses to compute the join.
 	 * The formula is:
 	 * <pre> B(indexjoin(p1,p2,idx)) = B(p1) + R(p1)*B(idx)
 	 *		 + R(indexjoin(p1,p2,idx) </pre>

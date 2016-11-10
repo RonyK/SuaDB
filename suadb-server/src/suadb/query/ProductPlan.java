@@ -34,7 +34,7 @@ public class ProductPlan implements Plan {
 	}
 
 	/**
-	 * Estimates the number of block accesses in the product.
+	 * Estimates the number of chunk accesses in the product.
 	 * The formula is:
 	 * <pre> B(product(p1,p2)) = B(p1) + R(p1)*B(p2) </pre>
 	 * @see suadb.query.Plan#blocksAccessed()

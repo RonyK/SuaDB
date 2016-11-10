@@ -2,7 +2,7 @@ package suadb.index.btree;
 
 import static java.sql.Types.INTEGER;
 import static suadb.file.Page.*;
-import suadb.file.Block;
+import suadb.file.Chunk;
 import suadb.record.*;
 import suadb.query.*;
 import suadb.tx.Transaction;
@@ -15,18 +15,18 @@ import suadb.tx.Transaction;
  * @author Edward Sciore
  */
 public class BTreePage {
-	private Block currentblk;
+	private Chunk currentblk;
 	private TableInfo ti;
 	private Transaction tx;
 	private int slotsize;
 
 	/**
-	 * Opens a page for the specified B-tree block.
-	 * @param currentblk a reference to the B-tree block
+	 * Opens a page for the specified B-tree chunk.
+	 * @param currentblk a reference to the B-tree chunk
 	 * @param ti the suadb.metadata for the particular B-tree suadb.file
 	 * @param tx the calling transaction
 	 */
-	public BTreePage(Block currentblk, TableInfo ti, Transaction tx) {
+	public BTreePage(Chunk currentblk, TableInfo ti, Transaction tx) {
 		this.currentblk = currentblk;
 		this.ti = ti;
 		this.tx = tx;
@@ -58,8 +58,8 @@ public class BTreePage {
 	}
 
 	/**
-	 * Returns true if the block is full.
-	 * @return true if the block is full
+	 * Returns true if the chunk is full.
+	 * @return true if the chunk is full
 	 */
 	public boolean isFull() {
 		return slotpos(getNumRecs()+1) >= BLOCK_SIZE;
@@ -71,10 +71,10 @@ public class BTreePage {
 	 * starting at the split position are transferred to the new page.
 	 * @param splitpos the split position
 	 * @param flag the initial value of the flag field
-	 * @return the reference to the new block
+	 * @return the reference to the new chunk
 	 */
-	public Block split(int splitpos, int flag) {
-		Block newblk = appendNew(flag);
+	public Chunk split(int splitpos, int flag) {
+		Chunk newblk = appendNew(flag);
 		BTreePage newpage = new BTreePage(newblk, ti, tx);
 		transferRecs(splitpos, newpage);
 		newpage.setFlag(flag);
@@ -108,37 +108,37 @@ public class BTreePage {
 	}
 
 	/**
-	 * Appends a new block to the end of the specified B-tree suadb.file,
+	 * Appends a new chunk to the end of the specified B-tree suadb.file,
 	 * having the specified flag value.
 	 * @param flag the initial value of the flag
-	 * @return a reference to the newly-created block
+	 * @return a reference to the newly-created chunk
 	 */
-	public Block appendNew(int flag) {
+	public Chunk appendNew(int flag) {
 		return tx.append(ti.fileName(), new BTPageFormatter(ti, flag));
 	}
 
 	// Methods called only by BTreeDir
 
 	/**
-	 * Returns the block number stored in the suadb.index suadb.record
+	 * Returns the chunk number stored in the suadb.index suadb.record
 	 * at the specified slot.
 	 * @param slot the slot of an suadb.index suadb.record
-	 * @return the block number stored in that suadb.record
+	 * @return the chunk number stored in that suadb.record
 	 */
 	public int getChildNum(int slot) {
-		return getInt(slot, "block");
+		return getInt(slot, "chunk");
 	}
 
 	/**
 	 * Inserts a directory entry at the specified slot.
 	 * @param slot the slot of an suadb.index suadb.record
 	 * @param val the dataval to be stored
-	 * @param blknum the block number to be stored
+	 * @param blknum the chunk number to be stored
 	 */
 	public void insertDir(int slot, Constant val, int blknum) {
 		insert(slot);
 		setVal(slot, "dataval", val);
-		setInt(slot, "block", blknum);
+		setInt(slot, "chunk", blknum);
 	}
 
 	// Methods called only by BTreeLeaf
@@ -149,7 +149,7 @@ public class BTreePage {
 	 * @return the dataRID value store at that slot
 	 */
 	public RID getDataRid(int slot) {
-		return new RID(getInt(slot, "block"), getInt(slot, "id"));
+		return new RID(getInt(slot, "chunk"), getInt(slot, "id"));
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class BTreePage {
 	public void insertLeaf(int slot, Constant val, RID rid) {
 		insert(slot);
 		setVal(slot, "dataval", val);
-		setInt(slot, "block", rid.blockNumber());
+		setInt(slot, "chunk", rid.blockNumber());
 		setInt(slot, "id", rid.id());
 	}
 

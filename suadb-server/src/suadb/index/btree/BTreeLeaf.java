@@ -1,12 +1,12 @@
 package suadb.index.btree;
 
-import suadb.file.Block;
+import suadb.file.Chunk;
 import suadb.tx.Transaction;
 import suadb.record.*;
 import suadb.query.Constant;
 
 /**
- * An object that holds the contents of a B-tree leaf block.
+ * An object that holds the contents of a B-tree leaf chunk.
  * @author Edward Sciore
  */
 public class BTreeLeaf {
@@ -17,15 +17,15 @@ public class BTreeLeaf {
 	private int currentslot;
 
 	/**
-	 * Opens a page to hold the specified leaf block.
+	 * Opens a page to hold the specified leaf chunk.
 	 * The page is positioned immediately before the first suadb.record
 	 * having the specified search key (if any).
-	 * @param blk a reference to the disk block
+	 * @param blk a reference to the disk chunk
 	 * @param ti the suadb.metadata of the B-tree leaf suadb.file
 	 * @param searchkey the search key value
 	 * @param tx the calling transaction
 	 */
-	public BTreeLeaf(Block blk, TableInfo ti, Constant searchkey, Transaction tx) {
+	public BTreeLeaf(Chunk blk, TableInfo ti, Constant searchkey, Transaction tx) {
 		this.ti = ti;
 		this.tx = tx;
 		this.searchkey = searchkey;
@@ -84,19 +84,19 @@ public class BTreeLeaf {
 	 * directory entry for the new page;
 	 * otherwise, the method returns null.
 	 * If all of the records in the page have the same dataval,
-	 * then the block does not split; instead, all but one of the
-	 * records are placed into an overflow block.
+	 * then the chunk does not split; instead, all but one of the
+	 * records are placed into an overflow chunk.
 	 * @param datarid the dataRID value of the new suadb.record
 	 * @return the directory entry of the newly-split page, if one exists.
 	 */
 	public DirEntry insert(RID datarid) {
 		// bug fix:  If the page has an overflow page
 		// and the searchkey of the new suadb.record would be lowest in its page,
-		// we need to first move the entire contents of that page to a new block
+		// we need to first move the entire contents of that page to a new chunk
 		// and then insert the new suadb.record in the now-empty current page.
 		if (contents.getFlag() >= 0 && contents.getDataVal(0).compareTo(searchkey) > 0) {
 			Constant firstval = contents.getDataVal(0);
-			Block newblk = contents.split(0, contents.getFlag());
+			Chunk newblk = contents.split(0, contents.getFlag());
 			currentslot = 0;
 			contents.setFlag(-1);
 			contents.insertLeaf(currentslot, searchkey, datarid);
@@ -111,8 +111,8 @@ public class BTreeLeaf {
 		Constant firstkey = contents.getDataVal(0);
 		Constant lastkey  = contents.getDataVal(contents.getNumRecs()-1);
 		if (lastkey.equals(firstkey)) {
-			// create an overflow block to hold all but the first suadb.record
-			Block newblk = contents.split(1, contents.getFlag());
+			// create an overflow chunk to hold all but the first suadb.record
+			Chunk newblk = contents.split(1, contents.getFlag());
 			contents.setFlag(newblk.number());
 			return null;
 		}
@@ -130,7 +130,7 @@ public class BTreeLeaf {
 				while (contents.getDataVal(splitpos-1).equals(splitkey))
 					splitpos--;
 			}
-			Block newblk = contents.split(splitpos, -1);
+			Chunk newblk = contents.split(splitpos, -1);
 			return new DirEntry(splitkey, newblk.number());
 		}
 	}
@@ -141,7 +141,7 @@ public class BTreeLeaf {
 		if (!searchkey.equals(firstkey) || flag < 0)
 			return false;
 		contents.close();
-		Block nextblk = new Block(ti.fileName(), flag);
+		Chunk nextblk = new Chunk(ti.fileName(), flag);
 		contents = new BTreePage(nextblk, ti, tx);
 		currentslot = 0;
 		return true;

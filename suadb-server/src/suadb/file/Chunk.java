@@ -1,60 +1,66 @@
 package suadb.file;
 
 /**
+ * A reference to a disk chunk.
+ * A Chunk object consists of a fileName and a chunk number.
  * It does not hold the contents of the chunk;
- * instead, that is the job of a {@link MemChunk} object.
  *
- * Created by Rony on 2016-11-07.
+ * Created by Rony on 2016-11-10.
  */
 public class Chunk
 {
-	// TODO :: How to treat chunk size - RonyK
-	// If we use compression chunk, size of each chunk would be different.
-	private int chunkSize;
-
 	private String fileName;
 	private int chunkNum;
+	private int chunkSize = 1;
 
 	/**
-	 * Constructs a chunk
-	 *
-	 * @param fileName
-	 * @param chunkNum
+	 * Constructs a chunk reference
+	 * for the specified fileName and chunk number.
+	 * @param fileName the name of the suadb.file
+	 * @param chunkNum the chunk number
 	 */
-	public Chunk(String fileName, int chunkNum)
-	{
+	public Chunk(String fileName, int chunkNum) {
 		this.fileName = fileName;
 		this.chunkNum = chunkNum;
 	}
 
-	public String getFileName()
+	public Chunk(String fileName, int chunkNum, int chunkSize)
 	{
+		this(fileName, chunkNum);
+		this.chunkSize = chunkSize;
+	}
+
+	/**
+	 * Returns the name of the suadb.file where the chunk lives.
+	 * @return the fileName
+	 */
+	public String fileName() {
 		return fileName;
 	}
 
-	public int getChunkNum()
-	{
+	/**
+	 * Returns the location of the chunk within the suadb.file.
+	 * @return the chunk number
+	 */
+	public int number() {
 		return chunkNum;
 	}
 
-	public int getChunkSize()
+	public int chunkSize()
 	{
 		return chunkSize;
 	}
 
-	public boolean equals(Object obj)
-	{
-		Chunk chunk = (Chunk)obj;
-		return fileName.equals(chunk.fileName) && chunkNum == chunk.chunkNum;
+	public boolean equals(Object obj) {
+		Chunk blk = (Chunk) obj;
+		return fileName.equals(blk.fileName) && chunkNum == blk.chunkNum;
 	}
 
-	public String toString()
-	{
+	public String toString() {
 		return "[suadb.file " + fileName + ", chunk " + chunkNum + "]";
 	}
 
-	public int hashCode()
-	{
+	public int hashCode() {
 		return toString().hashCode();
 	}
 }

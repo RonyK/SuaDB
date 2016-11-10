@@ -7,7 +7,7 @@ import suadb.file.Page;
 import suadb.buffer.PageFormatter;
 
 /**
- * An object that can format a page to look like a block of 
+ * An object that can format a page to look like a chunk of
  * empty records.
  * @author Edward Sciore
  */

@@ -3,8 +3,8 @@ package suadb.index.btree;
 import suadb.query.Constant;
 
 /**
- * A directory entry has two components: the number of the child block,
- * and the dataval of the first suadb.record in that block.
+ * A directory entry has two components: the number of the child chunk,
+ * and the dataval of the first suadb.record in that chunk.
  * @author Edward Sciore
  */
 public class DirEntry {
@@ -12,9 +12,9 @@ public class DirEntry {
 	private int blocknum;
 
 	/**
-	 * Creates a new entry for the specified dataval and block number.
+	 * Creates a new entry for the specified dataval and chunk number.
 	 * @param dataval the dataval
-	 * @param blocknum the block number
+	 * @param blocknum the chunk number
 	 */
 	public DirEntry(Constant dataval, int blocknum) {
 		this.dataval  = dataval;
@@ -30,8 +30,8 @@ public class DirEntry {
 	}
 
 	/**
-	 * Returns the block number component of the entry
-	 * @return the block number component of the entry
+	 * Returns the chunk number component of the entry
+	 * @return the chunk number component of the entry
 	 */
 	public int blockNumber() {
 		return blocknum;

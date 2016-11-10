@@ -7,8 +7,8 @@ import suadb.server.SuaDB;
  * The publicly-accessible suadb.buffer manager.
  * A suadb.buffer manager wraps a basic suadb.buffer manager, and
  * provides the same methods. The difference is that
- * the methods {@link #pin(Block) pin} and 
- * {@link #pinNew(String, PageFormatter) pinNew}
+ * the methods {@link #pin(Chunk) pin} and
+ * {@link #pinNew(String, PageFormatter, int) pinNew}
  * will never return null.
  * If no buffers are currently available, then the
  * calling thread will be placed on a waiting list.
@@ -19,9 +19,10 @@ import suadb.server.SuaDB;
  * then a {@link BufferAbortException} is thrown.
  * @author Edward Sciore
  */
+
 public class BufferMgr {
 	private static final long MAX_TIME = 10000; // 10 seconds
-	private BasicBufferMgr bufferMgr;
+	private ChunkBufferMgr bufferMgr;
 
 	/**
 	 * Creates a new suadb.buffer manager having the specified
@@ -37,21 +38,21 @@ public class BufferMgr {
 	 * @param numbuffers the number of suadb.buffer slots to allocate
 	 */
 	public BufferMgr(int numbuffers) {
-		bufferMgr = new BasicBufferMgr(numbuffers);
+		bufferMgr = new ChunkBufferMgr(numbuffers);
 	}
 
 	/**
-	 * Pins a suadb.buffer to the specified block, potentially
+	 * Pins a suadb.buffer to the specified chunk, potentially
 	 * waiting until a suadb.buffer becomes available.
 	 * If no suadb.buffer becomes available within a fixed
 	 * time period, then a {@link BufferAbortException} is thrown.
-	 * @param blk a reference to a disk block
-	 * @return the suadb.buffer pinned to that block
+	 * @param blk a reference to a disk chunk
+	 * @return the suadb.buffer pinned to that chunk
 	 */
-	public synchronized Buffer pin(Block blk) {
+	public synchronized ChunkBuffer pin(Chunk blk) {
 		try {
 			long timestamp = System.currentTimeMillis();
-			Buffer buff = bufferMgr.pin(blk);
+			ChunkBuffer buff = bufferMgr.pin(blk);
 			while (buff == null && !waitingTooLong(timestamp)) {
 				wait(MAX_TIME);
 				buff = bufferMgr.pin(blk);
@@ -66,21 +67,21 @@ public class BufferMgr {
 	}
 
 	/**
-	 * Pins a suadb.buffer to a new block in the specified suadb.file,
+	 * Pins a suadb.buffer to a new chunk in the specified suadb.file,
 	 * potentially waiting until a suadb.buffer becomes available.
 	 * If no suadb.buffer becomes available within a fixed
 	 * time period, then a {@link BufferAbortException} is thrown.
 	 * @param filename the name of the suadb.file
 	 * @param fmtr the formatter used to initialize the page
-	 * @return the suadb.buffer pinned to that block
+	 * @return the suadb.buffer pinned to that chunk
 	 */
-	public synchronized Buffer pinNew(String filename, PageFormatter fmtr) {
+	public synchronized ChunkBuffer pinNew(String filename, PageFormatter fmtr, int chunkSize) {
 		try {
 			long timestamp = System.currentTimeMillis();
-			Buffer buff = bufferMgr.pinNew(filename, fmtr);
+			ChunkBuffer buff = bufferMgr.pinNew(filename, fmtr, chunkSize);
 			while (buff == null && !waitingTooLong(timestamp)) {
 				wait(MAX_TIME);
-				buff = bufferMgr.pinNew(filename, fmtr);
+				buff = bufferMgr.pinNew(filename, fmtr, chunkSize);
 			}
 			if (buff == null)
 				throw new BufferAbortException();
@@ -97,7 +98,7 @@ public class BufferMgr {
 	 * then the threads on the wait list are notified.
 	 * @param buff the suadb.buffer to be unpinned
 	 */
-	public synchronized void unpin(Buffer buff) {
+	public synchronized void unpin(ChunkBuffer buff) {
 		bufferMgr.unpin(buff);
 		if (!buff.isPinned())
 			notifyAll();

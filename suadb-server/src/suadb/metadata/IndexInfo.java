@@ -50,15 +50,15 @@ public class IndexInfo {
 	}
 
 	/**
-	 * Estimates the number of block accesses required to
+	 * Estimates the number of chunk accesses required to
 	 * find all suadb.index records having a particular search key.
 	 * The method uses the table's suadb.metadata to estimate the
 	 * size of the suadb.index suadb.file and the number of suadb.index records
-	 * per block.
+	 * per chunk.
 	 * It then passes this information to the traversalCost
 	 * method of the appropriate suadb.index type,
 	 * which provides the estimate.
-	 * @return the number of block accesses required to traverse the suadb.index
+	 * @return the number of chunk accesses required to traverse the suadb.index
 	 */
 	public int blocksAccessed() {
 		TableInfo idxti = new TableInfo("", schema());
@@ -94,7 +94,7 @@ public class IndexInfo {
 	/**
 	 * Returns the schema of the suadb.index records.
 	 * The schema consists of the dataRID (which is
-	 * represented as two integers, the block number and the
+	 * represented as two integers, the chunk number and the
 	 * suadb.record ID) and the dataval (which is the indexed field).
 	 * Schema information about the indexed field is obtained
 	 * via the table's suadb.metadata.
@@ -102,7 +102,7 @@ public class IndexInfo {
 	 */
 	private Schema schema() {
 		Schema sch = new Schema();
-		sch.addIntField("block");
+		sch.addIntField("chunk");
 		sch.addIntField("id");
 		if (ti.schema().type(fldname) == INTEGER)
 			sch.addIntField("dataval");

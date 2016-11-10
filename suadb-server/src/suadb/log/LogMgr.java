@@ -31,7 +31,7 @@ public class LogMgr implements Iterable<BasicLogRecord> {
 	/**
 	 * Creates the manager for the specified log file.
 	 * If the log file does not yet exist, it is created
-	 * with an empty first block.
+	 * with an empty first chunk.
 	 * This constructor depends on a {@link FileMgr} object
 	 * that it gets from the method
 	 * {@link SuaDB#fileMgr()}.
@@ -88,7 +88,7 @@ public class LogMgr implements Iterable<BasicLogRecord> {
 		for (Object obj : rec)
 			recsize += size(obj);
 		if (currentpos + recsize >= BLOCK_SIZE){ // the log record doesn't fit,
-			flush();		  // so move to the next block.
+			flush();		  // so move to the next chunk.
 			appendNewBlock();
 		}
 		for (Object obj : rec)
@@ -126,8 +126,8 @@ public class LogMgr implements Iterable<BasicLogRecord> {
 
 	/**
 	 * Returns the LSN of the most recent log record.
-	 * As implemented, the LSN is the block number where the record is stored.
-	 * Thus every log record in a block has the same LSN.
+	 * As implemented, the LSN is the chunk number where the record is stored.
+	 * Thus every log record in a chunk has the same LSN.
 	 * @return the LSN of the most recent log record
 	 */
 	private int currentLSN() {

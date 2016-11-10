@@ -10,7 +10,7 @@ import static suadb.file.Page.INT_SIZE;
 
 /**
  * An object that can format a page to look like an
- * empty B-tree block.
+ * empty B-tree chunk.
  * @author Edward Sciore
  */
 public class BTPageFormatter implements PageFormatter {
