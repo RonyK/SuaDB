@@ -145,4 +145,25 @@ public class FileMgr {
 		}
 		return fc;
 	}
+	
+	public void flushFile(String fileName) throws IOException
+	{
+		FileChannel fc = openFiles.get(fileName);
+		if(fc != null)
+		{
+			fc.close();
+			openFiles.remove(fileName);
+		}
+	}
+	
+	public void flushAllFiles() throws IOException
+	{
+		for(Map.Entry<String, FileChannel> fKeyValue : openFiles.entrySet())
+		{
+			FileChannel fc = fKeyValue.getValue();
+			fc.close();
+		}
+		
+		openFiles.clear();
+	}
 }

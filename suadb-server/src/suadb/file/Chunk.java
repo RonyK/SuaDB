@@ -52,8 +52,8 @@ public class Chunk
 	}
 
 	public boolean equals(Object obj) {
-		Chunk blk = (Chunk) obj;
-		return fileName.equals(blk.fileName) && chunkNum == blk.chunkNum;
+		Chunk chunk = (Chunk) obj;
+		return fileName.equals(chunk.fileName) && chunkNum == chunk.chunkNum;
 	}
 
 	public String toString() {

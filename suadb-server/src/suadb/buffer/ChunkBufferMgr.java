@@ -15,7 +15,7 @@ import suadb.file.Chunk;
 public class ChunkBufferMgr
 {
 	private Buffer[] bufferPool;
-	private Queue<Buffer> freeBuffers = new LinkedBlockingQueue<>();
+	private Queue<Buffer> freeBuffers = new LinkedBlockingQueue<Buffer>();
 	private List<ChunkBuffer> cBuffers;
 	private int numAvailable;
 
@@ -124,7 +124,7 @@ public class ChunkBufferMgr
 			return null;
 		}
 
-		List<Buffer> result = new Vector<>();
+		List<Buffer> result = new Vector<Buffer>();
 
 		if(freeBuffers.size() < chunkSize)
 		{

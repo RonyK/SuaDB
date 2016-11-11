@@ -21,7 +21,7 @@ import static suadb.file.Page.*;
  */
 public class ChunkBuffer
 {
-	private List<Buffer> buffers = new Vector<>();
+	private List<Buffer> buffers = new Vector<Buffer>();
 	private Chunk chunk = null;
 	private int pins = 0;
 	private int modifiedBy = -1;  // negative means not modified
@@ -234,7 +234,7 @@ public class ChunkBuffer
 	public List<Buffer> retrieveBuffer()
 	{
 		List<Buffer> retrieveBuffers = buffers;
-		buffers = new Vector<>();
+		buffers = new Vector<Buffer>();
 
 		return retrieveBuffers;
 	}
