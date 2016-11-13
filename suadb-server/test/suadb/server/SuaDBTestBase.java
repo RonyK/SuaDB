@@ -1,5 +1,6 @@
 package suadb.server;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import java.io.File;
@@ -16,15 +17,25 @@ public class SuaDBTestBase
 	protected static String dbName = "testDB";
 	protected static String arrayFileName = "testArray.arr";
 	
+	protected static String homeDir;
+	protected static File dbDirectory;
+	
 	@BeforeClass
-	public static void SuaDBTestBaseSetup()
+	final public static void SuaDBTestBaseSetup()
 	{
-
+		homeDir = System.getProperty("user.home");
+		dbDirectory = new File(homeDir, dbName);
+	}
+	
+	@AfterClass
+	final public static void SuaDBTestBaseTearDown()
+	{
+		eraseAllTestFile(dbDirectory);
 	}
 	
 	static protected void eraseAllTestFile(File file)
 	{
-		assertTrue(deleteDirectory(file));
+		assertTrue(file.exists() == deleteDirectory(file));
 		assertFalse(file.exists());
 	}
 	
@@ -43,7 +54,16 @@ public class SuaDBTestBase
 				deleteDirectory(file);
 			} else
 			{
-				assertTrue("Delete " + file.getPath(), file.delete());
+				boolean b1 = file.exists();
+				boolean b2 = file.delete();
+				
+				System.out.println(b1);
+				System.out.println(b2);
+				
+				assertTrue(
+						"Delete " + file.getPath(),
+						file.exists() == file.delete());
+				
 			}
 		}
 		

@@ -55,6 +55,8 @@ public class ChunkBufferMgr
 				return null;
 			}
 
+			// What is the different with pin and pinnew? - RonyK
+			cBuff = new ChunkBuffer();
 			cBuff.assignToChunk(chunk, buffers);
 		}else
 		{

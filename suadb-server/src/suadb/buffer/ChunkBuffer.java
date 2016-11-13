@@ -100,7 +100,7 @@ public class ChunkBuffer
 		modifiedBy = txnum;
 		if (lsn >= 0)
 			logSequenceNumber = lsn;
-		buffer(offset).setInt(blockOffset(offset), val);
+		buffer(offset).setInt(blockOffset(offset), val, txnum, lsn);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class ChunkBuffer
 		modifiedBy = txnum;
 		if (lsn >= 0)
 			logSequenceNumber = lsn;
-		buffer(offset).setString(blockOffset(offset), val);
+		buffer(offset).setString(blockOffset(offset), val, txnum, lsn);
 	}
 
 	/**

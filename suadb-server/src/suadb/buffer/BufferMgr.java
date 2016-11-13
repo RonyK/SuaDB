@@ -46,16 +46,16 @@ public class BufferMgr {
 	 * waiting until a suadb.buffer becomes available.
 	 * If no suadb.buffer becomes available within a fixed
 	 * time period, then a {@link BufferAbortException} is thrown.
-	 * @param blk a reference to a disk chunk
+	 * @param chunk a reference to a disk chunk
 	 * @return the suadb.buffer pinned to that chunk
 	 */
-	public synchronized ChunkBuffer pin(Chunk blk) {
+	public synchronized ChunkBuffer pin(Chunk chunk) {
 		try {
 			long timestamp = System.currentTimeMillis();
-			ChunkBuffer buff = bufferMgr.pin(blk);
+			ChunkBuffer buff = bufferMgr.pin(chunk);
 			while (buff == null && !waitingTooLong(timestamp)) {
 				wait(MAX_TIME);
-				buff = bufferMgr.pin(blk);
+				buff = bufferMgr.pin(chunk);
 			}
 			if (buff == null)
 				throw new BufferAbortException();

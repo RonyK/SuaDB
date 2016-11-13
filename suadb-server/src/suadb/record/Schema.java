@@ -17,7 +17,7 @@ import static java.sql.Types.VARCHAR;
  */
 public class Schema {
 	private Map<String,FieldInfo> info = new HashMap<String,FieldInfo>();
-	private Map<String, DimensionInfo> dimInfo = new HashMap<>();
+	private Map<String, DimensionInfo> dimInfo = new HashMap<String, DimensionInfo>();
 	
 	/**
 	 * Creates an empty schema.

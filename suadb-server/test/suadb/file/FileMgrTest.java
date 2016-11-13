@@ -23,14 +23,12 @@ import static org.junit.Assert.*;
 public class FileMgrTest extends SuaDBTestBase
 {
 	static FileMgr fileMgr;
-	protected static String homeDir;
-	static File dbDirectory;
+
 	
 	@BeforeClass
 	public static void setup()
 	{
-		homeDir = System.getProperty("user.home");
-		dbDirectory = new File(homeDir, dbName);
+
 		fileMgr = new FileMgr(dbName);
 	}
 
@@ -72,7 +70,5 @@ public class FileMgrTest extends SuaDBTestBase
 			System.out.println(ioe.getMessage());
 			ioe.printStackTrace();
 		}
-		
-		eraseAllTestFile(dbDirectory);
 	}
 }
