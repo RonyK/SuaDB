@@ -40,10 +40,24 @@ public class Parser {
 	}
 
 	public Term term() {
+		int mathcode=-1;
 		Expression lhs = expression();
-		lex.eatDelim('=');
+		if (lex.matchDelim('=')) {
+			mathcode=0;
+			lex.eatDelim('=');
+		}
+		else if (lex.matchDelim('>')) {
+			mathcode=1;
+			lex.eatDelim('=');
+		}
+		else if (lex.matchDelim('<')) {
+			mathcode=2;
+			lex.eatDelim('=');
+		}
+		else
+			throw new BadSyntaxException();
 		Expression rhs = expression();
-		return new Term(lhs, rhs);
+		return new Term(lhs, rhs, mathcode);
 	}
 
 	public Predicate predicate() {
@@ -73,7 +87,6 @@ public class Parser {
 	public Object updateCmd() {
 		if (lex.matchKeyword("input"))
 			return input();
-
 		else
 			return create();
 	}
@@ -94,26 +107,27 @@ public class Parser {
 		lex.eatDelim(',');
 		String inputfile = lex.eatId();  // 'input_file'
 		lex.eatDelim(')');
-
 		return new InsertData(arrayname, inputfile);
 	}
 
+// Methods for parsing project commands
+
+	public ProjectData project() {
+		lex.eatKeyword("project");
+		lex.eatDelim('(');
+		String arrayname = lex.eatId();
+		lex.eatDelim(',');
+		List<String> attributes = fieldList();
+		lex.eatDelim(')');
+		return new ProjectData(arrayname,attributes);
+
+	}
 	private List<String> fieldList() {
 		List<String> L = new ArrayList<String>();
 		L.add(field());
 		if (lex.matchDelim(',')) {
 			lex.eatDelim(',');
 			L.addAll(fieldList());
-		}
-		return L;
-	}
-
-	private List<Constant> constList() {
-		List<Constant> L = new ArrayList<Constant>();
-		L.add(constant());
-		if (lex.matchDelim(',')) {
-			lex.eatDelim(',');
-			L.addAll(constList());
 		}
 		return L;
 	}

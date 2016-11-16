@@ -9,16 +9,22 @@ import suadb.record.Schema;
  */
 public class Term {
 	private Expression lhs, rhs;
+	private int mathcode;
 
 	/**
 	 * Creates a new term that compares two expressions
-	 * for equality.
 	 * @param lhs  the LHS expression
 	 * @param rhs  the RHS expression
+	 * @param mathcode comparison operator type
+	 *                 0 : =
+	 *                 1 : >
+	 *                 2 : <
+	 *
 	 */
-	public Term(Expression lhs, Expression rhs) {
+	public Term(Expression lhs, Expression rhs, int mathcode) {
 		this.lhs = lhs;
 		this.rhs = rhs;
+		this.mathcode = mathcode;
 	}
 
 	/**
