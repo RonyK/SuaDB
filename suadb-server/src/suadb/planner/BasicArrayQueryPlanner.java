@@ -38,4 +38,18 @@ public class BasicArrayQueryPlanner implements QueryPlanner {
         p = new ProjectPlan(p, data.fields());
         return p;
     }
+	
+    public Plan createFilterPlan(FilterData data, Plan leftPlan, Transaction tx)
+	{
+		Plan p = new FilterPlan(leftPlan, data.predicate());
+		
+		return p;
+	}
+	
+	public Plan createProjectPlan(ProjectData data, Plan leftPlan, Transaction tx)
+	{
+		Plan p = new ProjectPlan(leftPlan, data.getAttributes());
+		
+		return p;
+	}
 }

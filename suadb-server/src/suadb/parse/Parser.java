@@ -72,6 +72,7 @@ public class Parser {
 // Methods for parsing queries
 
 	public QueryData query() {
+		// TODO :: Add AQL queries in here - RonyK
 		lex.eatKeyword("filter");
 		Collection<String> tables = new ArrayList<String>();
 		tables.add(field());
