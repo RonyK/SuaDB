@@ -1,6 +1,7 @@
 package suadb.record;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,12 +12,14 @@ import static suadb.file.Page.*;
  * Created by Rony on 2016-11-09.
  */
 public class ArrayInfo {
-	private String arrayName;
+    private String arrayName;
 	private Schema schema;
+
 
 	public ArrayInfo(String arrayName, Schema schema) {
 		this.schema = schema;
 		this.arrayName = arrayName;
+        schema.attributes();
 	}
 
 	public String arrayName() {
@@ -25,6 +28,11 @@ public class ArrayInfo {
 
 	public Schema schema() {
 		return schema;
+	}
+
+	// ILHYUN : this method is needed to retrieve the length of record for an attribute
+	public int recordLength(String fldname){
+		return lengthInBytes(fldname);
 	}
 
 	private int lengthInBytes(String fldname) {
