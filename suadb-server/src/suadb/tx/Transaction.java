@@ -81,20 +81,20 @@ public class Transaction {
 	/**
 	 * Pins the specified chunk.
 	 * The transaction manages the suadb.buffer for the client.
-	 * @param blk a reference to the disk chunk
+	 * @param chunk a reference to the disk chunk
 	 */
-	public void pin(Chunk blk) {
-		myBuffers.pin(blk);
+	public void pin(Chunk chunk) {
+		myBuffers.pin(chunk);
 	}
 
 	/**
 	 * Unpins the specified chunk.
 	 * The transaction looks up the suadb.buffer pinned to this chunk,
 	 * and unpins it.
-	 * @param blk a reference to the disk chunk
+	 * @param chunk a reference to the disk chunk
 	 */
-	public void unpin(Chunk blk) {
-		myBuffers.unpin(blk);
+	public void unpin(Chunk chunk) {
+		myBuffers.unpin(chunk);
 	}
 
 	/**
@@ -102,13 +102,13 @@ public class Transaction {
 	 * specified offset of the specified chunk.
 	 * The method first obtains an SLock on the chunk,
 	 * then it calls the suadb.buffer to retrieve the value.
-	 * @param blk a reference to a disk chunk
+	 * @param chunk a reference to a disk chunk
 	 * @param offset the byte offset within the chunk
 	 * @return the integer stored at that offset
 	 */
-	public int getInt(Chunk blk, int offset) {
-		concurMgr.sLock(blk);
-		ChunkBuffer buff = myBuffers.getBuffer(blk);
+	public int getInt(Chunk chunk, int offset) {
+		concurMgr.sLock(chunk);
+		ChunkBuffer buff = myBuffers.getBuffer(chunk);
 		return buff.getInt(offset);
 	}
 
@@ -117,13 +117,13 @@ public class Transaction {
 	 * specified offset of the specified chunk.
 	 * The method first obtains an SLock on the chunk,
 	 * then it calls the suadb.buffer to retrieve the value.
-	 * @param blk a reference to a disk chunk
+	 * @param chunk a reference to a disk chunk
 	 * @param offset the byte offset within the chunk
 	 * @return the string stored at that offset
 	 */
-	public String getString(Chunk blk, int offset) {
-		concurMgr.sLock(blk);
-		ChunkBuffer buff = myBuffers.getBuffer(blk);
+	public String getString(Chunk chunk, int offset) {
+		concurMgr.sLock(chunk);
+		ChunkBuffer buff = myBuffers.getBuffer(chunk);
 		return buff.getString(offset);
 	}
 
@@ -136,13 +136,13 @@ public class Transaction {
 	 * writes that suadb.record to the log.
 	 * Finally, it calls the suadb.buffer to store the value,
 	 * passing in the LSN of the log suadb.record and the transaction's id.
-	 * @param blk a reference to the disk chunk
+	 * @param chunk a reference to the disk chunk
 	 * @param offset a byte offset within that chunk
 	 * @param val the value to be stored
 	 */
-	public void setInt(Chunk blk, int offset, int val) {
-		concurMgr.xLock(blk);
-		ChunkBuffer buff = myBuffers.getBuffer(blk);
+	public void setInt(Chunk chunk, int offset, int val) {
+		concurMgr.xLock(chunk);
+		ChunkBuffer buff = myBuffers.getBuffer(chunk);
 		int lsn = recoveryMgr.setInt(buff, offset, val);
 		buff.setInt(offset, val, txnum, lsn);
 	}
@@ -156,13 +156,13 @@ public class Transaction {
 	 * writes that suadb.record to the log.
 	 * Finally, it calls the suadb.buffer to store the value,
 	 * passing in the LSN of the log suadb.record and the transaction's id.
-	 * @param blk a reference to the disk chunk
+	 * @param chunk a reference to the disk chunk
 	 * @param offset a byte offset within that chunk
 	 * @param val the value to be stored
 	 */
-	public void setString(Chunk blk, int offset, String val) {
-		concurMgr.xLock(blk);
-		ChunkBuffer buff = myBuffers.getBuffer(blk);
+	public void setString(Chunk chunk, int offset, String val) {
+		concurMgr.xLock(chunk);
+		ChunkBuffer buff = myBuffers.getBuffer(chunk);
 		int lsn = recoveryMgr.setString(buff, offset, val);
 		buff.setString(offset, val, txnum, lsn);
 	}
@@ -191,12 +191,12 @@ public class Transaction {
 	 * @return a reference to the newly-created disk chunk
 	 */
 	public Chunk append(String filename, PageFormatter fmtr) {
-		Chunk dummyblk = new Chunk(filename, END_OF_FILE);
-		concurMgr.xLock(dummyblk);
+		Chunk dummyChunk = new Chunk(filename, END_OF_FILE);
+		concurMgr.xLock(dummyChunk);
 		// TODO :: Modify Chunk size - RonyK
-		Chunk blk = myBuffers.pinNew(filename, fmtr, 1);
-		unpin(blk);
-		return blk;
+		Chunk chunk = myBuffers.pinNew(filename, fmtr, 1);
+		unpin(chunk);
+		return chunk;
 	}
 
 	public Chunk append(String fileName, PageFormatter fmtr, int chunkSize)

@@ -219,6 +219,7 @@ public class Schema {
 	class DimensionInfo
 	{
 		int start, end, chunkSize;
+		//chunkSize : The number of cells in one chunk along one dimension - CDS
 //		int overlap;
 
 		public DimensionInfo(int start, int end, int chunkSize)

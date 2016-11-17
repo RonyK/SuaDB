@@ -22,7 +22,7 @@ import suadb.server.SuaDB;
 
 public class BufferMgr {
 	private static final long MAX_TIME = 10000; // 10 seconds
-	private ChunkBufferMgr bufferMgr;
+	private ChunkBufferMgr chunkBufferMgr;
 
 	/**
 	 * Creates a new suadb.buffer manager having the specified
@@ -38,7 +38,7 @@ public class BufferMgr {
 	 * @param numbuffers the number of suadb.buffer slots to allocate
 	 */
 	public BufferMgr(int numbuffers) {
-		bufferMgr = new ChunkBufferMgr(numbuffers);
+		chunkBufferMgr = new ChunkBufferMgr(numbuffers);
 	}
 
 	/**
@@ -52,10 +52,10 @@ public class BufferMgr {
 	public synchronized ChunkBuffer pin(Chunk chunk) {
 		try {
 			long timestamp = System.currentTimeMillis();
-			ChunkBuffer buff = bufferMgr.pin(chunk);
-			while (buff == null && !waitingTooLong(timestamp)) {
+			ChunkBuffer buff = chunkBufferMgr.pin(chunk);
+			while (buff == null && !waitingTooLong(timestamp)) {//wait to allocate the chunkBuffer to chunk
 				wait(MAX_TIME);
-				buff = bufferMgr.pin(chunk);
+				buff = chunkBufferMgr.pin(chunk);
 			}
 			if (buff == null)
 				throw new BufferAbortException();
@@ -78,10 +78,10 @@ public class BufferMgr {
 	public synchronized ChunkBuffer pinNew(String filename, PageFormatter fmtr, int chunkSize) {
 		try {
 			long timestamp = System.currentTimeMillis();
-			ChunkBuffer buff = bufferMgr.pinNew(filename, fmtr, chunkSize);
+			ChunkBuffer buff = chunkBufferMgr.pinNew(filename, fmtr, chunkSize);
 			while (buff == null && !waitingTooLong(timestamp)) {
 				wait(MAX_TIME);
-				buff = bufferMgr.pinNew(filename, fmtr, chunkSize);
+				buff = chunkBufferMgr.pinNew(filename, fmtr, chunkSize);
 			}
 			if (buff == null)
 				throw new BufferAbortException();
@@ -99,7 +99,7 @@ public class BufferMgr {
 	 * @param buff the suadb.buffer to be unpinned
 	 */
 	public synchronized void unpin(ChunkBuffer buff) {
-		bufferMgr.unpin(buff);
+		chunkBufferMgr.unpin(buff);
 		if (!buff.isPinned())
 			notifyAll();
 	}
@@ -109,7 +109,7 @@ public class BufferMgr {
 	 * @param txnum the transaction's id number
 	 */
 	public void flushAll(int txnum) {
-		bufferMgr.flushAll(txnum);
+		chunkBufferMgr.flushAll(txnum);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class BufferMgr {
 	 * @return the number of available buffers
 	 */
 	public int available() {
-		return bufferMgr.available();
+		return chunkBufferMgr.available();
 	}
 
 	private boolean waitingTooLong(long starttime) {

@@ -11,14 +11,14 @@ import suadb.buffer.PageFormatter;
  * empty records.
  * @author Edward Sciore
  */
-class RecordFormatter implements PageFormatter {
+class CellFormatter implements PageFormatter {
 	private TableInfo ti;
 
 	/**
 	 * Creates a formatter for a new page of a table.
 	 * @param ti the table's suadb.metadata
 	 */
-	public RecordFormatter(TableInfo ti) {
+	public CellFormatter(TableInfo ti) {
 		this.ti = ti;
 	}
 
@@ -31,7 +31,6 @@ class RecordFormatter implements PageFormatter {
 	 * @see suadb.buffer.PageFormatter#format(suadb.file.Page)
 	 */
 	public void format(Page page) {
-
 		int recsize = ti.recordLength() + INT_SIZE;
 		for (int pos=0; pos+recsize<=BLOCK_SIZE; pos += recsize) {
 			page.setInt(pos, EMPTY);

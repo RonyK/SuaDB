@@ -9,9 +9,26 @@ package suadb.file;
  */
 public class Chunk
 {
+	/**
+	 * File name of the chunk.
+	 * arrayName_attribute Name_chunkNumInTheAttribute;
+	 */
 	private String fileName;
+	/**
+	 * The logical order in an array.
+	 */
 	private int chunkNum;
-	private int chunkSize = 1;
+	/**
+	 * The number of cells in a chunk.
+	 * numOfCells = Product of each dimension's chunkSize
+	 */
+	private int numOfCells;
+
+	/**
+	*   The number of required Blocks to make a chunk.
+	*   numOfBlocks = Math.ceil(numOfCells/Math.floor(BLOCK_SIZE/(4Byte(empty/inuse flag) + (4Byte(INT) or 1BYTE*VARCHAR LENGTH))))
+	*/
+	private int numOfBlocks;
 
 	/**
 	 * Constructs a chunk reference
@@ -24,10 +41,11 @@ public class Chunk
 		this.chunkNum = chunkNum;
 	}
 
-	public Chunk(String fileName, int chunkNum, int chunkSize)
-	{
+	public Chunk(String fileName, int chunkNum, int numOfCells,int numOfBlocks){
 		this(fileName, chunkNum);
-		this.chunkSize = chunkSize;
+		this.numOfCells = numOfCells;
+		this.numOfCells = numOfCells;
+		this.numOfBlocks = numOfBlocks;
 	}
 
 	/**
@@ -46,10 +64,10 @@ public class Chunk
 		return chunkNum;
 	}
 
-	public int chunkSize()
-	{
-		return chunkSize;
+	public int getNumOfBlocks(){
+		return numOfBlocks;
 	}
+
 
 	public boolean equals(Object obj) {
 		Chunk chunk = (Chunk) obj;
