@@ -199,12 +199,15 @@ public class ChunkBuffer
 		chunk = c;
 		this.buffers = buffers;
 
-		int blockNum = c.number();
+		int chunkNum = c.number();
+
+		//TODO
 		for (Buffer buff : buffers)
 		{
-			Block block = new Block(c.fileName(), blockNum);
+
+			Block block = new Block(c.fileName(), chunkNum);
 			buff.assignToBlock(block);
-			blockNum++;
+			chunkNum++;
 		}
 
 		pins = 0;

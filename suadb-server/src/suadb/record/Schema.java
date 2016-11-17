@@ -16,47 +16,60 @@ import static java.sql.Types.VARCHAR;
  *
  */
 public class Schema {
-	private Map<String,FieldInfo> info = new HashMap<String,FieldInfo>();
-	private Map<String, DimensionInfo> dimInfo = new HashMap<String, DimensionInfo>();
-	
+	//key : attribute name, value : attribute type & length(if String type) - CDS
+	private Map<String, attributeInfo> attributeInfo = new HashMap<String, attributeInfo>();
+	//key : dimensionName, value : DimensionInfo(start,end,chunkSize) - CDS
+	private Map<String, DimensionInfo> dimensionInfo = new HashMap<String, DimensionInfo>();
+
 	/**
 	 * Creates an empty schema.
 	 * Field information can be added to a schema
 	 * via the five addXXX methods. 
 	 */
 	public Schema() {}
-	
+
 	/**
 	 * Adds a field to the schema having a specified
 	 * name, type, and length.
 	 * If the field type is "integer", then the length
 	 * value is irrelevant.
-	 * @param fldname the name of the field
+	 * @param attributeName the name of the field
 	 * @param type the type of the field, according to the constants in simpledb.sql.types
-	 * @param length the conceptual length of a string field.
+	 * @param length the conceptual length of a string attribute.
 	 */
-	public void addField(String fldname, int type, int length) {
-		info.put(fldname, new FieldInfo(type, length));
+	public void addField(String attributeName, int type, int length) {
+		attributeInfo.put(attributeName, new attributeInfo(type, length));
 	}
-
+	/**
+	 * Adds a attribute to the schema having a specified
+	 * name, type, and length.
+	 * If the attribute type is "integer", then the length
+	 * value is irrelevant.
+	 * @param attributeName the name of the attribute
+	 * @param type the type of the attribute, according to the constants in simpledb.sql.types
+	 * @param length the conceptual length of a string attribute.
+	 */
+	public void addAttribute(String attributeName, int type, int length) {
+		attributeInfo.put(attributeName, new attributeInfo(type, length));
+	}
 	/**
 	 * Adds a dimension in the schema.
 	 *
-	 * @param dimName   the name of dimension
+	 * @param dimensionName   the name of dimension
 	 * @param start     the number of dimension start
 	 * @param end       the number of dimension end
 	 * @param chunkSize the size of chunk
 	 */
-	public void addDimesion(String dimName, int start, int end,int chunkSize) {
-		dimInfo.put(dimName, new DimensionInfo(start,end,chunkSize));
+	public void addDimension(String dimensionName, int start, int end, int chunkSize) {
+		dimensionInfo.put(dimensionName, new DimensionInfo(start,end,chunkSize));
 	}
-	
+
 	/**
 	 * Adds an integer field to the schema.
 	 * @param fldname the name of the field
 	 */
 	public void addIntField(String fldname) {
-		addField(fldname, INTEGER, 0);
+		addAttribute(fldname, INTEGER, 0);
 	}
 
 	/**
@@ -68,7 +81,7 @@ public class Schema {
 	 * @param length the number of chars in the varchar definition
 	 */
 	public void addStringField(String fldname, int length) {
-		addField(fldname, VARCHAR, length);
+		addAttribute(fldname, VARCHAR, length);
 	}
 	
 	/**
@@ -81,21 +94,9 @@ public class Schema {
 	public void add(String fldname, Schema sch) {
 		int type	= sch.type(fldname);
 		int length = sch.length(fldname);
-		addField(fldname, type, length);
+		addAttribute(fldname, type, length);
 	}
 
-	/**
-	 * Adds a dimension in the schema.
-	 *
-	 * @param dimName   the name of dimension
-	 * @param start     the number of dimension start
-	 * @param end       the number of dimension end
-	 * @param chunkSize the size of chunk
-	 */
-	public void addDimension(String dimName, int start, int end, int chunkSize)
-	{
-		dimInfo.put(dimName, new DimensionInfo(start, end, chunkSize));
-	}
 	
 	/**
 	 * Adds all of the fields in the specified schema
@@ -103,29 +104,37 @@ public class Schema {
 	 * @param sch the other schema
 	 */
 	public void addAll(Schema sch) {
-		info.putAll(sch.info);
-		dimInfo.putAll(sch.dimInfo);
-	}
-	
-	/**
-	 * Returns a collection containing the name of
-	 * each field in the schema.
-	 * @return the collection of the schema's field names
-	 */
-	public Collection<String> fields() {
-		return info.keySet();
+		attributeInfo.putAll(sch.attributeInfo);
+		dimensionInfo.putAll(sch.dimensionInfo);
 	}
 
 	/**
-	 * Return a collection containing the name of
-	 * each dimension in the schema.
+	 * Returns a collection containing the name of
+	 * each field in the schema.
+	 * @return the collection of the schema's attribute names
+	 */
+	public Collection<String> fields() {
+		return attributeInfo.keySet();
+	}
+	/**
+	 * Returns a collection containing the name of
+	 * each attribute in the schema.
+	 * same as fields(), just for convenience - CDS
+	 * @return the collection of the schema's attribute names
+	 */
+	public Collection<String> attributes() {
+		return attributeInfo.keySet();
+	}
+	/**
+	 * Returns a collection containing the name of
+	 * each dimension in the schema. - CDS
 	 * @return the collection of the schema's dimension names
 	 */
-	public Collection<String> dimensions()
-	{
-		return dimInfo.keySet();
+	public Collection<String> dimensions() {
+		return dimensionInfo.keySet();
 	}
-	
+
+
 	/**
 	 * Returns true if the specified field
 	 * is in the schema
@@ -143,19 +152,19 @@ public class Schema {
 	 * @param dimName	the name of the dimension
 	 * @return			 true if the dimension in the schema
 	 */
-	public boolean hasDimension(String dimName)
-	{
-		return dimensions().contains(dimName);
-	}
+	 public boolean hasDimension(String dimName)
+	 {
+	 return dimensions().contains(dimName);
+	 }
 
-	/**
+	 /**
 	 * Returns the type of the specified field, using the
 	 * constants in {@link java.sql.Types}.
 	 * @param fldname the name of the field
 	 * @return the integer type of the field
 	 */
 	public int type(String fldname) {
-		return info.get(fldname).type;
+		return attributeInfo.get(fldname).type;
 	}
 	
 	/**
@@ -166,23 +175,42 @@ public class Schema {
 	 * @return the conceptual length of the field
 	 */
 	public int length(String fldname) {
-		return info.get(fldname).length;
+		return attributeInfo.get(fldname).length;
 	}
 
 	/**
-	 * Return the size of the specified dimension.
-	 *
-	 * @param dimName	the name of the dimension
-	 * @return			the size of the specified dimension
+	 * Returns the start point of the specified dimension. - CDS
+	 * @param dimensionName the name of the field
+	 * @return the start point
 	 */
-	public int chunkSize(String dimName)
-	{
-		return dimInfo.get(dimName).chunkSize;
+	public int start(String dimensionName) {
+		return dimensionInfo.get(dimensionName).start;
 	}
-	
-	class FieldInfo {
+
+	/**
+	 * Returns the end point of the specified dimension. - CDS
+	 * @param dimensionName the name of the field
+	 * @return the end point
+	 */
+	public int end(String dimensionName) {
+		return dimensionInfo.get(dimensionName).end;
+	}
+
+	/**
+	 * Returns the chunkSize of the specified dimension. - CDS
+	 * @param dimensionName the name of the field
+	 * @return the chunkSize
+	 */
+	public int chunkSize(String dimensionName) {
+		return dimensionInfo.get(dimensionName).chunkSize;
+	}
+
+
+
+
+	class attributeInfo {
 		int type, length;
-		public FieldInfo(int type, int length) {
+		public attributeInfo(int type, int length) {
 			this.type = type;
 			this.length = length;
 		}

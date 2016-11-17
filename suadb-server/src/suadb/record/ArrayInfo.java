@@ -1,5 +1,6 @@
 package suadb.record;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,48 +10,21 @@ import static suadb.file.Page.*;
 /**
  * Created by Rony on 2016-11-09.
  */
-public class ArrayInfo
-{
-	private Schema schema;
-	private Map<String, Integer> offsets;
-	// TODO :: What record length means? - RonyK
-	private int recordLen;
+public class ArrayInfo {
 	private String arrayName;
+	private Schema schema;
 
-	public ArrayInfo(String arrayName, Schema schema)
-	{
+	public ArrayInfo(String arrayName, Schema schema) {
 		this.schema = schema;
 		this.arrayName = arrayName;
-		offsets = new HashMap<String, Integer>();
-		int pos = 0;
-		for (String fldName : schema.fields())
-		{
-			offsets.put(fldName, pos);
-			pos += lengthInBytes(fldName);
-		}
 	}
 
-	public ArrayInfo(String arrayName, Schema schema, Map<String, Integer> offsets, int recordLen)
-	{
-		this.arrayName  = arrayName;
-		this.schema     = schema;
-		this.offsets    = offsets;
-		this.recordLen  = recordLen;
+	public String arrayName() {
+		return arrayName;
 	}
 
-	public String fileName()
-	{
-		return arrayName + ".arr";
-	}
-
-	public Schema schema()
-	{
+	public Schema schema() {
 		return schema;
-	}
-
-	public int recordLen()
-	{
-		return recordLen;
 	}
 
 	private int lengthInBytes(String fldname) {

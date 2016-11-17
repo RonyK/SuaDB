@@ -23,7 +23,7 @@ public class ChunkScan implements Scan {
 	/**
 	 * Creates a chunk consisting of the specified pages.
 	 * @param ti the suadb.metadata for the chunked table
-	 * @param startbnum the starting chunk number
+	 * @param startbnum the  starting chunk number
 	 * @param endbnum  the ending chunk number
 	 * @param tx the current transaction
 	 */

@@ -11,7 +11,7 @@ import suadb.tx.Transaction;
 public class RecordPage {
 	public static final int EMPTY = 0, INUSE = 1;
 
-	private Chunk blk;
+	private Chunk chunk;
 	private TableInfo ti;
 	private Transaction tx;
 	private int slotsize;
@@ -19,25 +19,25 @@ public class RecordPage {
 
 	/** Creates the suadb.record manager for the specified chunk.
 	  * The current suadb.record is set to be prior to the first one.
-	  * @param blk a reference to the disk chunk
+	  * @param chunk a reference to the disk chunk
 	  * @param ti the table's suadb.metadata
 	  * @param tx the transaction performing the operations
 	  */
-	public RecordPage(Chunk blk, TableInfo ti, Transaction tx) {
-		this.blk = blk;
+	public RecordPage(Chunk chunk, TableInfo ti, Transaction tx) {
+		this.chunk = chunk;
 		this.ti = ti;
 		this.tx = tx;
 		slotsize = ti.recordLength() + INT_SIZE;
-		tx.pin(blk);
+		tx.pin(chunk);
   }
 
 	/**
 	 * Closes the manager, by unpinning the chunk.
 	 */
 	public void close() {
-		if (blk != null) {
-	 	  tx.unpin(blk);
-	 	  blk = null;
+		if (chunk != null) {
+	 	  tx.unpin(chunk);
+	 	  chunk = null;
 		}
 	}
 
@@ -57,7 +57,7 @@ public class RecordPage {
 	 */
 	public int getInt(String fldname) {
 		int position = fieldpos(fldname);
-		return tx.getInt(blk, position);
+		return tx.getInt(chunk, position);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class RecordPage {
 	 */
 	public String getString(String fldname) {
 		int position = fieldpos(fldname);
-		return tx.getString(blk, position);
+		return tx.getString(chunk, position);
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class RecordPage {
 	 */
 	public void setInt(String fldname, int val) {
 		int position = fieldpos(fldname);
-		tx.setInt(blk, position, val);
+		tx.setInt(chunk, position, val);
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class RecordPage {
 	 */
 	public void setString(String fldname, String val) {
 		int position = fieldpos(fldname);
-		tx.setString(blk, position, val);
+		tx.setString(chunk, position, val);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class RecordPage {
 	 */
 	public void delete() {
 		int position = currentpos();
-		tx.setInt(blk, position, EMPTY);
+		tx.setInt(chunk, position, EMPTY);
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class RecordPage {
 		boolean found = searchFor(EMPTY);
 		if (found) {
 			int position = currentpos();
-			tx.setInt(blk, position, INUSE);
+			tx.setInt(chunk, position, INUSE);
 		}
 		return found;
 	}
@@ -153,7 +153,7 @@ public class RecordPage {
 		currentslot++;
 		while (isValidSlot()) {
 			int position = currentpos();
-			if (tx.getInt(blk, position) == flag)
+			if (tx.getInt(chunk, position) == flag)
 				return true;
 			currentslot++;
 		}
