@@ -9,25 +9,22 @@ import java.util.*;
  */
 public class QueryData {
 	private Collection<String> fields;
-	private Collection<String> tables;
+	private String array;
 	private Predicate pred;
 
 	/**
 	 * Saves the field and table list and predicate.
 	 */
-	public QueryData( Collection<String> table, Predicate pred) {
+	public QueryData( String array , Predicate pred) {
 
-		this.tables = table;
+		this.array = array;
 		this.pred = pred;
 	}
 
 	public Collection<String> fields() {
 		return null;
 	}
-	public Collection<String> tables() {
-		return tables;
-	}
-
+	public String tables() { return array; }
 	/**
 	 * Returns the predicate that describes which
 	 * records should be in the output table.
@@ -39,8 +36,7 @@ public class QueryData {
 
 	public String toString() {
 		String result = "filter(";
-		for (String tblname : tables)
-			result += tblname;
+		result += array;
 		result += ",";
 		String predstring = pred.toString();
 		if (!predstring.equals(""))

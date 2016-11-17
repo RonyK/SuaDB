@@ -25,10 +25,9 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 	public Plan createPlan(QueryData data, Transaction tx) {
 
 		// Step 1:  Create a TablePlanner object for each mentioned table
-		for (String tblname : data.tables()) {
+			String tblname = data.tables();
 			TablePlanner tp = new TablePlanner(tblname, data.pred(), tx);
 			tableplanners.add(tp);
-		}
 
 		// Step 2:  Choose the lowest-size plan to begin the join order
 		Plan currentplan = getLowestSelectPlan();

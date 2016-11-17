@@ -21,9 +21,6 @@ public class Parser {
 	public String field() {
 		return lex.eatId();
 	}
-	public String dimension() {
-		return lex.eatId();
-	}
 
 	public Constant constant() {
 		if (lex.matchStringConstant())
@@ -48,11 +45,11 @@ public class Parser {
 		}
 		else if (lex.matchDelim('>')) {
 			mathcode=1;
-			lex.eatDelim('=');
+			lex.eatDelim('>');
 		}
 		else if (lex.matchDelim('<')) {
 			mathcode=2;
-			lex.eatDelim('=');
+			lex.eatDelim('<');
 		}
 		else
 			throw new BadSyntaxException();
@@ -72,14 +69,13 @@ public class Parser {
 // Methods for parsing queries
 
 	public QueryData query() {
-		// TODO :: Add AQL queries in here - RonyK
 		lex.eatKeyword("filter");
-		Collection<String> tables = new ArrayList<String>();
-		tables.add(field());
+		lex.eatDelim('(');
+		String array = lex.eatId();
 		lex.eatDelim(',');
 		Predicate pred = new Predicate();
 		pred = predicate();
-		return new QueryData(tables, pred);
+		return new QueryData(array, pred);
 	}
 
 
@@ -159,6 +155,10 @@ public class Parser {
 			lex.eatKeyword("double");
 			schema.addField(fldname, DOUBLE, 0); //add double
 		}
+		else{
+			lex.eatKeyword("string");
+			schema.addStringField(fldname, 8);
+		}
 		while (lex.matchDelim(',')) {
 			lex.eatDelim(',');
 			fldname = field();
@@ -170,6 +170,10 @@ public class Parser {
 			else if(lex.matchKeyword("double")) {
 				lex.eatKeyword("double");
 				schema.addField(fldname, DOUBLE, 0); //add double
+			}
+			else{
+				lex.eatKeyword("string");
+				schema.addStringField(fldname, 8);
 			}
 		}
 
