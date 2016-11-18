@@ -120,7 +120,7 @@ public class Parser {
 		lex.eatDelim(',');
 		Predicate pred = new Predicate();
 		pred = predicate();
-		
+		lex.eatDelim(')');
 		return new FilterData(array,pred);
 	}
 
