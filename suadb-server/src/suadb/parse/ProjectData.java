@@ -24,8 +24,8 @@ public class ProjectData implements QueryData
 	 * Returns the name of the affected table.
 	 * @return the name of the affected table
 	 */
-	public String srcArrayName() {
-		return array.srcArrayName();
+	public QueryData array() {
+		return array;
 	}
 
 	public List<String> getAttributes() {
@@ -34,7 +34,7 @@ public class ProjectData implements QueryData
 
 	public String toString()
 	{
-		String result = "project("+ array.srcArrayName()+",";
+		String result = "project("+ array.toString()+",";
 		for (String attname : attributes)
 		{
 			result += attname + ",";
@@ -43,5 +43,4 @@ public class ProjectData implements QueryData
 		result += ")";
 		return result;
 	}
-
 }

@@ -30,7 +30,7 @@ public class ParserTest extends SuaDBTestBase
 		assertTrue(obj instanceof FilterData);
 		
 		FilterData fData = (FilterData)obj;
-		assertEquals(fData.srcArrayName(), arrayName);
+		assertEquals(fData.array(), new ArrayData(arrayName));
 		assertEquals(fData.predicate().toString(), predicate);
 	}
 	
@@ -51,7 +51,7 @@ public class ParserTest extends SuaDBTestBase
 		assertTrue(obj instanceof ProjectData);
 		
 		ProjectData fData = (ProjectData)obj;
-		assertEquals(fData.arrayName(), arrayName);
+		assertEquals(fData.array(), new ArrayData(arrayName));
 		assertEquals(fData.getAttributes(), attributesList);
 	}
 	
@@ -67,6 +67,6 @@ public class ParserTest extends SuaDBTestBase
 		assertTrue(obj instanceof ProjectData);
 		
 		ProjectData fData = (ProjectData)obj;
-		assertEquals(fData.arrayName(), arrayName);
+		assertEquals(fData.array(), new ArrayData(arrayName));
 	}
 }

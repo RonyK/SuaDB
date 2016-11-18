@@ -1,104 +1,93 @@
 package suadb.query;
 
 import suadb.record.RID;
-import suadb.record.RecordFile;
 import suadb.record.Schema;
-import suadb.record.TableInfo;
-import suadb.tx.Transaction;
-
-import static java.sql.Types.INTEGER;
 
 /**
  * Created by Aram on 2016-11-18.
  */
 public class ScanScan implements UpdateScan
 {
-	private RecordFile rf;
+	private Scan s;
 	private Schema sch;
 
-	public ScanScan(TableInfo ti, Transaction tx)
+	public ScanScan(Scan s)
 	{
-		rf  = new RecordFile(ti, tx);
-		sch = ti.schema();
+		this.s = s;
 	}
-
+	
 	// Scan methods
-
+	
 	public void beforeFirst() {
-		rf.beforeFirst();
+		s.beforeFirst();
 	}
-
+	
+	/**
+	 * Move to the next suadb.record satisfying the predicate.
+	 * The method repeatedly calls next on the underlying scan
+	 * until the underlying scan contains no more records.
+	 * @see suadb.query.Scan#next()
+	 */
 	public boolean next() {
-		return rf.next();
+		while (s.next())
+			return true;
+		return false;
 	}
-
+	
 	public void close() {
-		rf.close();
+		s.close();
 	}
-
-	/**
-	 * Returns the value of the specified field, as a Constant.
-	 * The schema is examined to determine the field's type.
-	 * If INTEGER, then the suadb.record suadb.file's getInt method is called;
-	 * otherwise, the getString method is called.
-	 * @see suadb.query.Scan#getVal(java.lang.String)
-	 */
+	
 	public Constant getVal(String fldname) {
-		if (sch.type(fldname) == INTEGER)
-			return new IntConstant(rf.getInt(fldname));
-		else
-			return new StringConstant(rf.getString(fldname));
+		return s.getVal(fldname);
 	}
-
+	
 	public int getInt(String fldname) {
-		return rf.getInt(fldname);
+		return s.getInt(fldname);
 	}
-
+	
 	public String getString(String fldname) {
-		return rf.getString(fldname);
+		return s.getString(fldname);
 	}
-
+	
 	public boolean hasField(String fldname) {
-		return sch.hasField(fldname);
+		return s.hasField(fldname);
 	}
-
+	
 	// UpdateScan methods
-
-	/**
-	 * Sets the value of the specified field, as a Constant.
-	 * The schema is examined to determine the field's type.
-	 * If INTEGER, then the suadb.record suadb.file's setInt method is called;
-	 * otherwise, the setString method is called.
-	 * @see suadb.query.UpdateScan#setVal(java.lang.String, suadb.query.Constant)
-	 */
+	
 	public void setVal(String fldname, Constant val) {
-		if (sch.type(fldname) == INTEGER)
-			rf.setInt(fldname, (Integer)val.asJavaVal());
-		else
-			rf.setString(fldname, (String)val.asJavaVal());
+		UpdateScan us = (UpdateScan) s;
+		us.setVal(fldname, val);
 	}
-
+	
 	public void setInt(String fldname, int val) {
-		rf.setInt(fldname, val);
+		UpdateScan us = (UpdateScan) s;
+		us.setInt(fldname, val);
 	}
-
+	
 	public void setString(String fldname, String val) {
-		rf.setString(fldname, val);
+		UpdateScan us = (UpdateScan) s;
+		us.setString(fldname, val);
 	}
-
+	
 	public void delete() {
-		rf.delete();
+		UpdateScan us = (UpdateScan) s;
+		us.delete();
 	}
-
+	
 	public void insert() {
-		rf.insert();
+		UpdateScan us = (UpdateScan) s;
+		us.insert();
 	}
-
+	
 	public RID getRid() {
-		return rf.currentRid();
+		UpdateScan us = (UpdateScan) s;
+		return us.getRid();
 	}
-
+	
 	public void moveToRid(RID rid) {
-		rf.moveToRid(rid);
+		UpdateScan us = (UpdateScan) s;
+		us.moveToRid(rid);
 	}
 }

@@ -1,51 +1,57 @@
 package suadb.planner;
+import suadb.parse.ArrayData;
+import suadb.parse.FilterData;
+import suadb.parse.ProjectData;
+import suadb.parse.QueryData;
+import suadb.parse.ScanData;
+import suadb.query.ArrayPlan;
+import suadb.query.FilterPlan;
+import suadb.query.Plan;
+import suadb.query.ProjectPlan;
+import suadb.query.ScanPlan;
 import suadb.tx.Transaction;
-import suadb.query.*;
-import suadb.parse.*;
-import suadb.server.SuaDB;
-import java.util.*;
 
 /**
  * Created by Aram on 2016-11-07.
  */
 
-public class BasicArrayQueryPlanner implements QueryPlanner {
-
-    /**
-     * Creates a suadb.query plan as follows.  It first takes
-     * the product of all tables and views; it then selects on the predicate;
-     * and finally it projects on the field list.
-     */
-    public Plan createPlan(QueryData data, Transaction tx) {
-        //Step 1: Create a plan for each mentioned table or view
-        List<Plan> plans = new ArrayList<Plan>();
+public class BasicArrayQueryPlanner implements QueryPlanner
+{
+    public Plan createPlan(QueryData data, Transaction tx)
+    {
 	    if (data instanceof FilterData)
 		    return createFilterPlan((FilterData)data, tx);
 	    else if (data instanceof ScanData)
 		    return createScanPlan((ScanData)data,tx);
-	    else
+	    else if (data instanceof ProjectData)
 		    return createProjectPlan((ProjectData)data,tx);
-
+	    else if (data instanceof ArrayData)
+	    	return createArrayPlan((ArrayData)data, tx);
+	    
+	    throw new UnsupportedOperationException();
     }
-
+	
+	private Plan createArrayPlan(ArrayData data, Transaction tx)
+	{
+		Plan p = new ArrayPlan(data.arrayName(), tx);
+		return p;
+	}
+	
 	public Plan createScanPlan(ScanData data, Transaction tx)
 	{
 		Plan p = new ScanPlan(createPlan(data.array(), tx));
-
 		return p;
 	}
 	
     public Plan createFilterPlan(FilterData data, Transaction tx)
 	{
 		Plan p = new FilterPlan(createPlan(data, tx), data.predicate());
-		
 		return p;
 	}
 	
 	public Plan createProjectPlan(ProjectData data, Transaction tx)
 	{
 		Plan p = new ProjectPlan(createPlan(data, tx), data.getAttributes());
-		
 		return p;
 	}
 }

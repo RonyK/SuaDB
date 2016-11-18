@@ -8,7 +8,6 @@ import suadb.record.Schema;
 public class ScanPlan implements Plan
 {
 	private Plan p;
-	private Schema schema = new Schema();
 
 	public ScanPlan(Plan p)
 	{
@@ -19,7 +18,7 @@ public class ScanPlan implements Plan
 	public Scan open()
 	{
 		Scan s = p.open();
-		return new ScanScan(s, schema.fields());
+		return new ScanScan(s);
 	}
 
 	@Override
@@ -43,6 +42,6 @@ public class ScanPlan implements Plan
 	@Override
 	public Schema schema()
 	{
-		return schema;
+		return p.schema();
 	}
 }

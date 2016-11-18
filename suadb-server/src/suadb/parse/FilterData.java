@@ -21,9 +21,9 @@ public class FilterData implements QueryData
 		this.predicate = predicate;
 	}
 	
-	public String array()
+	public QueryData array()
 	{
-		return array.srcArrayName();
+		return array;
 	}
 	
 	/**
@@ -39,6 +39,6 @@ public class FilterData implements QueryData
 	
 	public String toString()
 	{
-		return "filter(" + array.srcArrayName() + ", " + predicate.toString() + ")";
+		return "filter(" + array.toString() + ", " + predicate.toString() + ")";
 	}
 }

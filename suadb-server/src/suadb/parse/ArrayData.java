@@ -9,8 +9,17 @@ public class ArrayData implements QueryData
 	public ArrayData(String arrayname) {
 		this.arrayname = arrayname;
 	}
-	public String srcArrayName() {
+	public String arrayName() {
 		return arrayname;
 	}
 	public String toString() { return arrayname; }
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj instanceof ArrayData)
+			return arrayname == ((ArrayData)obj).arrayName();
+		
+		return false;
+	}
 }

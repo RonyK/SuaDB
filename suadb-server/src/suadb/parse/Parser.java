@@ -12,31 +12,36 @@ import static java.sql.Types.DOUBLE;
 public class Parser {
 	private Lexer lex;
 
-	public Parser(String s) {
+	public Parser(String s)
+	{
 		lex = new Lexer(s);
 	}
 
 // Methods for parsing predicates, terms, expressions, constants, and fields
 
-	public String field() {
+	public String field()
+	{
 		return lex.eatId();
 	}
 
-	public Constant constant() {
+	public Constant constant()
+	{
 		if (lex.matchStringConstant())
 			return new StringConstant(lex.eatStringConstant());
 		else
 			return new IntConstant(lex.eatIntConstant());
 	}
 
-	public Expression expression() {
+	public Expression expression()
+	{
 		if (lex.matchId())
 			return new FieldNameExpression(field());
 		else
 			return new ConstantExpression(constant());
 	}
 
-	public Term term() {
+	public Term term()
+	{
 		int mathcode=-1;
 		Expression lhs = expression();
 		if (lex.matchDelim('=')) {
@@ -57,7 +62,8 @@ public class Parser {
 		return new Term(lhs, rhs, mathcode);
 	}
 
-	public Predicate predicate() {
+	public Predicate predicate()
+	{
 		Predicate pred = new Predicate(term());
 		if (lex.matchKeyword("and")) {
 			lex.eatKeyword("and");
@@ -68,61 +74,72 @@ public class Parser {
 
 // Methods for parsing queries
 
-	public QueryData query() {
+	public QueryData query()
+	{
 		if (lex.matchKeyword("scan"))
+		{
 			return scan();
-		else if (lex.matchKeyword("project"))
+		}else if (lex.matchKeyword("project"))
+		{
 			return project();
-		else
+		}else if(lex.matchKeyword("filter"))
+		{
 			return filter();
-
-
+		}else
+		{
+			throw new UnsupportedOperationException();
+		}
 	}
 
 
-	public QueryData array(){
+	public QueryData array()
+	{
 		if(lex.matchId())
 			return new ArrayData(lex.eatId());
 		else
 			return query();
 	}
 
-
-	public ProjectData project() {
+	public ProjectData project()
+	{
 		lex.eatKeyword("project");
 		lex.eatDelim('(');
 		QueryData array = array();
 		lex.eatDelim(',');
 		List<String> attributes = fieldList();
 		lex.eatDelim(')');
-		return new ProjectData(array,attributes);
 
+		return new ProjectData(array,attributes);
 	}
 
-	public FilterData filter() {
+	public FilterData filter()
+	{
 		lex.eatKeyword("filter");
 		lex.eatDelim('(');
 		QueryData array = array();
 		lex.eatDelim(',');
 		Predicate pred = new Predicate();
 		pred = predicate();
+		
 		return new FilterData(array,pred);
 	}
 
-	public ScanData scan() {
+	public ScanData scan()
+	{
 		lex.eatKeyword("scan");
 		lex.eatDelim('(');
 		QueryData array = array();
 		lex.eatDelim(')');
+		
 		return new ScanData(array);
 	}
 
-	public Object list() {
+	public Object list()
+	{
+		// TODO :: Make list operator
 		//lex.eatKeyword("list()");
 		throw new UnsupportedOperationException();
-
 	}
-
 
 // Methods for parsing the various update commands
 
@@ -152,7 +169,6 @@ public class Parser {
 		return new InsertData(arrayname, inputfile);
 	}
 
-
 	private List<String> fieldList() {
 		List<String> L = new ArrayList<String>();
 		L.add(field());
@@ -162,8 +178,6 @@ public class Parser {
 		}
 		return L;
 	}
-
-
 
 // Method for parsing create table commands
 
@@ -240,10 +254,5 @@ public class Parser {
 
 		return schema;
 	}
-
-
-
-
-
 }
 
