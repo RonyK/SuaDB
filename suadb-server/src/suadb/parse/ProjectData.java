@@ -1,18 +1,22 @@
 package suadb.parse;
 import java.util.*;
-
 /**
+ * The operator : project()
+ *
+ * Synopsis :
+ *      project( srcArray, attribute1, attribute2, ... )
+ *
  * Created by Aram on 2016-11-15.
  */
-public class ProjectData
+public class ProjectData implements QueryData
 {
-	private String arrayname;
+	private QueryData array;
 	private List<String> attributes ;
 	/**
 	 * Saves the table name and the field and value lists.
 	 */
-	public ProjectData(String arrayname, List<String> attributes) {
-		this.arrayname = arrayname;
+	public ProjectData(QueryData array, List<String> attributes) {
+		this.array = array;
 		this.attributes = attributes;
 	}
 
@@ -20,12 +24,24 @@ public class ProjectData
 	 * Returns the name of the affected table.
 	 * @return the name of the affected table
 	 */
-	public String arrayName() {
-		return arrayname;
+	public String srcArrayName() {
+		return array.srcArrayName();
 	}
 
 	public List<String> getAttributes() {
 		return attributes;
+	}
+
+	public String toString()
+	{
+		String result = "project("+ array.srcArrayName()+",";
+		for (String attname : attributes)
+		{
+			result += attname + ",";
+		}
+		result = result.substring(0, result.length() - 2);
+		result += ")";
+		return result;
 	}
 
 }

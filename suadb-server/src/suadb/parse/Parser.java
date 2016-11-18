@@ -69,13 +69,58 @@ public class Parser {
 // Methods for parsing queries
 
 	public QueryData query() {
+		if (lex.matchKeyword("scan"))
+			return scan();
+		else if (lex.matchKeyword("project"))
+			return project();
+		else
+			return filter();
+
+
+	}
+
+
+	public QueryData array(){
+		if(lex.matchId())
+			return new ArrayData(lex.eatId());
+		else
+			return query();
+	}
+
+
+	public ProjectData project() {
+		lex.eatKeyword("project");
+		lex.eatDelim('(');
+		QueryData array = array();
+		lex.eatDelim(',');
+		List<String> attributes = fieldList();
+		lex.eatDelim(')');
+		return new ProjectData(array,attributes);
+
+	}
+
+	public FilterData filter() {
 		lex.eatKeyword("filter");
 		lex.eatDelim('(');
-		String array = lex.eatId();
+		QueryData array = array();
 		lex.eatDelim(',');
 		Predicate pred = new Predicate();
 		pred = predicate();
-		return new QueryData(array, pred);
+		return new FilterData(array,pred);
+	}
+
+	public ScanData scan() {
+		lex.eatKeyword("scan");
+		lex.eatDelim('(');
+		QueryData array = array();
+		lex.eatDelim(')');
+		return new ScanData(array);
+	}
+
+	public Object list() {
+		//lex.eatKeyword("list()");
+		throw new UnsupportedOperationException();
+
 	}
 
 
@@ -107,18 +152,7 @@ public class Parser {
 		return new InsertData(arrayname, inputfile);
 	}
 
-// Methods for parsing project commands
 
-	public ProjectData project() {
-		lex.eatKeyword("project");
-		lex.eatDelim('(');
-		String arrayname = lex.eatId();
-		lex.eatDelim(',');
-		List<String> attributes = fieldList();
-		lex.eatDelim(')');
-		return new ProjectData(arrayname,attributes);
-
-	}
 	private List<String> fieldList() {
 		List<String> L = new ArrayList<String>();
 		L.add(field());

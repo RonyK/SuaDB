@@ -10,20 +10,20 @@ import suadb.query.Predicate;
  *
  * Created by Rony on 2016-11-16.
  */
-public class FilterData
+public class FilterData implements QueryData
 {
-	private String srcArrayName;
+	private QueryData array;
 	private Predicate predicate;
 	
-	public FilterData(String srcArrayName, Predicate predicate)
+	public FilterData(QueryData array, Predicate predicate)
 	{
-		this.srcArrayName = srcArrayName;
+		this.array = array;
 		this.predicate = predicate;
 	}
 	
-	public String srcArrayName()
+	public String array()
 	{
-		return srcArrayName;
+		return array.srcArrayName();
 	}
 	
 	/**
@@ -39,6 +39,6 @@ public class FilterData
 	
 	public String toString()
 	{
-		return "filter(" + srcArrayName + ", " + predicate.toString() + ")";
+		return "filter(" + array.srcArrayName() + ", " + predicate.toString() + ")";
 	}
 }

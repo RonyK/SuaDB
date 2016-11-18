@@ -1,8 +1,8 @@
 package suadb.planner;
 
+import suadb.parse.QueryData;
 import suadb.tx.Transaction;
 import suadb.query.Plan;
-import suadb.parse.QueryData;
 
 /**
  * The interface implemented by planners for 
@@ -19,4 +19,6 @@ public interface QueryPlanner {
 	 * @return a plan for that suadb.query
 	 */
 	public Plan createPlan(QueryData data, Transaction tx);
+
+
 }
