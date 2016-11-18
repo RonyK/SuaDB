@@ -9,7 +9,7 @@ import java.io.*;
  */
 public class Lexer {
 	private Collection<String> keywords;
-	private StreamTokenizer tok;
+	private SuaDBStreamTokenizer tok;
 
 	/**
 	 * Creates a new lexical analyzer for SQL statement s.
@@ -17,7 +17,7 @@ public class Lexer {
 	 */
 	public Lexer(String s) {
 		initKeywords();
-		tok = new StreamTokenizer(new StringReader(s));
+		tok = new SuaDBStreamTokenizer(new StringReader(s));
 		tok.ordinaryChar('.');
 		tok.lowerCaseMode(true); //ids and keywords are converted
 		nextToken();
@@ -57,7 +57,7 @@ public class Lexer {
 	 * @return true if that keyword is the current token
 	 */
 	public boolean matchKeyword(String w) {
-		return tok.ttype == StreamTokenizer.TT_WORD && tok.sval.equals(w);
+		return tok.ttype == StreamTokenizer.TT_WORD && tok.sval().equals(w);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class Lexer {
 	 * @return true if the current token is an identifier
 	 */
 	public boolean matchId() {
-		return  tok.ttype==StreamTokenizer.TT_WORD && !keywords.contains(tok.sval);
+		return  tok.ttype==StreamTokenizer.TT_WORD && !keywords.contains(tok.sval());
 	}
 
 //Methods to "eat" the current token
@@ -105,7 +105,7 @@ public class Lexer {
 	public String eatStringConstant() {
 		if (!matchStringConstant())
 			throw new BadSyntaxException();
-		String s = tok.sval; //constants are not converted to lower case
+		String s = tok.sval(); //constants are not converted to lower case
 		nextToken();
 		return s;
 	}
@@ -132,7 +132,7 @@ public class Lexer {
 	public String eatId() {
 		if (!matchId())
 			throw new BadSyntaxException();
-		String s = tok.sval;
+		String s = tok.svalOriginal();
 		nextToken();
 		return s;
 	}

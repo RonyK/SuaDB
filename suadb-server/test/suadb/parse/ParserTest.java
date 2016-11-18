@@ -21,7 +21,7 @@ public class ParserTest extends SuaDBTestBase
 	public void test_03_query_filter()
 	{
 		String arrayName = "testArray";
-		String predicate = "0 < x and x < 5 and 3 < y and y < 5";
+		String predicate = "0 < x and x < 5 AND 3 < y AnD y < 5";
 		String query = "filter(" + arrayName + ", " + predicate + ");";
 		
 		Parser p = new Parser(query);
@@ -31,7 +31,7 @@ public class ParserTest extends SuaDBTestBase
 		
 		FilterData fData = (FilterData)obj;
 		assertEquals(fData.array(), new ArrayData(arrayName));
-		assertEquals(fData.predicate().toString(), predicate);
+		assertEquals(fData.predicate().toString(), predicate.toLowerCase());
 	}
 	
 	@Test
@@ -64,9 +64,9 @@ public class ParserTest extends SuaDBTestBase
 		Parser p = new Parser(query);
 		Object obj = p.query();
 		
-		assertTrue(obj instanceof ProjectData);
+		assertTrue(obj instanceof ScanData);
 		
-		ProjectData fData = (ProjectData)obj;
+		ScanData fData = (ScanData)obj;
 		assertEquals(fData.array(), new ArrayData(arrayName));
 	}
 }

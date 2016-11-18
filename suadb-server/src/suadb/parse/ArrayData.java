@@ -18,7 +18,9 @@ public class ArrayData implements QueryData
 	public boolean equals(Object obj)
 	{
 		if (obj instanceof ArrayData)
-			return arrayname == ((ArrayData)obj).arrayName();
+		{
+			return this.arrayname.equals(obj.toString());
+		}
 		
 		return false;
 	}
