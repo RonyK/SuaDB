@@ -11,11 +11,11 @@ public class Chunk
 {
 	/**
 	 * File name of the chunk.
-	 * arrayName_attribute Name_chunkNumInTheAttribute;
+	 * arrayName_attribute Name_chunkNumInTheAttribute
 	 */
 	private String fileName;
 	/**
-	 * The logical order in an array.
+	 * The logical order in an array
 	 */
 	private int chunkNum;
 	/**

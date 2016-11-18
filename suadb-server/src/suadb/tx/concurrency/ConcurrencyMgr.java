@@ -39,13 +39,13 @@ public class ConcurrencyMgr {
 	 * If the transaction does not have an XLock on that chunk,
 	 * then the method first gets an SLock on that chunk
 	 * (if necessary), and then upgrades it to an XLock.
-	 * @param blk a refrence to the disk chunk
+	 * @param chunk a refrence to the disk chunk
 	 */
-	public void xLock(Chunk blk) {
-		if (!hasXLock(blk)) {
-			sLock(blk);
-			locktbl.xLock(blk);
-			locks.put(blk, "X");
+	public void xLock(Chunk chunk) {
+		if (!hasXLock(chunk)) {
+			sLock(chunk);
+			locktbl.xLock(chunk);
+			locks.put(chunk, "X");
 		}
 	}
 

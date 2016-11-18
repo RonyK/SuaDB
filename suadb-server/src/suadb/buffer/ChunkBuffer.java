@@ -9,9 +9,9 @@ import suadb.file.*;
 import static suadb.file.Page.*;
 
 /**
- * A suadb.ChunkBuffer contain all buffers in chunk
- * and store information about status of chunk,
- * such as the disk chunk associated with the page,
+ * A suadb.ChunkBuffer contains all buffers in a chunk
+ * and stores information about status of chunk,
+ * such as the disk chunk associated with the pages,
  * the number of times the chunk has been pinned,
  * whether the contents of the page have been modified,
  * and if so, the id of the modifying transaction and
@@ -28,10 +28,10 @@ public class ChunkBuffer
 	private int logSequenceNumber = -1; // negative means no corresponding log suadb.record
 
 	/**
-	 * Creates a new suadb.buffer, wrapping a new
-	 * {@link suadb.file.Page page}.
+	 * Creates new suadb.buffers, wrapping new
+	 * {@link suadb.buffer.Buffer buffers}.
 	 * This constructor is called exclusively by the
-	 * class {@link BasicBufferMgr}.
+	 * class {@link ChunkBufferMgr}.
 	 * It depends on  the
 	 * {@link suadb.log.LogMgr LogMgr} object
 	 * that it gets from the class
@@ -43,48 +43,57 @@ public class ChunkBuffer
 	 */
 	public ChunkBuffer() {}
 
-	private int blockSeq(int offset)
-	{
-		return (int)(offset / BLOCK_SIZE);
-	}
-
-	private Buffer buffer(int offset)
-	{
-		return buffers.get(blockSeq(offset));
-	}
-
-	private int blockOffset(int offset)
-	{
-		return (int)(offset % BLOCK_SIZE);
+	/**
+	 * offsetInChunk -> logical block number in a chunk.
+	 * @param offsetInChunk
+	 * @return
+	 */
+	private int blockSeq(int offsetInChunk){
+		return (offsetInChunk / BLOCK_SIZE);
 	}
 
 	/**
-	 * Returns the integer value at the specified offset of the
-	 * suadb.buffer's page.
+	 * Get the buffer by offsetInChunk.
+	 * @param offsetInChunk
+	 * @return
+	 */
+	private Buffer buffer(int offsetInChunk){
+		return buffers.get(blockSeq(offsetInChunk));
+	}
+
+	/**
+	 * offsetInChunk in the block.
+	 * @param offsetInChunk
+	 * @return
+	 */
+	private int blockOffset(int offsetInChunk){
+		return (offsetInChunk % BLOCK_SIZE);
+	}
+
+	/**
+	 * Returns the integer value at the specified offset of the chunk.
 	 * If an integer was not stored at that location,
 	 * the behavior of the method is unpredictable.
-	 * @param offset the byte offset of the page
-	 * @return the integer value at that offset
+	 * @param offsetInChunk the byte offset of the chunk
+	 * @return the integer value at that offsetInChunk
 	 */
-	public int getInt(int offset) {
-		return buffer(offset).getInt(blockOffset(offset));
+	public int getInt(int offsetInChunk) {
+		return buffer(offsetInChunk).getInt(blockOffset(offsetInChunk));
 	}
 
 	/**
-	 * Returns the string value at the specified offset of the
-	 * suadb.buffer's page.
+	 * Returns the string value at the specified offset of the chunk.
 	 * If a string was not stored at that location,
 	 * the behavior of the method is unpredictable.
-	 * @param offset the byte offset of the page
+	 * @param offsetInChunk the byte offset of the chunk
 	 * @return the string value at that offset
 	 */
-	public String getString(int offset) {
-		return buffer(offset).getString(blockOffset(offset));
+	public String getString(int offsetInChunk) {
+		return buffer(offsetInChunk).getString(blockOffset(offsetInChunk));
 	}
 
 	/**
-	 * Writes an integer to the specified offset of the
-	 * suadb.buffer's page.
+	 * Writes an integer to the specified offset of the chunk.
 	 * This method assumes that the transaction has already
 	 * written an appropriate log suadb.record.
 	 * The suadb.buffer saves the id of the transaction
@@ -104,8 +113,7 @@ public class ChunkBuffer
 	}
 
 	/**
-	 * Writes a string to the specified offset of the
-	 * suadb.buffer's page.
+	 * Writes a string to the specified offset of the chunk.
 	 * This method assumes that the transaction has already
 	 * written an appropriate log suadb.record.
 	 * A negative lsn value indicates that a log suadb.record
@@ -126,7 +134,7 @@ public class ChunkBuffer
 
 	/**
 	 * Returns a reference to the disk chunk
-	 * that the suadb.buffer is pinned to.
+	 * that the suadb.buffers are pinned to.
 	 * @return a reference to a disk chunk
 	 */
 	public Chunk chunk() {
@@ -134,8 +142,7 @@ public class ChunkBuffer
 	}
 
 	/**
-	 * Writes the page to its disk chunk if the
-	 * page is dirty.
+	 * Writes the pages to its disk chunk if the page is dirty.
 	 * The method ensures that the corresponding log
 	 * suadb.record has been written to disk prior to writing
 	 * the page to disk.
@@ -167,7 +174,7 @@ public class ChunkBuffer
 	}
 
 	/**
-	 * Returns true if the suadb.buffer is currently pinned
+	 * Returns true if the suadb.ChunkBuffer is currently pinned
 	 * (that is, if it has a nonzero pin count).
 	 * @return true if the suadb.buffer is pinned
 	 */
@@ -176,7 +183,7 @@ public class ChunkBuffer
 	}
 
 	/**
-	 * Returns true if the suadb.buffer is dirty
+	 * Returns true if the suadb.ChunkBuffer is dirty
 	 * due to a modification by the specified transaction.
 	 * @param txnum the id of the transaction
 	 * @return true if the transaction modified the suadb.buffer
@@ -187,42 +194,36 @@ public class ChunkBuffer
 
 	/**
 	 * Reads the contents of the specified chunk into
-	 * the suadb.buffer's page.
+	 * the suadb.buffer's pages.
 	 * If the suadb.buffer was dirty, then the contents
 	 * of the previous page are first written to disk.
 	 * @param c a reference to the data chunk
 	 * @param buffers list of assigned buffers
 	 */
-	void assignToChunk(Chunk c, List<Buffer> buffers)
-	{
+	void assignToChunk(Chunk c, List<Buffer> buffers){
 		flush();
 		chunk = c;
 		this.buffers = buffers;
 
-		int chunkNum = c.number();
-
-		//TODO
-		for (Buffer buff : buffers)
-		{
-
-			Block block = new Block(c.fileName(), chunkNum);
-			buff.assignToBlock(block);
-			chunkNum++;
+		//Read all blocks in the chunk (from 0 to c.numOfBlocks)
+		int i=0;
+		for (Buffer buff : buffers){
+			Block block = new Block(c.fileName(),i++);
+			buff.assignToBlock(block);//Assign the buffer to the block.
 		}
 
 		pins = 0;
 	}
 
 	/**
-	 * Initializes the suadb.buffer's page according to the specified formatter,
-	 * and appends the page to the specified suadb.file.
+	 * Initializes the suadb.buffer's pages according to the specified formatter,
+	 * and appends the pages to the specified suadb.file.
 	 * If the suadb.buffer was dirty, then the contents
 	 * of the previous page are first written to disk.
 	 * @param fileName the name of the suadb.file
 	 * @param fmtr a page formatter, used to initialize the page
 	 */
-	void assignToNew(String fileName, PageFormatter fmtr, List<Buffer> buffers)
-	{
+	void assignToNew(String fileName, PageFormatter fmtr, List<Buffer> buffers){
 		flush();
 
 		this.buffers = buffers;

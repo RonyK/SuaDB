@@ -18,7 +18,7 @@ public class Transaction {
 	private RecoveryMgr	 recoveryMgr;
 	private ConcurrencyMgr concurMgr;
 	private int txnum;
-	private BufferList myBuffers = new BufferList();
+	private ChunkList myChunks = new ChunkList();//Chunk list that this transaction has - CDS
 
 	/**
 	 * Creates a new transaction and its associated
@@ -47,7 +47,7 @@ public class Transaction {
 	public void commit() {
 		recoveryMgr.commit();
 		concurMgr.release();
-		myBuffers.unpinAll();
+		myChunks.unpinAll();
 		System.out.println("transaction " + txnum + " committed");
 	}
 
@@ -61,7 +61,7 @@ public class Transaction {
 	public void rollback() {
 		recoveryMgr.rollback();
 		concurMgr.release();
-		myBuffers.unpinAll();
+		myChunks.unpinAll();
 		System.out.println("transaction " + txnum + " rolled back");
 	}
 
@@ -84,7 +84,7 @@ public class Transaction {
 	 * @param chunk a reference to the disk chunk
 	 */
 	public void pin(Chunk chunk) {
-		myBuffers.pin(chunk);
+		myChunks.pin(chunk);
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class Transaction {
 	 * @param chunk a reference to the disk chunk
 	 */
 	public void unpin(Chunk chunk) {
-		myBuffers.unpin(chunk);
+		myChunks.unpin(chunk);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class Transaction {
 	 */
 	public int getInt(Chunk chunk, int offset) {
 		concurMgr.sLock(chunk);
-		ChunkBuffer buff = myBuffers.getBuffer(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
 		return buff.getInt(offset);
 	}
 
@@ -123,7 +123,7 @@ public class Transaction {
 	 */
 	public String getString(Chunk chunk, int offset) {
 		concurMgr.sLock(chunk);
-		ChunkBuffer buff = myBuffers.getBuffer(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
 		return buff.getString(offset);
 	}
 
@@ -142,7 +142,7 @@ public class Transaction {
 	 */
 	public void setInt(Chunk chunk, int offset, int val) {
 		concurMgr.xLock(chunk);
-		ChunkBuffer buff = myBuffers.getBuffer(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
 		int lsn = recoveryMgr.setInt(buff, offset, val);
 		buff.setInt(offset, val, txnum, lsn);
 	}
@@ -162,7 +162,7 @@ public class Transaction {
 	 */
 	public void setString(Chunk chunk, int offset, String val) {
 		concurMgr.xLock(chunk);
-		ChunkBuffer buff = myBuffers.getBuffer(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
 		int lsn = recoveryMgr.setString(buff, offset, val);
 		buff.setString(offset, val, txnum, lsn);
 	}
@@ -181,38 +181,27 @@ public class Transaction {
 		return SuaDB.fileMgr().size(filename);
 	}
 
-	/**
-	 * Appends a new chunk to the end of the specified suadb.file
-	 * and returns a reference to it.
-	 * This method first obtains an XLock on the
-	 * "end of the suadb.file", before performing the append.
-	 * @param filename the name of the suadb.file
-	 * @param fmtr the formatter used to initialize the new page
-	 * @return a reference to the newly-created disk chunk
-	 */
-	public Chunk append(String filename, PageFormatter fmtr) {
-		Chunk dummyChunk = new Chunk(filename, END_OF_FILE);
-		concurMgr.xLock(dummyChunk);
-		// TODO :: Modify Chunk size - RonyK
-		Chunk chunk = myBuffers.pinNew(filename, fmtr, 1);
-		unpin(chunk);
-		return chunk;
-	}
-
-	public Chunk append(String fileName, PageFormatter fmtr, int chunkSize)
-	{
-		// TODO :: Why they get the XLock on the end of the file? - RonyK
-		Chunk dummyChunk = new Chunk(fileName, END_OF_FILE);
-		concurMgr.xLock(dummyChunk);
-		Chunk chunk = myBuffers.pinNew(fileName, fmtr, chunkSize);
-		unpin(chunk);
-
-		return chunk;
-	}
-
 	private static synchronized int nextTxNumber() {
 		nextTxNum++;
 		System.out.println("new transaction: " + nextTxNum);
 		return nextTxNum;
+	}
+
+	/**
+	 * create new chunk.
+	 *
+	 * @param fileName
+	 * @param fmtr
+	 * @param numberOfBlocks
+	 * @return
+	 */
+	public Chunk createNewChunk(String fileName, PageFormatter fmtr, int numberOfBlocks){
+		Chunk dummyChunk = new Chunk(fileName, END_OF_FILE);
+		concurMgr.xLock(dummyChunk);
+
+		Chunk chunk = myChunks.pinNew(fileName, fmtr, numberOfBlocks);
+		unpin(chunk);
+
+		return chunk;
 	}
 }

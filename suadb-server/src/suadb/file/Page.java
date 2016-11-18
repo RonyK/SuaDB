@@ -85,7 +85,7 @@ public class Page {
 	public Page() {}
 
 	/**
-	 * Populates the page with the contents of the specified disk chunk.
+	 * Populates the page with the contents of the specified disk block.
 	 * @param blk a reference to a disk chunk
 	 */
 	public synchronized void read(Block blk) {
@@ -93,7 +93,7 @@ public class Page {
 	}
 
 	/**
-	 * Writes the contents of the page to the specified disk chunk.
+	 * Writes the contents of the page to the specified disk block.
 	 * @param blk a reference to a disk chunk
 	 */
 	public synchronized void write(Block blk) {

@@ -73,15 +73,16 @@ public class BufferMgr {
 	 * time period, then a {@link BufferAbortException} is thrown.
 	 * @param filename the name of the suadb.file
 	 * @param fmtr the formatter used to initialize the page
+	 * @param numberOfBlocks The number of blocks to create a chunk.
 	 * @return the suadb.buffer pinned to that chunk
 	 */
-	public synchronized ChunkBuffer pinNew(String filename, PageFormatter fmtr, int chunkSize) {
+	public synchronized ChunkBuffer pinNew(String filename, PageFormatter fmtr, int numberOfBlocks) {
 		try {
 			long timestamp = System.currentTimeMillis();
-			ChunkBuffer buff = chunkBufferMgr.pinNew(filename, fmtr, chunkSize);
+			ChunkBuffer buff = chunkBufferMgr.pinNew(filename, fmtr, numberOfBlocks);
 			while (buff == null && !waitingTooLong(timestamp)) {
 				wait(MAX_TIME);
-				buff = chunkBufferMgr.pinNew(filename, fmtr, chunkSize);
+				buff = chunkBufferMgr.pinNew(filename, fmtr, numberOfBlocks);
 			}
 			if (buff == null)
 				throw new BufferAbortException();

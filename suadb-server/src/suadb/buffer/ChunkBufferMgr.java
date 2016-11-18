@@ -10,21 +10,21 @@ import java.util.concurrent.LinkedBlockingQueue;
 import suadb.file.Chunk;
 
 /**
+ * ChunkBufferMgr based on BasicBufferMgr in SimpleDB.
  * Created by Rony on 2016-11-10.
  */
 public class ChunkBufferMgr
 {
-	private Buffer[] bufferPool;
-	private Queue<Buffer> freeBuffers = new LinkedBlockingQueue<Buffer>();
+	private Buffer[] bufferPool;//Total buffers in SuaDB.
+	private Queue<Buffer> freeBuffers = new LinkedBlockingQueue<Buffer>();//Available buffers.
 	private List<ChunkBuffer> cBuffers;//List of currently allocated ChunkBuffers.
-	private int numAvailable;//The # of available buffers. initially BUFFER_SIZE.
+	private int numAvailable;//The number of available buffers. initially BUFFER_SIZE.
 
 	ChunkBufferMgr(int numBuffs)
 	{
 		bufferPool = new Buffer[numBuffs];
 		numAvailable = numBuffs;
-		for (int i = 0; i < numBuffs; i++)
-		{
+		for (int i = 0; i < numBuffs; i++){
 			bufferPool[i] = new Buffer();
 			freeBuffers.add(bufferPool[i]);
 		}
@@ -52,39 +52,33 @@ public class ChunkBufferMgr
 				return null;
 			}
 
-			// What is the different with pin and pinnew? - RonyK
 			cBuff = new ChunkBuffer();
-			cBuff.assignToChunk(chunk, buffers);
+			cBuff.assignToChunk(chunk, buffers);//load chunk into buffers.
 			cBuffers.add(cBuff);
 		}
 
-		if(!cBuff.isPinned()){
+		if(!cBuff.isPinned())
 			numAvailable -= cBuff.size();
-		}
 
 		cBuff.pin();
 
 		return cBuff;
-
-		/*
-		Buffer buff = findExistingBuffer(blk);
-		if (buff == null) {
-			buff = chooseUnpinnedBuffer();
-			if (buff == null)
-				return null;
-			buff.assignToBlock(blk);
-		}
-		if (!buff.isPinned())
-			numAvailable--;
-		buff.pin();
-		return buff;*/
 	}
 
-	synchronized ChunkBuffer pinNew(String fileName, PageFormatter fmtr, int chunkSize)
+	/**
+	 * Assign buffers to a new chunk in the specified array.
+	 * pinNew is similar to pin,
+	 * except that it immediately calls chooseUnpinnedBuffer(no findExistingBuffer).
+	 * And it calls assignToNew on the buffers it finds.
+	 * @param fileName the name of the suadb.file
+	 * @param fmtr the formatter used to initialize the page
+	 * @param requiredNumOfBlocks The number of blocks to create a chunk.
+	 * @return
+	 */
+	synchronized ChunkBuffer pinNew(String fileName, PageFormatter fmtr, int requiredNumOfBlocks)
 	{
-		List<Buffer> buffers = chooseUnpinnedBuffer(chunkSize);
-		if (buffers == null)
-		{
+		List<Buffer> buffers = chooseUnpinnedBuffer(requiredNumOfBlocks);
+		if (buffers == null){
 			return null;
 		}
 
@@ -125,31 +119,37 @@ public class ChunkBufferMgr
 		return null;
 	}
 
-	private List<Buffer> chooseUnpinnedBuffer(int chunkSize){
-		if(numAvailable < chunkSize){
+	private List<Buffer> chooseUnpinnedBuffer(int requiredNumOfBlocks){
+		boolean isAvailable=false;//Chunk can get enough buffers == TRUE
+		if(numAvailable < requiredNumOfBlocks){
 			return null;
 		}
 
 		List<Buffer> result = new Vector<Buffer>();
 
-		if(freeBuffers.size() < chunkSize){
+		if(freeBuffers.size() < requiredNumOfBlocks){
 			for (ChunkBuffer cBuff : cBuffers){
 				if (!cBuff.isPinned()){
 					cBuffers.remove(cBuff);
 					retriveBuffer(cBuff);
 				}
 
-				if (freeBuffers.size() >= chunkSize){
+				if (freeBuffers.size() >= requiredNumOfBlocks){
+					isAvailable = true;
 					break;
 				}
 			}
 		}
 
-		for (int i = 0; i < chunkSize; i++){
-			result.add(freeBuffers.poll());
-		}
+		if(isAvailable) {
+			for (int i = 0; i < requiredNumOfBlocks; i++)
+				result.add(freeBuffers.poll());
 
-		return result;
+			return result;
+		}
+		else
+			return null;
+
 	}
 
 	private void retriveBuffer(ChunkBuffer cBuff)

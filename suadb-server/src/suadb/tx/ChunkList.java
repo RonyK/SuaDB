@@ -7,12 +7,12 @@ import suadb.buffer.*;
 import java.util.*;
 
 /**
- * Manages the transaction's currently-pinned buffers. 
+ * Manages the transaction's currently-pinned chunks.
  * @author Edward Sciore
  */
-class BufferList {
-	private Map<Chunk, ChunkBuffer> buffers = new HashMap<Chunk,ChunkBuffer>();
-	private List<Chunk> pins = new ArrayList<Chunk>();
+class ChunkList {
+	private Map<Chunk, ChunkBuffer> buffers = new HashMap<Chunk,ChunkBuffer>();//Chunk & ChunkBuffer Map of a transaction - CDS
+	private List<Chunk> pins = new ArrayList<Chunk>();//Chunk list of a transaction - CDS
 	private BufferMgr bufferMgr = SuaDB.bufferMgr();
 
 	/**
@@ -41,10 +41,11 @@ class BufferList {
 	 * and pins it.
 	 * @param filename the name of the suadb.file
 	 * @param fmtr the formatter used to initialize the new page
+	 * @param numberOfBlocks The number of blocks to create a chunk.
 	 * @return a reference to the newly-created chunk
 	 */
-	Chunk pinNew(String filename, PageFormatter fmtr, int chunkSize) {
-		ChunkBuffer buff = bufferMgr.pinNew(filename, fmtr, chunkSize);
+	Chunk pinNew(String filename, PageFormatter fmtr, int numberOfBlocks) {
+		ChunkBuffer buff = bufferMgr.pinNew(filename, fmtr, numberOfBlocks);
 		Chunk chunk = buff.chunk();
 		buffers.put(chunk, buff);
 		pins.add(chunk);

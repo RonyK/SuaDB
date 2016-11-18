@@ -73,7 +73,7 @@ public class FileMgr {
 	}
 
 	/**
-	 * Writes the contents of a bytebuffer into a disk chunk.
+	 * Writes the contents of a bytebuffer into a disk block.
 	 * @param blk a reference to a disk chunk
 	 * @param bb  the bytebuffer
 	 */
