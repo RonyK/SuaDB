@@ -41,7 +41,13 @@ public class FilterPlan implements Plan
 		if(predicate.equatesWithConstant(fieldName) != null)
 		{
 			return 1;
-		}else
+		} else if(predicate.biggerThanConstant(fieldName) != null)
+		{
+			return 1;
+		} else if(predicate.smallerThanConstant(fieldName) != null)
+		{
+			return 1;
+		} else
 		{
 			String fieldName2 = predicate.equatesWithField(fieldName);
 			if(fieldName2 != null)

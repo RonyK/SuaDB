@@ -67,16 +67,73 @@ public class Term {
 	 * @return either the constant or null
 	 */
 	public Constant equatesWithConstant(String fldname) {
-		if (lhs.isFieldName() &&
-			 lhs.asFieldName().equals(fldname) &&
-			 rhs.isConstant())
-			return rhs.asConstant();
-		else if (rhs.isFieldName() &&
+		if (mathcode!=0)
+			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isConstant())
+				return rhs.asConstant();
+			else if (rhs.isFieldName() &&
 					rhs.asFieldName().equals(fldname) &&
 					lhs.isConstant())
-			return lhs.asConstant();
-		else
+				return lhs.asConstant();
+			else
+				return null;
+		}
+	}
+
+	/**
+	 * Determines if this term is of the form "F>c"
+	 * where F is the specified field and c is some constant.
+	 * If so, the method returns that constant.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the constant or null
+	 */
+	public Constant biggerThanConstant(String fldname) {
+		if (mathcode!=1)
 			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isConstant())
+				return rhs.asConstant();
+			else if (rhs.isFieldName() &&
+					rhs.asFieldName().equals(fldname) &&
+					lhs.isConstant())
+				return lhs.asConstant();
+			else
+				return null;
+		}
+	}
+
+	/**
+	 * Determines if this term is of the form "F<c"
+	 * where F is the specified field and c is some constant.
+	 * If so, the method returns that constant.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the constant or null
+	 */
+	public Constant smallerThanConstant(String fldname) {
+		if (mathcode!=2)
+			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isConstant())
+				return rhs.asConstant();
+			else if (rhs.isFieldName() &&
+					rhs.asFieldName().equals(fldname) &&
+					lhs.isConstant())
+				return lhs.asConstant();
+			else
+				return null;
+		}
 	}
 
 	/**
@@ -120,10 +177,31 @@ public class Term {
 	public boolean isSatisfied(Scan s) {
 		Constant lhsval = lhs.evaluate(s);
 		Constant rhsval = rhs.evaluate(s);
-		return rhsval.equals(lhsval);
+		if(mathcode==0)
+			return rhsval.equals(lhsval);
+		else if(mathcode==1){
+			if(lhsval.compareTo(rhsval)>0)
+				return true;
+			else
+				return false;
+		}
+		else{
+			if(lhsval.compareTo(rhsval)<0)
+				return true;
+			else
+				return false;
+		}
+
 	}
 
+	public int getMathcode() { return mathcode; }
+
 	public String toString() {
-		return lhs.toString() + "=" + rhs.toString();
+		if(mathcode==0)
+			return lhs.toString() + "=" + rhs.toString();
+		else if(mathcode==1)
+			return lhs.toString() + ">" + rhs.toString();
+		else  // mathcode==2
+			return lhs.toString() + "<" + rhs.toString();
 	}
 }

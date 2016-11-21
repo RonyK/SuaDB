@@ -118,6 +118,43 @@ public class Predicate {
 	}
 
 	/**
+	 * Determines if there is a term of the form "F>c"
+	 * where F is the specified field and c is some constant.
+	 * If so, the method returns that constant.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the constant or null
+	 */
+	public Constant biggerThanConstant(String fldname) {
+		for (Term t : terms) {
+			Constant c = t.biggerThanConstant(fldname);
+			if (c != null)
+				return c;
+		}
+		return null;
+	}
+
+	/**
+	 * Determines if there is a term of the form "F>c"
+	 * where F is the specified field and c is some constant.
+	 * If so, the method returns that constant.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the constant or null
+	 */
+	public Constant smallerThanConstant(String fldname) {
+		for (Term t : terms) {
+			Constant c = t.smallerThanConstant(fldname);
+			if (c != null)
+				return c;
+		}
+		return null;
+	}
+
+
+
+
+	/**
 	 * Determines if there is a term of the form "F1=F2"
 	 * where F1 is the specified field and F2 is another field.
 	 * If so, the method returns the name of that field.
