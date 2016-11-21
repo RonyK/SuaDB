@@ -1,7 +1,10 @@
 package suadb.query;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import suadb.record.Schema;
-import java.util.*;
 /**
  * A predicate is a Boolean combination of terms.
  * @author Edward Sciore
@@ -118,6 +121,40 @@ public class Predicate {
 	}
 
 	/**
+	 * Determines if there is a term of the form "F>c"
+	 * where F is the specified field and c is some constant.
+	 * If so, the method returns that constant.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the constant or null
+	 */
+	public Constant biggerThanConstant(String fldname) {
+		for (Term t : terms) {
+			Constant c = t.biggerThanConstant(fldname);
+			if (c != null)
+				return c;
+		}
+		return null;
+	}
+
+	/**
+	 * Determines if there is a term of the form "F>c"
+	 * where F is the specified field and c is some constant.
+	 * If so, the method returns that constant.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the constant or null
+	 */
+	public Constant smallerThanConstant(String fldname) {
+		for (Term t : terms) {
+			Constant c = t.smallerThanConstant(fldname);
+			if (c != null)
+				return c;
+		}
+		return null;
+	}
+
+	/**
 	 * Determines if there is a term of the form "F1=F2"
 	 * where F1 is the specified field and F2 is another field.
 	 * If so, the method returns the name of that field.
@@ -128,6 +165,40 @@ public class Predicate {
 	public String equatesWithField(String fldname) {
 		for (Term t : terms) {
 			String s = t.equatesWithField(fldname);
+			if (s != null)
+				return s;
+		}
+		return null;
+	}
+
+	/**
+	 * Determines if there is a term of the form "F1>F2"
+	 * where F1 is the specified field and F2 is another field.
+	 * If so, the method returns the name of that field.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return the name of the other field, or null
+	 */
+	public String biggerThanField(String fldname) {
+		for (Term t : terms) {
+			String s = t.biggerThanField(fldname);
+			if (s != null)
+				return s;
+		}
+		return null;
+	}
+
+	/**
+	 * Determines if there is a term of the form "F1<F2"
+	 * where F1 is the specified field and F2 is another field.
+	 * If so, the method returns the name of that field.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return the name of the other field, or null
+	 */
+	public String smallerThanField(String fldname) {
+		for (Term t : terms) {
+			String s = t.smallerThanField(fldname);
 			if (s != null)
 				return s;
 		}
