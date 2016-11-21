@@ -22,9 +22,9 @@ public class Term {
 	 *
 	 */
 	public Term(Expression lhs, Expression rhs, int mathcode) {
-		this.lhs = lhs;
-		this.rhs = rhs;
-		this.mathcode = mathcode;
+			this.lhs = lhs;
+			this.rhs = rhs;
+			this.mathcode = mathcode;
 	}
 
 	/**
@@ -145,16 +145,73 @@ public class Term {
 	 * @return either the name of the other field, or null
 	 */
 	public String equatesWithField(String fldname) {
-		if (lhs.isFieldName() &&
-			 lhs.asFieldName().equals(fldname) &&
-			 rhs.isFieldName())
-			return rhs.asFieldName();
-		else if (rhs.isFieldName() &&
+		if (mathcode!=0)
+			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isFieldName())
+				return rhs.asFieldName();
+			else if (rhs.isFieldName() &&
 					rhs.asFieldName().equals(fldname) &&
 					lhs.isFieldName())
-			return lhs.asFieldName();
-		else
+				return lhs.asFieldName();
+			else
+				return null;
+		}
+	}
+
+	/**
+	 * Determines if this term is of the form "F1>F2"
+	 * where F1 is the specified field and F2 is another field.
+	 * If so, the method returns the name of that field.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the name of the other field, or null
+	 */
+	public String biggerThanField(String fldname) {
+		if (mathcode!=1)
 			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isFieldName())
+				return rhs.asFieldName();
+			else if (rhs.isFieldName() &&
+					rhs.asFieldName().equals(fldname) &&
+					lhs.isFieldName())
+				return lhs.asFieldName();
+			else
+				return null;
+		}
+	}
+
+	/**
+	 * Determines if this term is of the form "F1<F2"
+	 * where F1 is the specified field and F2 is another field.
+	 * If so, the method returns the name of that field.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the name of the other field, or null
+	 */
+	public String smallerThanField(String fldname) {
+		if (mathcode!=2)
+			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isFieldName())
+				return rhs.asFieldName();
+			else if (rhs.isFieldName() &&
+					rhs.asFieldName().equals(fldname) &&
+					lhs.isFieldName())
+				return lhs.asFieldName();
+			else
+				return null;
+		}
 	}
 
 	/**

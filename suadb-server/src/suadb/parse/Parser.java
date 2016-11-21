@@ -41,21 +41,21 @@ public class Parser {
 	}
 
 	public Term term()
-	{
-		int mathcode=-1;
-		Expression lhs = expression();
-		if (lex.matchDelim('=')) {
-			mathcode=0;
-			lex.eatDelim('=');
-		}
-		else if (lex.matchDelim('>')) {
-			mathcode=1;
-			lex.eatDelim('>');
-		}
-		else if (lex.matchDelim('<')) {
-			mathcode=2;
-			lex.eatDelim('<');
-		}
+		{
+			int mathcode=-1;
+			Expression lhs = expression();
+			if (lex.matchDelim('=')) {
+				mathcode=0;
+				lex.eatDelim('=');
+			}
+			else if (lex.matchDelim('>')) {
+				mathcode=1;
+				lex.eatDelim('>');
+			}
+			else if (lex.matchDelim('<')) {
+				mathcode=2;
+				lex.eatDelim('<');
+			}
 		else
 			throw new BadSyntaxException();
 		Expression rhs = expression();

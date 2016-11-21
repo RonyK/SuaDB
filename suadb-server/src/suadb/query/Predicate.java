@@ -171,6 +171,40 @@ public class Predicate {
 		return null;
 	}
 
+	/**
+	 * Determines if there is a term of the form "F1>F2"
+	 * where F1 is the specified field and F2 is another field.
+	 * If so, the method returns the name of that field.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return the name of the other field, or null
+	 */
+	public String biggerThanField(String fldname) {
+		for (Term t : terms) {
+			String s = t.biggerThanField(fldname);
+			if (s != null)
+				return s;
+		}
+		return null;
+	}
+
+	/**
+	 * Determines if there is a term of the form "F1<F2"
+	 * where F1 is the specified field and F2 is another field.
+	 * If so, the method returns the name of that field.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return the name of the other field, or null
+	 */
+	public String smallerThanField(String fldname) {
+		for (Term t : terms) {
+			String s = t.smallerThanField(fldname);
+			if (s != null)
+				return s;
+		}
+		return null;
+	}
+
 	public String toString() {
 		Iterator<Term> iter = terms.iterator();
 		if (!iter.hasNext())
