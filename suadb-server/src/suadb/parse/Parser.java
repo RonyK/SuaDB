@@ -40,24 +40,30 @@ public class Parser {
 			return new ConstantExpression(constant());
 	}
 
+	// TODO :: How to support operators like; '>=', '<='.
+	// Lexer only support char(1) type delim.
 	public Term term()
+	{
+		int mathcode = -1;
+		Expression lhs = expression();
+		
+		if (lex.matchDelim('='))
 		{
-			int mathcode=-1;
-			Expression lhs = expression();
-			if (lex.matchDelim('=')) {
-				mathcode=0;
-				lex.eatDelim('=');
-			}
-			else if (lex.matchDelim('>')) {
-				mathcode=1;
-				lex.eatDelim('>');
-			}
-			else if (lex.matchDelim('<')) {
-				mathcode=2;
-				lex.eatDelim('<');
-			}
-		else
+			mathcode=0;
+			lex.eatDelim('=');
+		}else if (lex.matchDelim('>'))
+		{
+			mathcode=1;
+			lex.eatDelim('>');
+		}else if (lex.matchDelim('<'))
+		{
+			mathcode=2;
+			lex.eatDelim('<');
+		}else
+		{
 			throw new BadSyntaxException();
+		}
+			
 		Expression rhs = expression();
 		return new Term(lhs, rhs, mathcode);
 	}
@@ -90,8 +96,7 @@ public class Parser {
 			throw new UnsupportedOperationException();
 		}
 	}
-
-
+	
 	public QueryData array()
 	{
 		if(lex.matchId())
@@ -121,6 +126,7 @@ public class Parser {
 		Predicate pred = new Predicate();
 		pred = predicate();
 		lex.eatDelim(')');
+		
 		return new FilterData(array,pred);
 	}
 
@@ -153,7 +159,8 @@ public class Parser {
 	private Object create() {
 		lex.eatKeyword("create");
 		lex.eatKeyword("array");
-			return createArray();
+		
+		return createArray();
 	}
 
 
@@ -166,6 +173,7 @@ public class Parser {
 		lex.eatDelim(',');
 		String inputfile = lex.eatId();  // 'input_file'
 		lex.eatDelim(')');
+		
 		return new InsertData(arrayname, inputfile);
 	}
 
@@ -176,6 +184,7 @@ public class Parser {
 			lex.eatDelim(',');
 			L.addAll(fieldList());
 		}
+		
 		return L;
 	}
 
@@ -188,6 +197,7 @@ public class Parser {
 		lex.eatDelim('<');
 		schema = schemaDefs();
 		lex.eatDelim(']');
+		
 		return new CreateTableData(arrayname, schema);
 	}
 

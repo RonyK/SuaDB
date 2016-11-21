@@ -1,7 +1,10 @@
 package suadb.query;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import suadb.record.Schema;
-import java.util.*;
 /**
  * A predicate is a Boolean combination of terms.
  * @author Edward Sciore
@@ -150,9 +153,6 @@ public class Predicate {
 		}
 		return null;
 	}
-
-
-
 
 	/**
 	 * Determines if there is a term of the form "F1=F2"

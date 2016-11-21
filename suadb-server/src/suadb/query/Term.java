@@ -10,7 +10,7 @@ import suadb.record.Schema;
 public class Term {
 	private Expression lhs, rhs;
 	private int mathcode;
-
+	
 	/**
 	 * Creates a new term that compares two expressions
 	 * @param lhs  the LHS expression
@@ -19,12 +19,15 @@ public class Term {
 	 *                 0 : =
 	 *                 1 : >
 	 *                 2 : <
-	 *
 	 */
+	public static final int MATHCODE_EQUAL      = 0;
+	public static final int MATHCODE_GREATER    = 1;
+	public static final int MATHCODE_LESS       = 2;
+	
 	public Term(Expression lhs, Expression rhs, int mathcode) {
-			this.lhs = lhs;
-			this.rhs = rhs;
-			this.mathcode = mathcode;
+		this.lhs = lhs;
+		this.rhs = rhs;
+		this.mathcode = mathcode;
 	}
 
 	/**
@@ -234,31 +237,43 @@ public class Term {
 	public boolean isSatisfied(Scan s) {
 		Constant lhsval = lhs.evaluate(s);
 		Constant rhsval = rhs.evaluate(s);
-		if(mathcode==0)
-			return rhsval.equals(lhsval);
-		else if(mathcode==1){
-			if(lhsval.compareTo(rhsval)>0)
-				return true;
-			else
-				return false;
+		
+		switch (mathcode)
+		{
+			case MATHCODE_GREATER:
+			{
+				if(lhsval.compareTo(rhsval)>0)
+					return true;
+				else
+					return false;
+			}
+			case MATHCODE_LESS:
+			{
+				if(lhsval.compareTo(rhsval)<0)
+					return true;
+				else
+					return false;
+			}
+			case MATHCODE_EQUAL:
+			default:
+			{
+				return rhsval.equals(lhsval);
+			}
 		}
-		else{
-			if(lhsval.compareTo(rhsval)<0)
-				return true;
-			else
-				return false;
-		}
-
 	}
 
 	public int getMathcode() { return mathcode; }
 
 	public String toString() {
-		if(mathcode==0)
-			return lhs.toString() + "=" + rhs.toString();
-		else if(mathcode==1)
-			return lhs.toString() + ">" + rhs.toString();
-		else  // mathcode==2
-			return lhs.toString() + "<" + rhs.toString();
+		switch (mathcode)
+		{
+			case MATHCODE_GREATER:
+				return lhs.toString() + ">" + rhs.toString();
+			case MATHCODE_LESS:
+				return lhs.toString() + "<" + rhs.toString();
+			case MATHCODE_EQUAL:
+			default:
+				return lhs.toString() + "=" + rhs.toString();
+		}
 	}
 }
