@@ -1,5 +1,6 @@
 package suadb.tx;
 
+import suadb.file.Block;
 import suadb.file.Chunk;
 import suadb.server.SuaDB;
 import suadb.buffer.*;
@@ -188,7 +189,23 @@ public class Transaction {
 	}
 
 	/**
-	 * create new chunk.
+	 * Appends a new block(one-block-sized chunk) to the end of the specified file
+	 * and returns a reference to it.
+	 * This method first obtains an XLock on the
+	 * "end of the file", before performing the append.
+	 * @param filename the name of the file
+	 * @param fmtr the formatter used to initialize the new page
+	 * @return a reference to the newly-created disk block
+	 */
+	public Chunk append(String filename, PageFormatter fmtr) {
+		Chunk dummyChunk = new Chunk(filename, END_OF_FILE);
+		concurMgr.xLock(dummyChunk);
+		Chunk chunk = myChunks.pinNew(filename, fmtr, 1);//Appends a new block(one-block-sized chunk)
+		unpin(chunk);
+		return chunk;
+	}
+	/**
+	 * create new chunk file.
 	 *
 	 * @param fileName
 	 * @param fmtr

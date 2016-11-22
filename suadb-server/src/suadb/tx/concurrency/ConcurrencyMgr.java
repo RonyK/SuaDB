@@ -25,12 +25,12 @@ public class ConcurrencyMgr {
 	 * Obtains an SLock on the chunk, if necessary.
 	 * The method will ask the lock table for an SLock
 	 * if the transaction currently has no locks on that chunk.
-	 * @param blk a reference to the disk chunk
+	 * @param chunk a reference to the disk chunk
 	 */
-	public void sLock(Chunk blk) {
-		if (locks.get(blk) == null) {
-			locktbl.sLock(blk);
-			locks.put(blk, "S");
+	public void sLock(Chunk chunk) {
+		if (locks.get(chunk) == null) {
+			locktbl.sLock(chunk);
+			locks.put(chunk, "S");
 		}
 	}
 
@@ -54,13 +54,13 @@ public class ConcurrencyMgr {
 	 * unlock each one.
 	 */
 	public void release() {
-		for (Chunk blk : locks.keySet())
-			locktbl.unlock(blk);
+		for (Chunk chunk : locks.keySet())
+			locktbl.unlock(chunk);
 		locks.clear();
 	}
 
-	private boolean hasXLock(Chunk blk) {
-		String locktype = locks.get(blk);
+	private boolean hasXLock(Chunk chunk) {
+		String locktype = locks.get(chunk);
 		return locktype != null && locktype.equals("X");
 	}
 }

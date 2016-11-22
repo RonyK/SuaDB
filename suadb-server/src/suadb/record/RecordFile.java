@@ -1,10 +1,10 @@
 package suadb.record;
 
-import suadb.file.Chunk;
+import suadb.file.Block;
 import suadb.tx.Transaction;
 
 /**
- * Manages a suadb.file of records.
+ * Manages a file of records.
  * There are methods for iterating through the records
  * and accessing their contents.
  * @author Edward Sciore
@@ -17,9 +17,9 @@ public class RecordFile {
 	private int currentblknum;
 
 	/**
-	 * Constructs an object to manage a suadb.file of records.
-	 * If the suadb.file does not exist, it is created.
-	 * @param ti the table suadb.metadata
+	 * Constructs an object to manage a file of records.
+	 * If the file does not exist, it is created.
+	 * @param ti the table metadata
 	 * @param tx the transaction
 	 */
 	public RecordFile(TableInfo ti, Transaction tx) {
@@ -32,24 +32,24 @@ public class RecordFile {
 	}
 
 	/**
-	 * Closes the suadb.record suadb.file.
+	 * Closes the record file.
 	 */
 	public void close() {
 		rp.close();
 	}
 
 	/**
-	 * Positions the current suadb.record so that a call to method next
-	 * will wind up at the first suadb.record.
+	 * Positions the current record so that a call to method next
+	 * will wind up at the first record.
 	 */
 	public void beforeFirst() {
 		moveTo(0);
 	}
 
 	/**
-	 * Moves to the next suadb.record. Returns false if there
-	 * is no next suadb.record.
-	 * @return false if there is no next suadb.record.
+	 * Moves to the next record. Returns false if there
+	 * is no next record.
+	 * @return false if there is no next record.
 	 */
 	public boolean next() {
 		while (true) {
@@ -63,7 +63,7 @@ public class RecordFile {
 
 	/**
 	 * Returns the value of the specified field
-	 * in the current suadb.record.
+	 * in the current record.
 	 * @param fldname the name of the field
 	 * @return the integer value at that field
 	 */
@@ -73,7 +73,7 @@ public class RecordFile {
 
 	/**
 	 * Returns the value of the specified field
-	 * in the current suadb.record.
+	 * in the current record.
 	 * @param fldname the name of the field
 	 * @return the string value at that field
 	 */
@@ -83,7 +83,7 @@ public class RecordFile {
 
 	/**
 	 * Sets the value of the specified field
-	 * in the current suadb.record.
+	 * in the current record.
 	 * @param fldname the name of the field
 	 * @param val the new value for the field
 	 */
@@ -93,7 +93,7 @@ public class RecordFile {
 
 	/**
 	 * Sets the value of the specified field
-	 * in the current suadb.record.
+	 * in the current record.
 	 * @param fldname the name of the field
 	 * @param val the new value for the field
 	 */
@@ -102,10 +102,10 @@ public class RecordFile {
 	}
 
 	/**
-	 * Deletes the current suadb.record.
+	 * Deletes the current record.
 	 * The client must call next() to move to
-	 * the next suadb.record.
-	 * Calls to methods on a deleted suadb.record
+	 * the next record.
+	 * Calls to methods on a deleted record
 	 * have unspecified behavior.
 	 */
 	public void delete() {
@@ -113,23 +113,24 @@ public class RecordFile {
 	}
 
 	/**
-	 * Inserts a new, blank suadb.record somewhere in the suadb.file
-	 * beginning at the current suadb.record.
-	 * If the new suadb.record does not fit into an existing chunk,
-	 * then a new chunk is appended to the suadb.file.
+	 * Inserts a new, blank record somewhere in the file
+	 * beginning at the current record.
+	 * If the new record does not fit into an existing block,
+	 * then a new block is appended to the file.
 	 */
 	public void insert() {
 		while (!rp.insert()) {
-			if (atLastBlock())
+			if (atLastBlock()) {
 				appendBlock();
+			}
 			moveTo(currentblknum + 1);
 		}
 	}
 
 	/**
-	 * Positions the current suadb.record as indicated by the
+	 * Positions the current record as indicated by the
 	 * specified RID.
-	 * @param rid a suadb.record identifier
+	 * @param rid a record identifier
 	 */
 	public void moveToRid(RID rid) {
 		moveTo(rid.blockNumber());
@@ -137,8 +138,8 @@ public class RecordFile {
 	}
 
 	/**
-	 * Returns the RID of the current suadb.record.
-	 * @return a suadb.record identifier
+	 * Returns the RID of the current record.
+	 * @return a record identifier
 	 */
 	public RID currentRid() {
 		int id = rp.currentId();
@@ -149,18 +150,16 @@ public class RecordFile {
 		if (rp != null)
 			rp.close();
 		currentblknum = b;
-		Chunk blk = new Chunk(filename, currentblknum);
+		Block blk = new Block(filename, currentblknum);
 		rp = new RecordPage(blk, ti, tx);
 	}
 
-	// TODO :: Change Block to chunk
 	private boolean atLastBlock() {
 		return currentblknum == tx.size(filename) - 1;
 	}
 
-	// TODO :: Change to appendChunk
 	private void appendBlock() {
 		RecordFormatter fmtr = new RecordFormatter(ti);
-	//	tx.append(filename, fmtr);
+		tx.append(filename, fmtr);
 	}
 }

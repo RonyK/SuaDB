@@ -81,14 +81,13 @@ public class ChunkBufferMgr
 		if (buffers == null){
 			return null;
 		}
-
 		ChunkBuffer cBuff = new ChunkBuffer();
+		cBuff.setChunk(fileName,requiredNumOfBlocks);//Chunk initialization in ChunkBuffer.
 		cBuff.assignToNew(fileName, fmtr, buffers);
-		cBuff.pin();
-
 		numAvailable -= cBuff.size();
-
+		cBuff.pin();
 		return cBuff;
+
 	}
 
 	synchronized void unpin(ChunkBuffer cBuff)
@@ -120,14 +119,15 @@ public class ChunkBufferMgr
 	}
 
 	private List<Buffer> chooseUnpinnedBuffer(int requiredNumOfBlocks){
-		boolean isAvailable=false;//Chunk can get enough buffers == TRUE
-		if(numAvailable < requiredNumOfBlocks){
+		boolean isAvailable=true;//Chunk can get enough buffers == TRUE
+		if(numAvailable < requiredNumOfBlocks)
 			return null;
-		}
+
 
 		List<Buffer> result = new Vector<Buffer>();
 
 		if(freeBuffers.size() < requiredNumOfBlocks){
+
 			for (ChunkBuffer cBuff : cBuffers){
 				if (!cBuff.isPinned()){
 					cBuffers.remove(cBuff);
@@ -139,12 +139,13 @@ public class ChunkBufferMgr
 					break;
 				}
 			}
+			isAvailable = false;
 		}
 
 		if(isAvailable) {
-			for (int i = 0; i < requiredNumOfBlocks; i++)
+			for (int i = 0; i < requiredNumOfBlocks; i++) {
 				result.add(freeBuffers.poll());
-
+			}
 			return result;
 		}
 		else

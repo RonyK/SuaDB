@@ -109,6 +109,7 @@ public class ChunkBuffer
 		modifiedBy = txnum;
 		if (lsn >= 0)
 			logSequenceNumber = lsn;
+		System.out.println("몇번째 블락 ? "+blockSeq(offset)+" "+blockOffset(offset));
 		buffer(offset).setInt(blockOffset(offset), val, txnum, lsn);
 	}
 
@@ -139,6 +140,12 @@ public class ChunkBuffer
 	 */
 	public Chunk chunk() {
 		return chunk;
+	}
+
+	public void setChunk(String filename, int requiredNumOfBlocks){
+		chunk = new Chunk();
+		chunk.setFileName(filename);
+		chunk.setNumOfBlocks(requiredNumOfBlocks);
 	}
 
 	/**
@@ -227,8 +234,8 @@ public class ChunkBuffer
 		flush();
 
 		this.buffers = buffers;
-		for(Buffer b : buffers)
-		{
+
+		for(Buffer b : buffers){
 			b.assignToNew(fileName, fmtr);
 		}
 
