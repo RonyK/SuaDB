@@ -161,6 +161,6 @@ public class RecordFile {
 	// TODO :: Change to appendChunk
 	private void appendBlock() {
 		RecordFormatter fmtr = new RecordFormatter(ti);
-		tx.append(filename, fmtr);
+	//	tx.append(filename, fmtr);
 	}
 }

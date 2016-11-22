@@ -122,6 +122,8 @@ public class CellPage {
      * Return false if there were no available slots.
      * @return false if the insertion was not possible
      */
+    // TODO :: this is for appending records in SimpleDB, Have to find another way
+    /*
     public boolean insert() {
         currentslot = -1;
         boolean found = searchFor(EMPTY);
@@ -131,6 +133,7 @@ public class CellPage {
         }
         return found;
     }
+*/
 
     /**
      * Sets the current suadb.record to be the suadb.record having the
@@ -159,7 +162,7 @@ public class CellPage {
     }
 */
     private boolean isValidSlot() {
-        return currentpos() + slotsize <= BLOCK_SIZE;
+        return currentpos() + slotsize <= BLOCK_SIZE*chunk.getNumOfBlocks();
     }
 
     private boolean searchFor(int flag) {

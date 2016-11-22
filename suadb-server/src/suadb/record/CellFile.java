@@ -15,8 +15,9 @@ public class CellFile {
     private String filename;
     private String attributename;
     private CellPage cp;
-    private int currentblknum;
-    private int chunknum;
+    private int currentchunknum;
+    private int numberofblocks;
+    private int numberofchunks;         // this variable is needed in order to find out if the current chunk is the last one
 
     /**
      * Constructs an object to manage a suadb.file of records.
@@ -44,17 +45,20 @@ public class CellFile {
      * @param attributename the name of attribute (SuaDB adopts separate storage for each attribute)
      */
 
-    public CellFile(ArrayInfo ai, Transaction tx, int chunknum, String attributename) {
+    public CellFile(ArrayInfo ai, Transaction tx, int chunknum, String attributename, int numberofblocks,int numberofchunks) {
         this.ai = ai;
         this.tx = tx;
-        this.chunknum = chunknum;
+        this.currentchunknum = chunknum;
         this.attributename = attributename;
-        filename = ai.arrayName() + "_" + attributename + "_" + chunknum;
-        if (tx.size(filename) == 0)
-            appendBlock();
-        moveTo(0);
+        this.numberofblocks = numberofblocks;
+        this.numberofchunks = numberofchunks;
+        // move to the specified chunk , updates itself
+        moveTo(chunknum);
     }
 
+    private String assignName(ArrayInfo ai, String attributename, int currentchunknum){
+        return ai.arrayName() + "_" + attributename + "_" + currentchunknum;
+    }
 
     /**
      * Closes the suadb.record suadb.file.
@@ -80,9 +84,9 @@ public class CellFile {
         while (true) {
             if (cp.next())
                 return true;
-            if (atLastBlock())
+            if (atLaskChunk())
                 return false;
-            moveTo(currentblknum + 1);
+            moveTo(currentchunknum + 1);
         }
     }
 
@@ -139,22 +143,26 @@ public class CellFile {
      * If the new suadb.record does not fit into an existing chunk,
      * then a new chunk is appended to the suadb.file.
      */
+
+    // TODO :: Is this function needed?? Will check -IHSUh
+    // TODO :: this is for appending records in SimpleDB, Have to find another way -IHSUh
+    /*
     public void insert() {
         while (!cp.insert()) {
             if (atLastBlock())
-                appendBlock();
-            moveTo(currentblknum + 1);
+                appendBlock(0);     // TODO :: filled with arbitrary argument
+            moveTo(currentchunknum + 1);
         }
     }
-
+*/
     /**
      * Positions the current suadb.record as indicated by the
      * specified RID.
-     * @param rid a suadb.record identifier
+     * @param offset a offset of the cell in this chunk
      */
-    public void moveToRid(RID rid) {
-        moveTo(rid.blockNumber());
-        cp.moveToId(rid.id());
+    public void moveToId(int offset) {
+       // moveTo(rid.blockNumber());
+        cp.moveToId(offset);
     }
 
     /**
@@ -163,26 +171,31 @@ public class CellFile {
      */
     public RID currentRid() {
         int id = cp.currentId();
-        return new RID(currentblknum, id);
+        return new RID(currentchunknum, id);
     }
 
-    private void moveTo(int b) {
+    public void moveTo(int c) {
         if (cp != null)
             cp.close();
-        currentblknum = b;
-        Chunk blk = new Chunk(filename, currentblknum);
+        currentchunknum = c;
+        // Update filename  - ILHYUN
+        this.filename = assignName(this.ai,this.attributename,currentchunknum);
+        if (tx.size(filename) == 0)
+            createChunk(c);
+        Chunk blk = new Chunk(filename, currentchunknum);
         cp = new CellPage(blk, ai, tx, ai.recordLength(attributename));
     }
 
-    // TODO :: Change Block to chunk
-    private boolean atLastBlock() {
-        return currentblknum == tx.size(filename) - 1;
+    private boolean atLaskChunk() {
+        return currentchunknum == (numberofchunks-1);
     }
 
-    // TODO :: Change to appendChunk
-    private void appendBlock() {
+
+    private void createChunk(int chunknum) {
         CellFormatter fmtr = new CellFormatter(ai,attributename);
-        tx.append(filename, fmtr);
+        String filename =assignName(this.ai,this.attributename,chunknum);
+        tx.createNewChunk(filename, fmtr,numberofblocks);
+
     }
 }
 
