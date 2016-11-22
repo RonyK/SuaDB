@@ -99,6 +99,7 @@ public class FileMgr {
 		int newblknum = size(filename);
 		Block blk = new Block(filename, newblknum);
 		write(blk, bb);
+
 		return blk;
 	}
 

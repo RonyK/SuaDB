@@ -24,6 +24,7 @@ import suadb.log.LogMgr;
 import suadb.metadata.MetadataMgr;
 import suadb.server.SuaDB;
 import suadb.server.SuaDBTestBase;
+import suadb.tx.Transaction;
 
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static suadb.server.SuaDB.BUFFER_SIZE;
@@ -47,7 +48,6 @@ public class ChunkBufferMgrTest extends SuaDBTestBase
 	{
 		assertTrue(SuaDB.bufferMgr().available() == BUFFER_SIZE);
 	}
-	
 	@Test
 	public void test_01_pin()
 	{
@@ -56,23 +56,24 @@ public class ChunkBufferMgrTest extends SuaDBTestBase
 		Chunk chunk0 = new Chunk(arrayFileName, 0, 3);
 		Chunk chunk1 = new Chunk(arrayFileName, 3, 2);
 		Chunk chunk2 = new Chunk(arrayFileName, 5, 2);
-		
+
+
 		SuaDB.bufferMgr().pin(chunk0);
-		
+
 		assertTrue(
 				"Check available chunk size",
-				SuaDB.bufferMgr().available() == BUFFER_SIZE - chunk0.chunkSize());
-		
+				SuaDB.bufferMgr().available() == BUFFER_SIZE - chunk0.getNumOfBlocks());
+
 		SuaDB.bufferMgr().pin(chunk1);
-		
+
 		assertTrue(
 				"Check available chunk size",
-				SuaDB.bufferMgr().available() == BUFFER_SIZE - chunk0.chunkSize() - chunk1.chunkSize());
+				SuaDB.bufferMgr().available() == BUFFER_SIZE - chunk0.getNumOfBlocks() - chunk1.getNumOfBlocks());
 	}
 	
 	public void test_05_unpin()
 	{
-		
+		//TODO
 	}
 	
 	@AfterClass

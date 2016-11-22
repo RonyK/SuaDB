@@ -2,6 +2,7 @@ package suadb.multibuffer;
 
 import static java.sql.Types.INTEGER;
 
+import suadb.file.Block;
 import suadb.file.Chunk;
 import suadb.tx.Transaction;
 import suadb.record.*;
@@ -35,7 +36,7 @@ public class ChunkScan implements Scan {
 		String filename = ti.fileName();
 		for (int i=startbnum; i<=endbnum; i++) {
 			// TODO :: Pass over size of chunk using ArrayInfo or Schema when you make a new Chunk.
-			Chunk blk = new Chunk(filename, i);
+			Block blk = new Block(filename, i);
 			pages.add(new RecordPage(blk, ti, tx));
 		}
 		beforeFirst();

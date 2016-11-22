@@ -86,6 +86,7 @@ public class BufferMgr {
 			}
 			if (buff == null)
 				throw new BufferAbortException();
+
 			return buff;
 		}
 		catch(InterruptedException e) {

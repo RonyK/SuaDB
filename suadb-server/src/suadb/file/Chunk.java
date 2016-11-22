@@ -9,6 +9,8 @@ package suadb.file;
  */
 public class Chunk
 {
+
+
 	/**
 	 * File name of the chunk.
 	 * arrayName_attribute Name_chunkNumInTheAttribute
@@ -30,20 +32,25 @@ public class Chunk
 	*/
 	private int numOfBlocks;
 
-	/**
-	 * Constructs a chunk reference
-	 * for the specified fileName and chunk number.
-	 * @param fileName the name of the suadb.file
-	 * @param chunkNum the chunk number
-	 */
+	public Chunk(){}
+
+	public Chunk(Block block){//For wrapping a block.
+		this.chunkNum = block.number();
+		this.fileName = block.fileName();
+		this.numOfBlocks = 1;//one-block-sized chunk.
+	}
+
 	public Chunk(String fileName, int chunkNum) {
+		this.fileName = fileName;
+		this.chunkNum = chunkNum;
+	}
+	public Chunk(String fileName, int chunkNum,int numOfBlocks) {
 		this.fileName = fileName;
 		this.chunkNum = chunkNum;
 	}
 
 	public Chunk(String fileName, int chunkNum, int numOfCells,int numOfBlocks){
 		this(fileName, chunkNum);
-		this.numOfCells = numOfCells;
 		this.numOfCells = numOfCells;
 		this.numOfBlocks = numOfBlocks;
 	}
@@ -68,6 +75,21 @@ public class Chunk
 		return numOfBlocks;
 	}
 
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public void setChunkNum(int chunkNum) {
+		this.chunkNum = chunkNum;
+	}
+
+	public void setNumOfCells(int numOfCells) {
+		this.numOfCells = numOfCells;
+	}
+
+	public void setNumOfBlocks(int numOfBlocks) {
+		this.numOfBlocks = numOfBlocks;
+	}
 
 	public boolean equals(Object obj) {
 		Chunk chunk = (Chunk) obj;
@@ -81,4 +103,6 @@ public class Chunk
 	public int hashCode() {
 		return toString().hashCode();
 	}
+
+
 }

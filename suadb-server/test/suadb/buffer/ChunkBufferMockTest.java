@@ -51,7 +51,7 @@ public class ChunkBufferMockTest extends SuaDBTestBase
 	{
 		int chunkSize = 5;
 		int chunkNum = 0;
-		Chunk chunk = new Chunk(arrayFileName, chunkNum, chunkSize);
+		Chunk chunk = new Chunk(arrayFileName, chunkNum);
 		List<Buffer> buffers = makeBuffer(chunkSize);
 		
 		chunkBuffer.assignToChunk(chunk, buffers);

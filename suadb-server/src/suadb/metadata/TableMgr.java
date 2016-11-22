@@ -75,7 +75,7 @@ public class TableMgr {
 			fcatfile.setInt	("offset", ti.offset(fldname));
 		}
 		fcatfile.close();
-}
+	}
 
 	/**
 	 * Retrieves the suadb.metadata for the specified table
