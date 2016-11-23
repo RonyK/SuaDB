@@ -29,30 +29,26 @@ public class Chunk
 	/**
 	*   The number of required Blocks to make a chunk.
 	*   numOfBlocks = Math.ceil(numOfCells/Math.floor(BLOCK_SIZE/(4Byte(empty/inuse flag) + (4Byte(INT) or 1BYTE*VARCHAR LENGTH))))
+	 *   It must be less than BLOCK_SIZE.
 	*/
 	private int numOfBlocks;
 
 	public Chunk(){}
-
-	public Chunk(Block block){//For wrapping a block.
-		this.chunkNum = block.number();
-		this.fileName = block.fileName();
-		this.numOfBlocks = 1;//one-block-sized chunk.
-	}
 
 	public Chunk(String fileName, int chunkNum) {
 		this.fileName = fileName;
 		this.chunkNum = chunkNum;
 	}
 	public Chunk(String fileName, int chunkNum,int numOfBlocks) {
-		this.fileName = fileName;
-		this.chunkNum = chunkNum;
-	}
-
-	public Chunk(String fileName, int chunkNum, int numOfCells,int numOfBlocks){
 		this(fileName, chunkNum);
-		this.numOfCells = numOfCells;
 		this.numOfBlocks = numOfBlocks;
+	}
+	public Chunk(String fileName, int chunkNum,int numOfBlocks, int numOfCells){
+		this(fileName, chunkNum,numOfBlocks);
+		this.numOfCells = numOfCells;
+	}
+	public Chunk(Block block){//For wrapping a block.
+		this(block.fileName(),block.number(),1);//one-block-sized chunk.
 	}
 
 	/**

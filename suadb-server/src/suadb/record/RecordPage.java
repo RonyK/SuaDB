@@ -157,8 +157,7 @@ public class RecordPage {
 		currentslot++;
 		while (isValidSlot()) {
 			int position = currentpos();
-			int flagg = tx.getInt(chunk, position);
-			if (flagg == flag)
+			if (tx.getInt(chunk, position) == flag)
 				return true;
 			currentslot++;
 		}

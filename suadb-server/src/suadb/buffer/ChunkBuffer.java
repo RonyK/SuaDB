@@ -109,7 +109,6 @@ public class ChunkBuffer
 		modifiedBy = txnum;
 		if (lsn >= 0)
 			logSequenceNumber = lsn;
-		System.out.println("몇번째 블락 ? "+blockSeq(offset)+" "+blockOffset(offset));
 		buffer(offset).setInt(blockOffset(offset), val, txnum, lsn);
 	}
 

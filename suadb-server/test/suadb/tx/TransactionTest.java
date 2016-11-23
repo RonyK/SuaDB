@@ -2,9 +2,159 @@ package suadb.tx;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by dh_st_000 on 2016-11-22.
- */
-public class TransactionTest {
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+import suadb.file.Chunk;
+import suadb.server.SuaDB;
+import suadb.server.SuaDBTestBase;
+/**
+ * Created by CDS on 2016-11-22.
+ */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class TransactionTest extends SuaDBTestBase{
+	@BeforeClass
+	public static void beforeClass(){
+		SuaDB.init(dbName);
+	}
+
+	@Test
+	public void test_basic_pin_setInt_getInt(){
+		Transaction tx = new Transaction();
+		Chunk chunk1 = new Chunk("chunk1",1,3);//A chunk that has 3 blocks.
+		Chunk chunk2 = new Chunk("chunk2",2,5);//A chunk that has 5 blocks.
+		tx.pin(chunk1);
+		tx.pin(chunk2);
+
+		tx.setInt(chunk1,0,4);
+		assertTrue( tx.getInt(chunk1,0) == 4 );
+
+		assertTrue( tx.getInt(chunk2,0) == 0 );
+		tx.commit();
+	}
+
+	@Test
+	public void test_basic_pin_setString_getString(){
+		Transaction tx = new Transaction();
+		Chunk chunk1 = new Chunk("chunk1",1,3);//A chunk that has 3 blocks.
+		Chunk chunk2 = new Chunk("chunk2",2,5);//A chunk that has 5 blocks.
+		tx.pin(chunk1);
+		tx.pin(chunk2);
+
+		tx.setString(chunk1,0,"SuaDB Test");
+		assertTrue( (tx.getString(chunk1,0)).equals("SuaDB Test") );
+
+		assertTrue( (tx.getString(chunk2,0)).equals("") );
+		tx.commit();
+	}
+
+	@Test
+	public void test_basic_pin_setInt_getInt_setString_getString(){
+		Transaction tx = new Transaction();
+		Chunk chunk1 = new Chunk("chunk1",1,3);//A chunk that has 3 blocks.
+		tx.pin(chunk1);
+
+		tx.setInt(chunk1,0,4);
+		tx.setString(chunk1,4,"SuaDB Test");
+		assertTrue( (tx.getInt(chunk1,0))==4 );
+		assertTrue( (tx.getString(chunk1,4)).equals("SuaDB Test") );
+
+		tx.commit();
+	}
+
+
+	@Test
+	public void test_concurrent_three_transactions(){
+		TestA t1 = new TestA();
+		new Thread(t1).start();
+		TestB t2 = new TestB();
+		new Thread(t2).start();
+		TestC t3 = new TestC();
+		new Thread(t3).start();
+
+		try {//wait until threads finish. (Don't start tearDown() immediately)
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@AfterClass
+	public static void tearDown(){
+		try{
+			SuaDB.fileMgr().flushAllFiles();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+
+
+	class TestA implements Runnable{
+		public void run(){
+			try{
+				Transaction tx = new Transaction();
+				Chunk chunk1 = new Chunk("junk1",1,3);//A chunk that has 3 blocks.
+				Chunk chunk2 = new Chunk("junk2",2,5);//A chunk that has 5 blocks.
+				tx.pin(chunk1);
+				tx.pin(chunk2);
+				System.out.println("Tx A: read 1 start");
+				tx.getInt(chunk1,0);
+				System.out.println("Tx A: read 1 end");
+				Thread.sleep(1000);
+				System.out.println("Tx A: read 2 start");
+				tx.getInt(chunk2,0);
+				System.out.println("Tx A: read 2 end");
+				tx.commit();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	class TestB implements Runnable{
+		public void run(){
+			try{
+				Transaction tx = new Transaction();
+				Chunk chunk1 = new Chunk("junk1",1,3);//A chunk that has 3 blocks.
+				Chunk chunk2 = new Chunk("junk2",2,5);//A chunk that has 5 blocks.
+				tx.pin(chunk1);
+				tx.pin(chunk2);
+				System.out.println("Tx B: write 2 start");
+				tx.setInt(chunk2,0,0);
+				System.out.println("Tx B: write 2 end");
+				Thread.sleep(1000);
+				System.out.println("Tx B: read 1 start");
+				tx.getInt(chunk1,0);
+				System.out.println("Tx B: read 1 end");
+				tx.commit();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	class TestC implements Runnable{
+		public void run(){
+			try{
+				Transaction tx = new Transaction();
+				Chunk chunk1 = new Chunk("junk1",1,3);//A chunk that has 3 blocks.
+				Chunk chunk2 = new Chunk("junk2",2,5);//A chunk that has 5 blocks.
+				tx.pin(chunk1);
+				tx.pin(chunk2);
+				System.out.println("Tx C: write 1 start");
+				tx.setInt(chunk1,0,0);
+				System.out.println("Tx C: write 1 end");
+				Thread.sleep(1000);
+				System.out.println("Tx C: read 2 start");
+				tx.getInt(chunk2,0);
+				System.out.println("Tx C: read 2 end");
+				tx.commit();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }
