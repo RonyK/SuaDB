@@ -67,6 +67,11 @@ public class Page {
 		return INT_SIZE + (n * (int)bytesPerChar);
 	}
 
+	/**
+	 * The size of an double in bytes
+	 */
+	public static final int DOUBLE_SIZE = Double.SIZE / Byte.SIZE;
+
 	protected ByteBuffer contents = ByteBuffer.allocateDirect(BLOCK_SIZE);
 	protected FileMgr fileMgr = SuaDB.fileMgr();
 
@@ -156,5 +161,27 @@ public class Page {
 		byte[] byteval = val.getBytes();
 		contents.putInt(byteval.length);
 		contents.put(byteval);
+	}
+
+	/**
+	 * Returns the double value at a specified offset of the page.
+	 * If an double was not stored at that location,
+	 * the behavior of the method is unpredictable.
+	 * @param offset the byte offset within the page
+	 * @return the double value at that offset
+	 */
+	public synchronized double getDouble(int offset) {
+		contents.position(offset);
+		return contents.getDouble();
+	}
+
+	/**
+	 * Writes an double to the specified offset on the page.
+	 * @param offset the byte offset within the page
+	 * @param val the double to be written to the page
+	 */
+	public synchronized void setDouble(int offset, double val) {
+		contents.position(offset);
+		contents.putDouble(val);
 	}
 }

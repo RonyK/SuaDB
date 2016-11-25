@@ -88,6 +88,15 @@ public class RecoveryMgr {
 			return new SetStringRecord(txnum, blk, offset, oldval).writeToLog();
 	}
 
+	public int setDouble(ChunkBuffer buff, int offset, double newval) {
+		double oldval = buff.getDouble(offset);
+		Chunk chunk = buff.chunk();
+		if (isTempBlock(chunk))
+			return -1;
+		else
+			return new SetDoubleRecord(txnum, chunk, offset, oldval).writeToLog();
+	}
+
 	/**
 	 * Rolls back the transaction.
 	 * The method iterates through the log records,

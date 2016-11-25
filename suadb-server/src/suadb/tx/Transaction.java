@@ -129,6 +129,21 @@ public class Transaction {
 	}
 
 	/**
+	 * Returns the double value stored at the
+	 * specified offset of the specified chunk.
+	 * The method first obtains an SLock on the chunk,
+	 * then it calls the suadb.buffer to retrieve the value.
+	 * @param chunk a reference to a disk chunk
+	 * @param offset the byte offset within the chunk
+	 * @return the double stored at that offset
+	 */
+	public double getDouble(Chunk chunk, int offset) {
+		concurMgr.sLock(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
+		return buff.getDouble(offset);
+	}
+
+	/**
 	 * Stores an integer at the specified offset
 	 * of the specified chunk.
 	 * The method first obtains an XLock on the chunk.
@@ -166,6 +181,26 @@ public class Transaction {
 		ChunkBuffer buff = myChunks.getBuffer(chunk);
 		int lsn = recoveryMgr.setString(buff, offset, val);
 		buff.setString(offset, val, txnum, lsn);
+	}
+
+	/**
+	 * Stores an double at the specified offset
+	 * of the specified chunk.
+	 * The method first obtains an XLock on the chunk.
+	 * It then reads the current value at that offset,
+	 * puts it into an update log suadb.record, and
+	 * writes that suadb.record to the log.
+	 * Finally, it calls the suadb.buffer to store the value,
+	 * passing in the LSN of the log suadb.record and the transaction's id.
+	 * @param chunk a reference to the disk chunk
+	 * @param offset a byte offset within that chunk
+	 * @param val the value to be stored
+	 */
+	public void setDouble(Chunk chunk, int offset, double val) {
+		concurMgr.xLock(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
+		int lsn = recoveryMgr.setDouble(buff, offset, val);
+		buff.setDouble(offset, val, txnum, lsn);
 	}
 
 	/**

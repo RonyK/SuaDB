@@ -29,6 +29,10 @@ public class Buffer
 		return contents.getString(offset);
 	}
 
+	public double getDouble(int offset){
+		return contents.getDouble(offset);
+	}
+
 	public void setInt(int offset, int val, int txnum, int lsn) {
 		modifiedBy = txnum;
 		if (lsn >= 0)
@@ -41,6 +45,13 @@ public class Buffer
 		if (lsn >= 0)
 			logSequenceNumber = lsn;
 		contents.setString(offset, val);
+	}
+
+	public void setDouble(int offset, double val, int txnum, int lsn) {
+		modifiedBy = txnum;
+		if (lsn >= 0)
+			logSequenceNumber = lsn;
+		contents.setDouble(offset, val);
 	}
 
 	void flush() {

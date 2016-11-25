@@ -31,8 +31,11 @@ public class TransactionTest extends SuaDBTestBase{
 
 		tx.setInt(chunk1,0,4);
 		assertTrue( tx.getInt(chunk1,0) == 4 );
-
 		assertTrue( tx.getInt(chunk2,0) == 0 );
+
+		tx.setInt(chunk1,500,4);//Assign an INT value above one block size.
+		assertTrue( tx.getInt(chunk1,500) == 4 );
+
 		tx.commit();
 	}
 
@@ -46,8 +49,27 @@ public class TransactionTest extends SuaDBTestBase{
 
 		tx.setString(chunk1,0,"SuaDB Test");
 		assertTrue( (tx.getString(chunk1,0)).equals("SuaDB Test") );
-
 		assertTrue( (tx.getString(chunk2,0)).equals("") );
+
+		tx.setString(chunk1,500,"SuaDB Test2");//Assign a STRING value above one block size.
+		assertTrue( (tx.getString(chunk1,500)).equals("SuaDB Test2") );
+
+		tx.commit();
+	}
+
+	@Test
+	public void test_basic_pin_setDouble_getDouble(){
+		Transaction tx = new Transaction();
+		Chunk chunk1 = new Chunk("chunk1",1,3);//A chunk that has 3 blocks.
+		Chunk chunk2 = new Chunk("chunk2",2,5);//A chunk that has 5 blocks.
+		tx.pin(chunk1);
+
+		tx.setDouble(chunk1,0,3.14);
+		assertTrue( tx.getDouble(chunk1,0) == 3.14 );
+
+		tx.setDouble(chunk1,500,4.3245);//Assign an DOUBLE value above one block size.
+		assertTrue( tx.getDouble(chunk1,500) == 4.3245 );
+
 		tx.commit();
 	}
 

@@ -92,6 +92,10 @@ public class ChunkBuffer
 		return buffer(offsetInChunk).getString(blockOffset(offsetInChunk));
 	}
 
+	public double getDouble(int offsetInChunk) {
+		return buffer(offsetInChunk).getDouble(blockOffset(offsetInChunk));
+	}
+
 	/**
 	 * Writes an integer to the specified offset of the chunk.
 	 * This method assumes that the transaction has already
@@ -130,6 +134,13 @@ public class ChunkBuffer
 		if (lsn >= 0)
 			logSequenceNumber = lsn;
 		buffer(offset).setString(blockOffset(offset), val, txnum, lsn);
+	}
+
+	public void setDouble(int offset, double val, int txnum, int lsn) {
+		modifiedBy = txnum;
+		if (lsn >= 0)
+			logSequenceNumber = lsn;
+		buffer(offset).setDouble(blockOffset(offset), val, txnum, lsn);
 	}
 
 	/**
