@@ -25,17 +25,7 @@ public class CellFile {
      * @param ai the table suadb.metadata
      * @param tx the transaction
      */
-    /*
-    public CellFile(ArrayInfo ai, Transaction tx) {
-        this.ai = ai;
-        this.tx = tx;
-        filename = ai.fileName();
-        if (tx.size(filename) == 0)
-            appendBlock();
-        moveTo(0);
-    }
 
-*/
     /**
      * Constructs an object to manage a suadb.file of records.
      * If the suadb.file does not exist, it is created.
@@ -137,24 +127,7 @@ public class CellFile {
         cp.delete();
     }
 
-    /**
-     * Inserts a new, blank suadb.record somewhere in the suadb.file
-     * beginning at the current suadb.record.
-     * If the new suadb.record does not fit into an existing chunk,
-     * then a new chunk is appended to the suadb.file.
-     */
 
-    // TODO :: Is this function needed?? Will check -IHSUh
-    // TODO :: this is for appending records in SimpleDB, Have to find another way -IHSUh
-    /*
-    public void insert() {
-        while (!cp.insert()) {
-            if (atLastBlock())
-                appendBlock(0);     // TODO :: filled with arbitrary argument
-            moveTo(currentchunknum + 1);
-        }
-    }
-*/
     /**
      * Positions the current suadb.record as indicated by the
      * specified RID.
@@ -182,7 +155,7 @@ public class CellFile {
         this.filename = assignName(this.ai,this.attributename,currentchunknum);
         if (tx.size(filename) == 0)
             createChunk(c);
-        Chunk blk = new Chunk(filename, currentchunknum);
+        Chunk blk = new Chunk(filename, currentchunknum,numberofblocks);
         cp = new CellPage(blk, ai, tx, ai.recordLength(attributename));
     }
 

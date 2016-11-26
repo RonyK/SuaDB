@@ -1,10 +1,6 @@
 package suadb.buffer;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import suadb.file.Chunk;
@@ -126,11 +122,12 @@ public class ChunkBufferMgr
 
 		List<Buffer> result = new Vector<Buffer>();
 
+		// fixed erroneous code -  java.util.ConcurrentModificationException -IHSUh
 		if(freeBuffers.size() < requiredNumOfBlocks){
-
-			for (ChunkBuffer cBuff : cBuffers){
+			for(Iterator<ChunkBuffer> iterator = cBuffers.iterator(); iterator.hasNext();){
+				ChunkBuffer cBuff = iterator.next();
 				if (!cBuff.isPinned()){
-					cBuffers.remove(cBuff);
+					iterator.remove();
 					retriveBuffer(cBuff);
 				}
 

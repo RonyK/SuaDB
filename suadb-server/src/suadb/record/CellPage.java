@@ -92,7 +92,9 @@ public class CellPage {
      * @param val the integer value stored in that field
      */
     public void setInt(int val) {
-        int position = currentpos() + INT_SIZE;
+        int position = currentpos();
+        tx.setInt(chunk, position, INUSE);
+        position += INT_SIZE;
         tx.setInt(chunk, position, val);
     }
 
@@ -102,7 +104,9 @@ public class CellPage {
      * @param val the string value stored in that field
      */
     public void setString( String val) {
-        int position = currentpos() + INT_SIZE;
+        int position = currentpos();
+        tx.setInt(chunk, position, INUSE);
+        position += INT_SIZE;
         tx.setString(chunk, position, val);
     }
 

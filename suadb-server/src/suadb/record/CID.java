@@ -8,16 +8,16 @@ import java.util.Map;
  */
 public class CID {
     private List<Integer> dimensionvalues;
-    private Map<String, Schema.DimensionInfo> dimensioninfo;
+    private ArrayInfo arrayinfo;
 
     /**
      * Creates a CID for the suadb.record having the
      * specified dimension values in the array
      * @param dimensionvalues the dimension values
      */
-    public CID(List<Integer> dimensionvalues, Map<String, Schema.DimensionInfo> dimensionInfo) {
+    public CID(List<Integer> dimensionvalues, ArrayInfo arrayinfo) {
         this.dimensionvalues = dimensionvalues;
-        this.dimensioninfo = dimensionInfo;
+        this.arrayinfo = arrayinfo;
     }
 
 
@@ -25,8 +25,8 @@ public class CID {
         return dimensionvalues;
     }
 
-    public Map<String, Schema.DimensionInfo> dimensionInfo() {
-        return dimensioninfo;
+    public ArrayInfo arrayInfo() {
+        return arrayinfo;
     }
 
     public boolean equals(Object obj) {

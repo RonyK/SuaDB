@@ -49,7 +49,7 @@ public class ArrayFile {
         int index = 0;
         for(String dimname: dimensions){
             // total number of chunks is multiplication of chunks of each dimension
-            numberofchunksperdimension[index] = (int)Math.ceil(((float)(ai.schema().end(dimname) - ai.schema().start(dimname)+1))/dimensions.size());
+            numberofchunksperdimension[index] = (int)Math.ceil(((float)(ai.schema().end(dimname) - ai.schema().start(dimname)+1))/ai.schema().chunkSize(dimname));
             index++;
         }
         for(int i = 0 ; i < numberofdimensions ; i++){
@@ -68,7 +68,6 @@ public class ArrayFile {
     /*
     calculates the number of blocks in a chunk for a given attributename
      */
-    // TODO ::needs test!! - IHSUh
     private int getNumberOfBlocksPerChunk(String attributename){
         int numberofcellsinablock = 1;
         int numberofcellsinachunk = 1;
@@ -83,20 +82,18 @@ public class ArrayFile {
         return (int) Math.ceil( (double)numberofcellsinachunk / numberofcellsinablock);
 
     }
-    // TODO ::needs test!! - IHSUh
     private int getChunknumber(CID cid){
         int chunkindex[] = new int [numberofdimensions];
         int chunkOffset = 0;
         for(int i = 0 ; i <numberofdimensions ; i++){
-            chunkindex[i] = ( (cid.dimensionValues().get(i) - cid.dimensionInfo().get(dimensions.get(i)).start) / numberofchunksperdimension[i]);
+            chunkindex[i] = ( (cid.dimensionValues().get(i) - cid.arrayInfo().schema().start(dimensions.get(i)) ) / ai.schema().chunkSize(dimensions.get(i)));
         }
-
-        for(int i = 0 ; i < numberofdimensions ; i++){
+        for(int i = 0  ; i < numberofdimensions ; i++){
             int numberchunksinfollowingdimension = 1;
-            for (int j = i + 1 ; j < numberofdimensions ; j++){
+            for (int j = i + 1; j < numberofdimensions ; j++){
                 numberchunksinfollowingdimension *= numberofchunksperdimension[j];
             }
-            chunkOffset += numberchunksinfollowingdimension * (chunkindex[i]+1);
+            chunkOffset += numberchunksinfollowingdimension * (chunkindex[i]);
         }
         return chunkOffset;
     }
@@ -106,28 +103,24 @@ public class ArrayFile {
     // watch out for incrementing by 1 of the given index;
     // TODO ::needs test!! - IHSUh
     private int calculateCellOffsetInChunk(CID cid){
-   //     int dimensionstart[] = new int [numberofdimensions];
-   //     int dimensionend[] = new int [numberofdimensions];
+
         int dimensionvalueinchunk[] = new int [numberofdimensions];
-
         int offset = 0;
-
         for(int i = 0 ; i < numberofdimensions ; i++){
-     //       dimensionstart[i] = cid.dimensionInfo().get(dimensions.get(i)).start;
-     //       dimensionend[i] = cid.dimensionInfo().get(dimensions.get(i)).end;
-            dimensionvalueinchunk[i] = cid.dimensionValues().get(i) - cid.dimensionInfo().get(dimensions.get(i)).start;
-            dimensionvalueinchunk[i] %= cid.dimensionInfo().get(dimensions.get(i)).chunkSize;
+            dimensionvalueinchunk[i] = cid.dimensionValues().get(i) - cid.arrayInfo().schema().start(dimensions.get(i));
+            dimensionvalueinchunk[i] %= cid.arrayInfo().schema().chunkSize(dimensions.get(i));
          }
-        for(int i = 0 ; i < numberofdimensions ; i++){
+
+
+        for(int i = 0  ; i < numberofdimensions ; i++){
             int numbercellsinfollowingdimension = 1;
-            for (int j = i + 1 ; j < numberofdimensions ; j++){
-                numbercellsinfollowingdimension *= cid.dimensionInfo().get(dimensions.get(i)).chunkSize;
+            for (int j = i+1; j < numberofdimensions ; j++){
+                numbercellsinfollowingdimension *= cid.arrayInfo().schema().chunkSize(dimensions.get(j));
             }
             offset += numbercellsinfollowingdimension * (dimensionvalueinchunk[i]);
         }
         return offset;
     }
-
 
     /**
      * Closes the suadb.record suadb.file.
@@ -145,7 +138,9 @@ public class ArrayFile {
      */
     public void beforeFirst() {
         for( int j = 0 ; j < numberofattributes ; j++){
-            currentCFiles[j].moveToId(0);       // temporary argument -IHSUH, CID not fixed, moveTO() is private.
+            currentCFiles[j].beforeFirst();
+   //         currentCFiles[j].moveTo(0);
+    //        currentCFiles[j].moveToId(0);
         }
     }
 
@@ -153,8 +148,34 @@ public class ArrayFile {
         int index = attributes.indexOf(attributename);
         if( index < 0)
             return;
-        currentCFiles[index].moveToId(0);
+        currentCFiles[index].beforeFirst();
+   //     currentCFiles[index].moveTo(0);
+   //     currentCFiles[index].moveToId(0);
     }
+
+
+    /**
+     * Moves to the next suadb.record. Returns false if there
+     * is no next suadb.record.
+     * @return false if there is no next suadb.record.
+     */
+
+    public void next() {
+
+        for( int j = 0 ; j < numberofattributes ; j++){
+            currentCFiles[j].next();
+        }
+        return ;
+    }
+
+
+    public boolean next(String attributename) {
+        int index = attributes.indexOf(attributename);
+        if( index < 0)
+            return false;
+        return currentCFiles[index].next();
+    }
+
 
     /**
      * Returns the value of the specified field
@@ -246,14 +267,14 @@ public class ArrayFile {
      * @return a suadb.record identifier
      */
 
-
-    // TODO :: currently not available, need to check whether it is needed or not
+    // TODO :: this method should be implemented - IHSUh
     /*
     public CID currentCid() {
         int id = cp.currentId();
         return new CID(currentchunknum, id);
     }
     */
+
 
 
 

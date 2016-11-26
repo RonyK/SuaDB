@@ -2,6 +2,7 @@ package suadb.record;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static java.sql.Types.INTEGER;
@@ -19,7 +20,7 @@ public class Schema {
 	//key : attribute name, value : attribute type & length(if String type) - CDS
 	private Map<String, attributeInfo> attributeInfo = new HashMap<String, attributeInfo>();
 	//key : dimensionName, value : DimensionInfo(start,end,chunkSize) - CDS
-	private Map<String, DimensionInfo> dimensionInfo = new HashMap<String, DimensionInfo>();
+	private Map<String, DimensionInfo> dimensionInfo = new LinkedHashMap<String, DimensionInfo>();
 
 	/**
 	 * Creates an empty schema.
