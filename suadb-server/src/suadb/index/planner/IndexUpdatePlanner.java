@@ -1,6 +1,5 @@
 package suadb.index.planner;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import suadb.record.RID;
@@ -27,11 +26,10 @@ public class IndexUpdatePlanner implements UpdatePlanner {
 		// first, insert the suadb.record
 		UpdateScan s = (UpdateScan) p.open();
 		s.insert();
-		RID rid = s.getRid();
+//		RID rid = s.getRid();
 
 		// then modify each field, inserting an suadb.index suadb.record if appropriate
 		Map<String,IndexInfo> indexes = SuaDB.mdMgr().getIndexInfo(tblname, tx);
-
 
 		s.close();
 		return 1;
@@ -47,13 +45,15 @@ public class IndexUpdatePlanner implements UpdatePlanner {
 		int count = 0;
 		while(s.next()) {
 			// first, delete the suadb.record's RID from every suadb.index
-			RID rid = s.getRid();
-			for (String fldname : indexes.keySet()) {
-				Constant val = s.getVal(fldname);
-				Index idx = indexes.get(fldname).open();
-				idx.delete(val, rid);
-				idx.close();
-			}
+			// TODO :: =====
+//			RID rid = s.getRid();
+//			for (String fldname : indexes.keySet()) {
+//				Constant val = s.getVal(fldname);
+//				Index idx = indexes.get(fldname).open();
+//				idx.delete(val, rid);
+//				idx.close();
+//			}
+			// TODO :: =====
 			// then delete the suadb.record
 			s.delete();
 			count++;
@@ -81,9 +81,11 @@ public class IndexUpdatePlanner implements UpdatePlanner {
 
 			// then update the appropriate suadb.index, if it exists
 			if (idx != null) {
-				RID rid = s.getRid();
-				idx.delete(oldval, rid);
-				idx.insert(newval, rid);
+//              TODO :: =====
+//				RID rid = s.getRid();
+//				idx.delete(oldval, rid);
+//				idx.insert(newval, rid);
+//              TODO :: =====
 			}
 			count++;
 		}
@@ -92,8 +94,8 @@ public class IndexUpdatePlanner implements UpdatePlanner {
 		return count;
 	}
 
-	public int executeCreateTable(CreateTableData data, Transaction tx) {
-		SuaDB.mdMgr().createTable(data.tableName(), data.newSchema(), tx);
+	public int executeCreateTable(CreateArrayData data, Transaction tx) {
+		SuaDB.mdMgr().createTable(data.arrayName(), data.newSchema(), tx);
 		return 0;
 	}
 
@@ -104,6 +106,13 @@ public class IndexUpdatePlanner implements UpdatePlanner {
 
 	public int executeCreateIndex(CreateIndexData data, Transaction tx) {
 		SuaDB.mdMgr().createIndex(data.indexName(), data.tableName(), data.fieldName(), tx);
+		return 0;
+	}
+	
+	@Override
+	public int executeCreateArray(CreateArrayData data, Transaction tx)
+	{
+		SuaDB.mdMgr().createArray(data.arrayName(), data.newSchema(), tx);
 		return 0;
 	}
 }

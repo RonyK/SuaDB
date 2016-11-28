@@ -82,13 +82,13 @@ public class FilterScan implements Scan
 		us.insert();
 	}
 	
-	public RID getRid() {
-		UpdateScan us = (UpdateScan) s;
-		return us.getRid();
-	}
-	
-	public void moveToRid(RID rid) {
-		UpdateScan us = (UpdateScan) s;
-		us.moveToRid(rid);
-	}
+//	public RID getRid() {
+//		UpdateScan us = (UpdateScan) s;
+//		return us.getRid();
+//	}
+//
+//	public void moveToRid(RID rid) {
+//		UpdateScan us = (UpdateScan) s;
+//		us.moveToRid(rid);
+//	}
 }

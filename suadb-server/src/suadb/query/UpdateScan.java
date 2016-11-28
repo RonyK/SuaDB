@@ -42,12 +42,12 @@ public interface UpdateScan extends Scan {
 	 * Returns the RID of the current suadb.record.
 	 * @return the RID of the current suadb.record
 	 */
-	public RID  getRid();
+//	public RID  getRid();
 
 	/**
 	 * Positions the scan so that the current suadb.record has
 	 * the specified RID.
 	 * @param rid the RID of the desired suadb.record
 	 */
-	public void moveToRid(RID rid);
+//	public void moveToRid(RID rid);
 }

@@ -1,6 +1,5 @@
 package suadb.planner;
 
-import java.util.Iterator;
 import suadb.server.SuaDB;
 import suadb.tx.Transaction;
 import suadb.parse.*;
@@ -48,8 +47,14 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 		return 1;
 	}
 
-	public int executeCreateTable(CreateTableData data, Transaction tx) {
-		SuaDB.mdMgr().createTable(data.tableName(), data.newSchema(), tx);
+	public int executeCreateTable(CreateArrayData data, Transaction tx) {
+		SuaDB.mdMgr().createTable(data.arrayName(), data.newSchema(), tx);
+		return 0;
+	}
+	
+	public int executeCreateArray(CreateArrayData data, Transaction tx)
+	{
+		SuaDB.mdMgr().createArray(data.arrayName(), data.newSchema(), tx);
 		return 0;
 	}
 

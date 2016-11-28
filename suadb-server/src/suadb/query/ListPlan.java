@@ -23,10 +23,10 @@ public class ListPlan implements Plan
 		if(targetName == null || targetName.length() == 0 || targetName == "arrays")
 		{
 			// Default : list(arrays)
-			p = new TablePlan(TableMgr.TABLE_CATALOG_TABLE, tx);
+			p = new TablePlan(TableMgr.TABLE_TABLE_CATALOG, tx);
 		}else if(targetName == "filed")
 		{
-			p = new TablePlan(TableMgr.FILED_CATALOG_TABLE, tx);
+			p = new TablePlan(TableMgr.TABLE_FILED_CATALOG, tx);
 		}else
 		{
 			throw new UnsupportedOperationException(targetName);

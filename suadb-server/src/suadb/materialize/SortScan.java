@@ -132,9 +132,10 @@ public class SortScan implements Scan {
 	 * so that it can be restored at a later time.
 	 */
 	public void savePosition() {
-		RID rid1 = s1.getRid();
-		RID rid2 = (s2 == null) ? null : s2.getRid();
-		savedposition = Arrays.asList(rid1,rid2);
+		// TODO - RonyK
+//		RID rid1 = s1.getRid();
+//		RID rid2 = (s2 == null) ? null : s2.getRid();
+//		savedposition = Arrays.asList(rid1,rid2);
 	}
 
 	/**
@@ -143,8 +144,9 @@ public class SortScan implements Scan {
 	public void restorePosition() {
 		RID rid1 = savedposition.get(0);
 		RID rid2 = savedposition.get(1);
-		s1.moveToRid(rid1);
-		if (rid2 != null)
-			s2.moveToRid(rid2);
+		// TODO - RonyK
+//		s1.moveToRid(rid1);
+//		if (rid2 != null)
+//			s2.moveToRid(rid2);
 	}
 }

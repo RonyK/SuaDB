@@ -44,7 +44,9 @@ public interface UpdatePlanner {
 	 * @param tx the calling transaction
 	 * @return the number of affected records
 	 */
-	public int executeCreateTable(CreateTableData data, Transaction tx);
+	public int executeCreateTable(CreateArrayData data, Transaction tx);
+	
+	public int executeCreateArray(CreateArrayData data, Transaction tx);
 
 	/**
 	 * Executes the specified create view statement, and

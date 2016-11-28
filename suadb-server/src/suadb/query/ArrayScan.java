@@ -1,5 +1,7 @@
 package suadb.query;
 
+import suadb.record.ArrayFile;
+import suadb.record.ArrayInfo;
 import suadb.record.RID;
 import suadb.record.RecordFile;
 import suadb.record.Schema;
@@ -13,13 +15,13 @@ import static java.sql.Types.INTEGER;
  */
 public class ArrayScan implements UpdateScan
 {
-	private RecordFile rf;
+	private ArrayFile rf;
 	private Schema sch;
 	
-	public ArrayScan(TableInfo ti, Transaction tx)
+	public ArrayScan(ArrayInfo ai, Transaction tx)
 	{
-		rf  = new RecordFile(ti, tx);
-		sch = ti.schema();
+		rf  = new ArrayFile(ai, tx);
+		sch = ai.schema();
 	}
 	
 	// Scan methods
@@ -89,16 +91,17 @@ public class ArrayScan implements UpdateScan
 	public void delete() {
 		rf.delete();
 	}
-	
+
+	// TODO :: Insert() - RonyK
 	public void insert() {
-		rf.insert();
+//		rf.insert();
 	}
 	
-	public RID getRid() {
-		return rf.currentRid();
-	}
-	
-	public void moveToRid(RID rid) {
-		rf.moveToRid(rid);
-	}
+//	public RID getRid() {
+//		return rf.currentRid();
+//	}
+//
+//	public void moveToRid(RID rid) {
+//		rf.moveToRid(rid);
+//	}
 }

@@ -204,7 +204,7 @@ public class Parser
 	}
 
 // Method for parsing create table commands
-	public CreateTableData createArray() {
+	public CreateArrayData createArray() {
 		Schema schema = new Schema();
 		lex.eatKeyword("array");
 		String arrayname = lex.eatId();
@@ -212,7 +212,7 @@ public class Parser
 		schema = schemaDefs();
 		lex.eatDelim(']');
 		
-		return new CreateTableData(arrayname, schema);
+		return new CreateArrayData(arrayname, schema);
 	}
 
 	private Schema schemaDefs() {

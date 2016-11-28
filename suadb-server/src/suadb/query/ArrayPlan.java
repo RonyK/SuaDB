@@ -1,6 +1,7 @@
 package suadb.query;
 
 import suadb.metadata.StatInfo;
+import suadb.record.ArrayInfo;
 import suadb.record.Schema;
 import suadb.record.TableInfo;
 import suadb.server.SuaDB;
@@ -12,14 +13,15 @@ import suadb.tx.Transaction;
 public class ArrayPlan implements Plan
 {
 	private Transaction tx;
-	private TableInfo ti;
+	private ArrayInfo ti;
 	private StatInfo si;
 	
 	public ArrayPlan(String arrayName, Transaction tx)
 	{
 		this.tx = tx;
-		ti = SuaDB.mdMgr().getTableInfo(arrayName, tx);
-		si = SuaDB.mdMgr().getStatInfo(arrayName, ti, tx);
+		ti = SuaDB.mdMgr().getArrayInfo(arrayName, tx);
+		// TODO :: Get StatInfo
+//		si = SuaDB.mdMgr().getStatInfo(arrayName, ti, tx);
 	}
 	
 	/**
@@ -27,7 +29,7 @@ public class ArrayPlan implements Plan
 	 * @see suadb.query.Plan#open()
 	 */
 	public Scan open() {
-		return new TableScan(ti, tx);
+		return new ArrayScan(ti, tx);
 	}
 	
 	/**

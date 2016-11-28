@@ -25,6 +25,16 @@ public class MetadataMgr {
 	public TableInfo getTableInfo(String tblname, Transaction tx) {
 		return tblmgr.getTableInfo(tblname, tx);
 	}
+	
+	public void createArray(String arrayName, Schema schema, Transaction tx)
+	{
+		tblmgr.createArray(arrayName, schema, tx);
+	}
+	
+	public ArrayInfo getArrayInfo(String arrayName, Transaction tx)
+	{
+		return tblmgr.getArrayInfo(arrayName, tx);
+	}
 
 	public void createView(String viewname, String viewdef, Transaction tx) {
 		viewmgr.createView(viewname, viewdef, tx);
@@ -45,4 +55,6 @@ public class MetadataMgr {
 	public StatInfo getStatInfo(String tblname, TableInfo ti, Transaction tx) {
 		return statmgr.getStatInfo(tblname, ti, tx);
 	}
+
+	// TODO :: Get Array State Info
 }
