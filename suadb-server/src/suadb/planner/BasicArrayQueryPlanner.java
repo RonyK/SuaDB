@@ -1,11 +1,15 @@
 package suadb.planner;
+import java.util.List;
+
 import suadb.parse.ArrayData;
 import suadb.parse.FilterData;
+import suadb.parse.ListData;
 import suadb.parse.ProjectData;
 import suadb.parse.QueryData;
 import suadb.parse.ScanData;
 import suadb.query.ArrayPlan;
 import suadb.query.FilterPlan;
+import suadb.query.ListPlan;
 import suadb.query.Plan;
 import suadb.query.ProjectPlan;
 import suadb.query.ScanPlan;
@@ -27,6 +31,8 @@ public class BasicArrayQueryPlanner implements QueryPlanner
 		    return createProjectPlan((ProjectData)data,tx);
 	    else if (data instanceof ArrayData)
 	    	return createArrayPlan((ArrayData)data, tx);
+	    else if (data instanceof ListData)
+	    	return createListPlan((ListData)data, tx);
 	    
 	    throw new UnsupportedOperationException();
     }
@@ -52,6 +58,12 @@ public class BasicArrayQueryPlanner implements QueryPlanner
 	public Plan createProjectPlan(ProjectData data, Transaction tx)
 	{
 		Plan p = new ProjectPlan(createPlan(data, tx), data.getAttributes());
+		return p;
+	}
+	
+	public Plan createListPlan(ListData data, Transaction tx)
+	{
+		Plan p = new ListPlan(data.target(), tx);
 		return p;
 	}
 }

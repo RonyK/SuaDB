@@ -9,7 +9,8 @@ import static java.sql.Types.DOUBLE;
  * The SuaDB parser.
  * @author Edward Sciore
  */
-public class Parser {
+public class Parser
+{
 	private Lexer lex;
 
 	public Parser(String s)
@@ -91,6 +92,9 @@ public class Parser {
 		}else if(lex.matchKeyword("filter"))
 		{
 			return filter();
+		}else if(lex.matchKeyword("list"))
+		{
+			return list();
 		}else
 		{
 			throw new UnsupportedOperationException();
@@ -123,7 +127,7 @@ public class Parser {
 		lex.eatDelim('(');
 		QueryData array = array();
 		lex.eatDelim(',');
-		Predicate pred = new Predicate();
+		Predicate pred;
 		pred = predicate();
 		lex.eatDelim(')');
 		
@@ -140,32 +144,41 @@ public class Parser {
 		return new ScanData(array);
 	}
 
-	public Object list()
+	public ListData list()
 	{
-		// TODO :: Make list operator
-		//lex.eatKeyword("list()");
-		throw new UnsupportedOperationException();
+		String target = null;
+		
+		lex.eatKeyword("list");
+		lex.eatDelim('(');
+		if(!lex.matchDelim(')'))
+		{
+			target = lex.eatId();
+		}
+		
+		lex.eatDelim(')');
+		
+		return new ListData(target);
 	}
 
 // Methods for parsing the various update commands
 
-	public Object updateCmd() {
+	public Object updateCmd()
+	{
 		if (lex.matchKeyword("input"))
 			return input();
 		else
 			return create();
 	}
 
-	private Object create() {
+	private Object create()
+	{
 		lex.eatKeyword("create");
 		lex.eatKeyword("array");
 		
 		return createArray();
 	}
-
-
+	
 // Methods for parsing input commands
-
 	public InsertData input() {
 		lex.eatKeyword("input");
 		lex.eatDelim('(');
@@ -189,7 +202,6 @@ public class Parser {
 	}
 
 // Method for parsing create table commands
-
 	public CreateTableData createArray() {
 		Schema schema = new Schema();
 		lex.eatKeyword("array");
