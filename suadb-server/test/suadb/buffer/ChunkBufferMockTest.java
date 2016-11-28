@@ -14,7 +14,7 @@ import suadb.file.Block;
 import suadb.file.Chunk;
 import suadb.file.FileMgr;
 import suadb.server.SuaDB;
-import suadb.server.SuaDBTestBase;
+import suadb.test.SuaDBTestBase;
 
 /**
  * Created by Rony on 2016-11-11.

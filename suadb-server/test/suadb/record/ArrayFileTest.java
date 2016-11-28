@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import suadb.file.Chunk;
 import suadb.server.SuaDB;
-import suadb.server.SuaDBTestBase;
+import suadb.test.SuaDBTestBase;
 import suadb.tx.Transaction;
 import suadb.tx.TransactionTest;
 

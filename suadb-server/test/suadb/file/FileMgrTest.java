@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import suadb.server.SuaDBTestBase;
+import suadb.test.SuaDBTestBase;
 
 import static suadb.file.Page.*;
 import static org.junit.Assert.*;

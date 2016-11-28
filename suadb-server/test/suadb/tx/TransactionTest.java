@@ -10,7 +10,7 @@ import org.junit.runners.MethodSorters;
 
 import suadb.file.Chunk;
 import suadb.server.SuaDB;
-import suadb.server.SuaDBTestBase;
+import suadb.test.SuaDBTestBase;
 /**
  * Created by CDS on 2016-11-22.
  */

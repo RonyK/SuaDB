@@ -23,7 +23,7 @@ import suadb.file.FileMgr;
 import suadb.log.LogMgr;
 import suadb.metadata.MetadataMgr;
 import suadb.server.SuaDB;
-import suadb.server.SuaDBTestBase;
+import suadb.test.SuaDBTestBase;
 import suadb.tx.Transaction;
 
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
