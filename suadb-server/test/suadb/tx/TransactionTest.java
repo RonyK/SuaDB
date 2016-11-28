@@ -22,7 +22,7 @@ public class TransactionTest extends SuaDBTestBase{
 	}
 
 	@Test
-	public void test_basic_pin_setInt_getInt(){
+	public void test0_basic_pin_setInt_getInt(){
 		Transaction tx = new Transaction();
 		Chunk chunk1 = new Chunk("chunk1",1,3);//A chunk that has 3 blocks.
 		Chunk chunk2 = new Chunk("chunk2",2,5);//A chunk that has 5 blocks.
@@ -40,7 +40,7 @@ public class TransactionTest extends SuaDBTestBase{
 	}
 
 	@Test
-	public void test_basic_pin_setString_getString(){
+	public void test1_basic_pin_setString_getString(){
 		Transaction tx = new Transaction();
 		Chunk chunk1 = new Chunk("chunk1",1,3);//A chunk that has 3 blocks.
 		Chunk chunk2 = new Chunk("chunk2",2,5);//A chunk that has 5 blocks.
@@ -58,10 +58,9 @@ public class TransactionTest extends SuaDBTestBase{
 	}
 
 	@Test
-	public void test_basic_pin_setDouble_getDouble(){
+	public void test2_basic_pin_setDouble_getDouble(){
 		Transaction tx = new Transaction();
 		Chunk chunk1 = new Chunk("chunk1",1,3);//A chunk that has 3 blocks.
-		Chunk chunk2 = new Chunk("chunk2",2,5);//A chunk that has 5 blocks.
 		tx.pin(chunk1);
 
 		tx.setDouble(chunk1,0,3.14);
@@ -74,22 +73,23 @@ public class TransactionTest extends SuaDBTestBase{
 	}
 
 	@Test
-	public void test_basic_pin_setInt_getInt_setString_getString(){
+	public void test3_basic_pin_setInt_getInt_setString_getString(){
 		Transaction tx = new Transaction();
 		Chunk chunk1 = new Chunk("chunk1",1,3);//A chunk that has 3 blocks.
 		tx.pin(chunk1);
 
 		tx.setInt(chunk1,0,4);
-		tx.setString(chunk1,4,"SuaDB Test");
+		tx.setString(chunk1,14 ,"SuaDB Test");
+
 		assertTrue( (tx.getInt(chunk1,0))==4 );
-		assertTrue( (tx.getString(chunk1,4)).equals("SuaDB Test") );
+		assertTrue( (tx.getString(chunk1,14)).equals("SuaDB Test") );
 
 		tx.commit();
 	}
 
 
 	@Test
-	public void test_concurrent_three_transactions(){
+	public void test4_concurrent_three_transactions(){
 		TestA t1 = new TestA();
 		new Thread(t1).start();
 		TestB t2 = new TestB();
