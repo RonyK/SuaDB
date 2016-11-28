@@ -9,16 +9,25 @@ import suadb.record.Schema;
  */
 public class Term {
 	private Expression lhs, rhs;
-
+	private int mathcode;
+	
 	/**
 	 * Creates a new term that compares two expressions
-	 * for equality.
 	 * @param lhs  the LHS expression
 	 * @param rhs  the RHS expression
+	 * @param mathcode comparison operator type
+	 *                 0 : =
+	 *                 1 : >
+	 *                 2 : <
 	 */
-	public Term(Expression lhs, Expression rhs) {
+	public static final int MATHCODE_EQUAL      = 0;
+	public static final int MATHCODE_GREATER    = 1;
+	public static final int MATHCODE_LESS       = 2;
+	
+	public Term(Expression lhs, Expression rhs, int mathcode) {
 		this.lhs = lhs;
 		this.rhs = rhs;
+		this.mathcode = mathcode;
 	}
 
 	/**
@@ -61,16 +70,73 @@ public class Term {
 	 * @return either the constant or null
 	 */
 	public Constant equatesWithConstant(String fldname) {
-		if (lhs.isFieldName() &&
-			 lhs.asFieldName().equals(fldname) &&
-			 rhs.isConstant())
-			return rhs.asConstant();
-		else if (rhs.isFieldName() &&
+		if (mathcode!=0)
+			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isConstant())
+				return rhs.asConstant();
+			else if (rhs.isFieldName() &&
 					rhs.asFieldName().equals(fldname) &&
 					lhs.isConstant())
-			return lhs.asConstant();
-		else
+				return lhs.asConstant();
+			else
+				return null;
+		}
+	}
+
+	/**
+	 * Determines if this term is of the form "F>c"
+	 * where F is the specified field and c is some constant.
+	 * If so, the method returns that constant.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the constant or null
+	 */
+	public Constant biggerThanConstant(String fldname) {
+		if (mathcode!=1)
 			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isConstant())
+				return rhs.asConstant();
+			else if (rhs.isFieldName() &&
+					rhs.asFieldName().equals(fldname) &&
+					lhs.isConstant())
+				return lhs.asConstant();
+			else
+				return null;
+		}
+	}
+
+	/**
+	 * Determines if this term is of the form "F<c"
+	 * where F is the specified field and c is some constant.
+	 * If so, the method returns that constant.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the constant or null
+	 */
+	public Constant smallerThanConstant(String fldname) {
+		if (mathcode!=2)
+			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isConstant())
+				return rhs.asConstant();
+			else if (rhs.isFieldName() &&
+					rhs.asFieldName().equals(fldname) &&
+					lhs.isConstant())
+				return lhs.asConstant();
+			else
+				return null;
+		}
 	}
 
 	/**
@@ -82,16 +148,73 @@ public class Term {
 	 * @return either the name of the other field, or null
 	 */
 	public String equatesWithField(String fldname) {
-		if (lhs.isFieldName() &&
-			 lhs.asFieldName().equals(fldname) &&
-			 rhs.isFieldName())
-			return rhs.asFieldName();
-		else if (rhs.isFieldName() &&
+		if (mathcode!=0)
+			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isFieldName())
+				return rhs.asFieldName();
+			else if (rhs.isFieldName() &&
 					rhs.asFieldName().equals(fldname) &&
 					lhs.isFieldName())
-			return lhs.asFieldName();
-		else
+				return lhs.asFieldName();
+			else
+				return null;
+		}
+	}
+
+	/**
+	 * Determines if this term is of the form "F1>F2"
+	 * where F1 is the specified field and F2 is another field.
+	 * If so, the method returns the name of that field.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the name of the other field, or null
+	 */
+	public String biggerThanField(String fldname) {
+		if (mathcode!=1)
 			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isFieldName())
+				return rhs.asFieldName();
+			else if (rhs.isFieldName() &&
+					rhs.asFieldName().equals(fldname) &&
+					lhs.isFieldName())
+				return lhs.asFieldName();
+			else
+				return null;
+		}
+	}
+
+	/**
+	 * Determines if this term is of the form "F1<F2"
+	 * where F1 is the specified field and F2 is another field.
+	 * If so, the method returns the name of that field.
+	 * If not, the method returns null.
+	 * @param fldname the name of the field
+	 * @return either the name of the other field, or null
+	 */
+	public String smallerThanField(String fldname) {
+		if (mathcode!=2)
+			return null;
+		else
+		{
+			if (lhs.isFieldName() &&
+					lhs.asFieldName().equals(fldname) &&
+					rhs.isFieldName())
+				return rhs.asFieldName();
+			else if (rhs.isFieldName() &&
+					rhs.asFieldName().equals(fldname) &&
+					lhs.isFieldName())
+				return lhs.asFieldName();
+			else
+				return null;
+		}
 	}
 
 	/**
@@ -114,10 +237,43 @@ public class Term {
 	public boolean isSatisfied(Scan s) {
 		Constant lhsval = lhs.evaluate(s);
 		Constant rhsval = rhs.evaluate(s);
-		return rhsval.equals(lhsval);
+		
+		switch (mathcode)
+		{
+			case MATHCODE_GREATER:
+			{
+				if(lhsval.compareTo(rhsval)>0)
+					return true;
+				else
+					return false;
+			}
+			case MATHCODE_LESS:
+			{
+				if(lhsval.compareTo(rhsval)<0)
+					return true;
+				else
+					return false;
+			}
+			case MATHCODE_EQUAL:
+			default:
+			{
+				return rhsval.equals(lhsval);
+			}
+		}
 	}
 
+	public int getMathcode() { return mathcode; }
+
 	public String toString() {
-		return lhs.toString() + "=" + rhs.toString();
+		switch (mathcode)
+		{
+			case MATHCODE_GREATER:
+				return lhs.toString() + ">" + rhs.toString();
+			case MATHCODE_LESS:
+				return lhs.toString() + "<" + rhs.toString();
+			case MATHCODE_EQUAL:
+			default:
+				return lhs.toString() + "=" + rhs.toString();
+		}
 	}
 }

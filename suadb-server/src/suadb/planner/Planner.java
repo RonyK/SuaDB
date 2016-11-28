@@ -18,16 +18,19 @@ public class Planner {
 	}
 
 	/**
-	 * Creates a plan for an SQL select statement, using the supplied suadb.planner.
-	 * @param qry the SQL suadb.query string
+	 * Creates a plan for an AQL filter statement, using the supplied suadb.planner.
+	 * @param qry the AQL suadb.query string
 	 * @param tx the transaction
 	 * @return the scan corresponding to the suadb.query plan
 	 */
+
+
 	public Plan createQueryPlan(String qry, Transaction tx) {
 		Parser parser = new Parser(qry);
 		QueryData data = parser.query();
-		return qplanner.createPlan(data, tx);
+		return qplanner.createPlan(data,tx);
 	}
+
 
 	/**
 	 * Executes an SQL insert, delete, modify, or

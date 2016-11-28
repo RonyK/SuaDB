@@ -4,11 +4,7 @@ import suadb.buffer.BufferMgr;
 import suadb.file.FileMgr;
 import suadb.log.LogMgr;
 import suadb.metadata.MetadataMgr;
-import suadb.planner.BasicQueryPlanner;
-import suadb.planner.BasicUpdatePlanner;
-import suadb.planner.Planner;
-import suadb.planner.QueryPlanner;
-import suadb.planner.UpdatePlanner;
+import suadb.planner.*;
 import suadb.tx.Transaction;
 
 /**
@@ -103,7 +99,7 @@ public class SuaDB
 	 * To change how the suadb.planner works, modify this method.
 	 * @return the system's suadb.planner for SQL commands
 	 */public static Planner planner() {
-		QueryPlanner  qplanner = new BasicQueryPlanner();
+		QueryPlanner  qplanner = new BasicArrayQueryPlanner();
 		UpdatePlanner uplanner = new BasicUpdatePlanner();
 		return new Planner(qplanner, uplanner);
 	}

@@ -41,6 +41,7 @@ public class Schema {
 	public void addField(String attributeName, int type, int length) {
 		attributeInfo.put(attributeName, new attributeInfo(type, length));
 	}
+	
 	/**
 	 * Adds a attribute to the schema having a specified
 	 * name, type, and length.
@@ -53,6 +54,7 @@ public class Schema {
 	public void addAttribute(String attributeName, int type, int length) {
 		attributeInfo.put(attributeName, new attributeInfo(type, length));
 	}
+	
 	/**
 	 * Adds a dimension in the schema.
 	 *
@@ -97,7 +99,6 @@ public class Schema {
 		int length = sch.length(fldname);
 		addAttribute(fldname, type, length);
 	}
-
 	
 	/**
 	 * Adds all of the fields in the specified schema
@@ -114,6 +115,7 @@ public class Schema {
 	 * each field in the schema.
 	 * @return the collection of the schema's attribute names
 	 */
+	
 	public Collection<String> fields() {
 		return attributeInfo.keySet();
 	}
@@ -123,6 +125,7 @@ public class Schema {
 	 * same as fields(), just for convenience - CDS
 	 * @return the collection of the schema's attribute names
 	 */
+	
 	public Collection<String> attributes() {
 		return attributeInfo.keySet();
 	}
@@ -131,11 +134,11 @@ public class Schema {
 	 * each dimension in the schema. - CDS
 	 * @return the collection of the schema's dimension names
 	 */
+	
 	public Collection<String> dimensions() {
 		return dimensionInfo.keySet();
 	}
-
-
+	
 	/**
 	 * Returns true if the specified field
 	 * is in the schema
@@ -205,9 +208,6 @@ public class Schema {
 	public int chunkSize(String dimensionName) {
 		return dimensionInfo.get(dimensionName).chunkSize;
 	}
-
-
-
 
 	class attributeInfo {
 		int type, length;

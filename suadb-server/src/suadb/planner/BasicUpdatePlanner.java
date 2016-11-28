@@ -43,11 +43,7 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 		Plan p = new TablePlan(data.tableName(), tx);
 		UpdateScan us = (UpdateScan) p.open();
 		us.insert();
-		Iterator<Constant> iter = data.vals().iterator();
-		for (String fldname : data.fields()) {
-			Constant val = iter.next();
-			us.setVal(fldname, val);
-		}
+
 		us.close();
 		return 1;
 	}
