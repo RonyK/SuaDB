@@ -111,7 +111,6 @@ public class ArrayFile {
             dimensionvalueinchunk[i] %= cid.arrayInfo().schema().chunkSize(dimensions.get(i));
          }
 
-
         for(int i = 0  ; i < numberofdimensions ; i++){
             int numbercellsinfollowingdimension = 1;
             for (int j = i+1; j < numberofdimensions ; j++){
@@ -130,7 +129,6 @@ public class ArrayFile {
             currentCFiles[j].close();
         }
     }
-
 
     /**
      * Positions the current suadb.record so that a call to method next
@@ -153,21 +151,21 @@ public class ArrayFile {
    //     currentCFiles[index].moveToId(0);
     }
 
-
     /**
      * Moves to the next suadb.record. Returns false if there
      * is no next suadb.record.
      * @return false if there is no next suadb.record.
      */
-
-    public void next() {
+    // TODO :: Wrong Here : Change return type void -> boolean - RonyK
+    public boolean next() {
 
         for( int j = 0 ; j < numberofattributes ; j++){
             currentCFiles[j].next();
         }
-        return ;
+        
+        // TODO :: Return true if there were more records to iterate.
+        return true;
     }
-
 
     public boolean next(String attributename) {
         int index = attributes.indexOf(attributename);
@@ -175,7 +173,6 @@ public class ArrayFile {
             return false;
         return currentCFiles[index].next();
     }
-
 
     /**
      * Returns the value of the specified field
@@ -187,7 +184,6 @@ public class ArrayFile {
         if( index < 0)
             return -1;
         return currentCFiles[index].getInt();
-
     }
 
     /**
@@ -261,7 +257,6 @@ public class ArrayFile {
         currentCFiles[index].moveToId(calculateCellOffsetInChunk(cid));
     }
 
-
     /**
      * Returns the RID of the current suadb.record.
      * @return a suadb.record identifier
@@ -275,7 +270,7 @@ public class ArrayFile {
     }
     */
 
-
-
-
+	// TODO :: Insert()                     - RonyK
+	// insert data sequentially.
+	// TODO :: Insert(Dimension[] dim)      - RonyK
 }
