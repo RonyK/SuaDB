@@ -2,6 +2,7 @@ package suadb.log;
 
 import suadb.file.Page;
 
+import static suadb.file.Page.DOUBLE_SIZE;
 import static suadb.file.Page.INT_SIZE;
 import static suadb.file.Page.STR_SIZE;
 
@@ -52,6 +53,12 @@ public class BasicLogRecord {
 	public String nextString() {
 		String result = pg.getString(pos);
 		pos += STR_SIZE(result.length());
+		return result;
+	}
+
+	public double nextDouble() {
+		double result = pg.getDouble(pos);
+		pos += DOUBLE_SIZE;
 		return result;
 	}
 }

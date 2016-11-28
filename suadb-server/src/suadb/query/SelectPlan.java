@@ -31,7 +31,7 @@ public class SelectPlan implements Plan {
 	}
 
 	/**
-	 * Estimates the number of block accesses in the selection,
+	 * Estimates the number of chunk accesses in the selection,
 	 * which is the same as in the underlying suadb.query.
 	 * @see suadb.query.Plan#blocksAccessed()
 	 */

@@ -1,6 +1,7 @@
 package suadb.tx.concurrency;
 
-import suadb.file.Block;
+import suadb.file.Chunk;
+
 import java.util.*;
 
 /**
@@ -8,7 +9,7 @@ import java.util.*;
  * If a transaction requests a lock that causes a conflict with an
  * existing lock, then that transaction is placed on a wait list.
  * There is only one wait list for all blocks.
- * When the last lock on a block is unlocked, then all transactions
+ * When the last lock on a chunk is unlocked, then all transactions
  * are removed from the wait list and rescheduled.
  * If one of those transactions discovers that the lock it is waiting for
  * is still locked, it will place itself back on the wait list.
@@ -17,19 +18,19 @@ import java.util.*;
 class LockTable {
 	private static final long MAX_TIME = 10000; // 10 seconds
 
-	private Map<Block,Integer> locks = new HashMap<Block,Integer>();
+	private Map<Chunk,Integer> locks = new HashMap<Chunk,Integer>();
 
 	/**
-	 * Grants an SLock on the specified block.
+	 * Grants an SLock on the specified chunk.
 	 * If an XLock exists when the method is called,
 	 * then the calling thread will be placed on a wait list
 	 * until the lock is released.
 	 * If the thread remains on the wait list for a certain
 	 * amount of time (currently 10 seconds),
 	 * then an exception is thrown.
-	 * @param blk a reference to the disk block
+	 * @param blk a reference to the disk chunk
 	 */
-	public synchronized void sLock(Block blk) {
+	public synchronized void sLock(Chunk blk) {
 		try {
 			long timestamp = System.currentTimeMillis();
 			while (hasXlock(blk) && !waitingTooLong(timestamp))
@@ -45,16 +46,16 @@ class LockTable {
 	}
 
 	/**
-	 * Grants an XLock on the specified block.
+	 * Grants an XLock on the specified chunk.
 	 * If a lock of any type exists when the method is called,
 	 * then the calling thread will be placed on a wait list
 	 * until the locks are released.
 	 * If the thread remains on the wait list for a certain
 	 * amount of time (currently 10 seconds),
 	 * then an exception is thrown.
-	 * @param blk a reference to the disk block
+	 * @param blk a reference to the disk chunk
 	 */
-	synchronized void xLock(Block blk) {
+	synchronized void xLock(Chunk blk) {
 		try {
 			long timestamp = System.currentTimeMillis();
 			while (hasOtherSLocks(blk) && !waitingTooLong(timestamp))
@@ -69,12 +70,12 @@ class LockTable {
 	}
 
 	/**
-	 * Releases a lock on the specified block.
-	 * If this lock is the last lock on that block,
+	 * Releases a lock on the specified chunk.
+	 * If this lock is the last lock on that chunk,
 	 * then the waiting transactions are notified.
-	 * @param blk a reference to the disk block
+	 * @param blk a reference to the disk chunk
 	 */
-	synchronized void unlock(Block blk) {
+	synchronized void unlock(Chunk blk) {
 		int val = getLockVal(blk);
 		if (val > 1)
 			locks.put(blk, val-1);
@@ -84,11 +85,11 @@ class LockTable {
 		}
 	}
 
-	private boolean hasXlock(Block blk) {
+	private boolean hasXlock(Chunk blk) {
 		return getLockVal(blk) < 0;
 	}
 
-	private boolean hasOtherSLocks(Block blk) {
+	private boolean hasOtherSLocks(Chunk blk) {
 		return getLockVal(blk) > 1;
 	}
 
@@ -96,7 +97,7 @@ class LockTable {
 		return System.currentTimeMillis() - starttime > MAX_TIME;
 	}
 
-	private int getLockVal(Block blk) {
+	private int getLockVal(Chunk blk) {
 		Integer ival = locks.get(blk);
 		return (ival == null) ? 0 : ival.intValue();
 	}

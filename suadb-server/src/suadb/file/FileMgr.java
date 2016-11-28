@@ -16,8 +16,8 @@ import static suadb.file.Page.BLOCK_SIZE;
  * The SuaDB suadb.file manager.
  * The database system stores its data as files within a specified directory.
  * The suadb.file manager provides methods for reading the contents of
- * a suadb.file block to a Java byte suadb.buffer,
- * writing the contents of a byte suadb.buffer to a suadb.file block,
+ * a suadb.file chunk to a Java byte suadb.buffer,
+ * writing the contents of a byte suadb.buffer to a suadb.file chunk,
  * and appending the contents of a byte suadb.buffer to the end of a suadb.file.
  * These methods are called exclusively by the class {@link suadb.file.Page Page},
  * and are thus package-private.
@@ -57,8 +57,8 @@ public class FileMgr {
 	}
 
 	/**
-	 * Reads the contents of a disk block into a bytebuffer.
-	 * @param blk a reference to a disk block
+	 * Reads the contents of a disk chunk into a bytebuffer.
+	 * @param blk a reference to a disk chunk
 	 * @param bb  the bytebuffer
 	 */
 	synchronized void read(Block blk, ByteBuffer bb) {
@@ -68,13 +68,13 @@ public class FileMgr {
 			fc.read(bb, blk.number() * BLOCK_SIZE);
 		}
 		catch (IOException e) {
-			throw new RuntimeException("cannot read block " + blk);
+			throw new RuntimeException("cannot read chunk " + blk);
 		}
 	}
 
 	/**
 	 * Writes the contents of a bytebuffer into a disk block.
-	 * @param blk a reference to a disk block
+	 * @param blk a reference to a disk chunk
 	 * @param bb  the bytebuffer
 	 */
 	synchronized void write(Block blk, ByteBuffer bb) {
@@ -84,7 +84,7 @@ public class FileMgr {
 			fc.write(bb, blk.number() * BLOCK_SIZE);
 		}
 		catch (IOException e) {
-			throw new RuntimeException("cannot write block" + blk);
+			throw new RuntimeException("cannot write chunk" + blk);
 		}
 	}
 
@@ -93,12 +93,13 @@ public class FileMgr {
 	 * of the specified suadb.file.
 	 * @param filename the name of the suadb.file
 	 * @param bb  the bytebuffer
-	 * @return a reference to the newly-created block.
+	 * @return a reference to the newly-created chunk.
 	 */
 	synchronized Block append(String filename, ByteBuffer bb) {
 		int newblknum = size(filename);
 		Block blk = new Block(filename, newblknum);
 		write(blk, bb);
+
 		return blk;
 	}
 
@@ -144,5 +145,26 @@ public class FileMgr {
 			openFiles.put(filename, fc);
 		}
 		return fc;
+	}
+	
+	public void flushFile(String fileName) throws IOException
+	{
+		FileChannel fc = openFiles.get(fileName);
+		if(fc != null)
+		{
+			fc.close();
+			openFiles.remove(fileName);
+		}
+	}
+	
+	public void flushAllFiles() throws IOException
+	{
+		for(Map.Entry<String, FileChannel> fKeyValue : openFiles.entrySet())
+		{
+			FileChannel fc = fKeyValue.getValue();
+			fc.close();
+		}
+		
+		openFiles.clear();
 	}
 }

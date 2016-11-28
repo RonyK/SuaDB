@@ -7,8 +7,8 @@ import suadb.server.SuaDB;
  * The publicly-accessible suadb.buffer manager.
  * A suadb.buffer manager wraps a basic suadb.buffer manager, and
  * provides the same methods. The difference is that
- * the methods {@link #pin(Block) pin} and 
- * {@link #pinNew(String, PageFormatter) pinNew}
+ * the methods {@link #pin(Chunk) pin} and
+ * {@link #pinNew(String, PageFormatter, int) pinNew}
  * will never return null.
  * If no buffers are currently available, then the
  * calling thread will be placed on a waiting list.
@@ -19,9 +19,10 @@ import suadb.server.SuaDB;
  * then a {@link BufferAbortException} is thrown.
  * @author Edward Sciore
  */
+
 public class BufferMgr {
 	private static final long MAX_TIME = 10000; // 10 seconds
-	private BasicBufferMgr bufferMgr;
+	private ChunkBufferMgr chunkBufferMgr;
 
 	/**
 	 * Creates a new suadb.buffer manager having the specified
@@ -37,24 +38,24 @@ public class BufferMgr {
 	 * @param numbuffers the number of suadb.buffer slots to allocate
 	 */
 	public BufferMgr(int numbuffers) {
-		bufferMgr = new BasicBufferMgr(numbuffers);
+		chunkBufferMgr = new ChunkBufferMgr(numbuffers);
 	}
 
 	/**
-	 * Pins a suadb.buffer to the specified block, potentially
+	 * Pins a suadb.buffer to the specified chunk, potentially
 	 * waiting until a suadb.buffer becomes available.
 	 * If no suadb.buffer becomes available within a fixed
 	 * time period, then a {@link BufferAbortException} is thrown.
-	 * @param blk a reference to a disk block
-	 * @return the suadb.buffer pinned to that block
+	 * @param chunk a reference to a disk chunk
+	 * @return the suadb.buffer pinned to that chunk
 	 */
-	public synchronized Buffer pin(Block blk) {
+	public synchronized ChunkBuffer pin(Chunk chunk) {
 		try {
 			long timestamp = System.currentTimeMillis();
-			Buffer buff = bufferMgr.pin(blk);
-			while (buff == null && !waitingTooLong(timestamp)) {
+			ChunkBuffer buff = chunkBufferMgr.pin(chunk);
+			while (buff == null && !waitingTooLong(timestamp)) {//wait to allocate the chunkBuffer to chunk
 				wait(MAX_TIME);
-				buff = bufferMgr.pin(blk);
+				buff = chunkBufferMgr.pin(chunk);
 			}
 			if (buff == null)
 				throw new BufferAbortException();
@@ -66,24 +67,26 @@ public class BufferMgr {
 	}
 
 	/**
-	 * Pins a suadb.buffer to a new block in the specified suadb.file,
+	 * Pins a suadb.buffer to a new chunk in the specified suadb.file,
 	 * potentially waiting until a suadb.buffer becomes available.
 	 * If no suadb.buffer becomes available within a fixed
 	 * time period, then a {@link BufferAbortException} is thrown.
 	 * @param filename the name of the suadb.file
 	 * @param fmtr the formatter used to initialize the page
-	 * @return the suadb.buffer pinned to that block
+	 * @param numberOfBlocks The number of blocks to create a chunk.
+	 * @return the suadb.buffer pinned to that chunk
 	 */
-	public synchronized Buffer pinNew(String filename, PageFormatter fmtr) {
+	public synchronized ChunkBuffer pinNew(String filename, PageFormatter fmtr, int numberOfBlocks) {
 		try {
 			long timestamp = System.currentTimeMillis();
-			Buffer buff = bufferMgr.pinNew(filename, fmtr);
+			ChunkBuffer buff = chunkBufferMgr.pinNew(filename, fmtr, numberOfBlocks);
 			while (buff == null && !waitingTooLong(timestamp)) {
 				wait(MAX_TIME);
-				buff = bufferMgr.pinNew(filename, fmtr);
+				buff = chunkBufferMgr.pinNew(filename, fmtr, numberOfBlocks);
 			}
 			if (buff == null)
 				throw new BufferAbortException();
+
 			return buff;
 		}
 		catch(InterruptedException e) {
@@ -97,8 +100,8 @@ public class BufferMgr {
 	 * then the threads on the wait list are notified.
 	 * @param buff the suadb.buffer to be unpinned
 	 */
-	public synchronized void unpin(Buffer buff) {
-		bufferMgr.unpin(buff);
+	public synchronized void unpin(ChunkBuffer buff) {
+		chunkBufferMgr.unpin(buff);
 		if (!buff.isPinned())
 			notifyAll();
 	}
@@ -108,7 +111,7 @@ public class BufferMgr {
 	 * @param txnum the transaction's id number
 	 */
 	public void flushAll(int txnum) {
-		bufferMgr.flushAll(txnum);
+		chunkBufferMgr.flushAll(txnum);
 	}
 
 	/**
@@ -116,7 +119,7 @@ public class BufferMgr {
 	 * @return the number of available buffers
 	 */
 	public int available() {
-		return bufferMgr.available();
+		return chunkBufferMgr.available();
 	}
 
 	private boolean waitingTooLong(long starttime) {

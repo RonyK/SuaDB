@@ -41,7 +41,7 @@ public class IndexSelectPlan implements Plan {
 	}
 
 	/**
-	 * Estimates the number of block accesses to compute the
+	 * Estimates the number of chunk accesses to compute the
 	 * suadb.index selection, which is the same as the
 	 * suadb.index traversal cost plus the number of matching data records.
 	 * @see suadb.query.Plan#blocksAccessed()

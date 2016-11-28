@@ -9,7 +9,7 @@ import suadb.server.SuaDB;
  *
  */
 class BasicBufferMgr {
-	private Buffer[] bufferpool;
+	private BasicBuffer[] bufferpool;
 	private int numAvailable;
 
 	/**
@@ -26,10 +26,10 @@ class BasicBufferMgr {
 	 * @param numbuffs the number of suadb.buffer slots to allocate
 	 */
 	BasicBufferMgr(int numbuffs) {
-		bufferpool = new Buffer[numbuffs];
+		bufferpool = new BasicBuffer[numbuffs];
 		numAvailable = numbuffs;
 		for (int i=0; i<numbuffs; i++)
-			bufferpool[i] = new Buffer();
+			bufferpool[i] = new BasicBuffer();
 	}
 
 	/**
@@ -37,22 +37,22 @@ class BasicBufferMgr {
 	 * @param txnum the transaction's id number
 	 */
 	synchronized void flushAll(int txnum) {
-		for (Buffer buff : bufferpool)
+		for (BasicBuffer buff : bufferpool)
 			if (buff.isModifiedBy(txnum))
-			buff.flush();
+				buff.flush();
 	}
 
 	/**
-	 * Pins a suadb.buffer to the specified block.
-	 * If there is already a suadb.buffer assigned to that block
+	 * Pins a suadb.buffer to the specified chunk.
+	 * If there is already a suadb.buffer assigned to that chunk
 	 * then that suadb.buffer is used;
 	 * otherwise, an unpinned suadb.buffer from the pool is chosen.
 	 * Returns a null value if there are no available buffers.
-	 * @param blk a reference to a disk block
+	 * @param blk a reference to a disk chunk
 	 * @return the pinned suadb.buffer
 	 */
-	synchronized Buffer pin(Block blk) {
-		Buffer buff = findExistingBuffer(blk);
+	synchronized BasicBuffer pin(Block blk) {
+		BasicBuffer buff = findExistingBuffer(blk);
 		if (buff == null) {
 			buff = chooseUnpinnedBuffer();
 			if (buff == null)
@@ -66,16 +66,16 @@ class BasicBufferMgr {
 	}
 
 	/**
-	 * Allocates a new block in the specified suadb.file, and
+	 * Allocates a new chunk in the specified suadb.file, and
 	 * pins a suadb.buffer to it.
-	 * Returns null (without allocating the block) if
+	 * Returns null (without allocating the chunk) if
 	 * there are no available buffers.
 	 * @param filename the name of the suadb.file
-	 * @param fmtr a pageformatter object, used to format the new block
+	 * @param fmtr a pageformatter object, used to format the new chunk
 	 * @return the pinned suadb.buffer
 	 */
-	synchronized Buffer pinNew(String filename, PageFormatter fmtr) {
-		Buffer buff = chooseUnpinnedBuffer();
+	synchronized BasicBuffer pinNew(String filename, PageFormatter fmtr) {
+		BasicBuffer buff = chooseUnpinnedBuffer();
 		if (buff == null)
 			return null;
 		buff.assignToNew(filename, fmtr);
@@ -88,7 +88,7 @@ class BasicBufferMgr {
 	 * Unpins the specified suadb.buffer.
 	 * @param buff the suadb.buffer to be unpinned
 	 */
-	synchronized void unpin(Buffer buff) {
+	synchronized void unpin(BasicBuffer buff) {
 		buff.unpin();
 		if (!buff.isPinned())
 			numAvailable++;
@@ -102,17 +102,17 @@ class BasicBufferMgr {
 		return numAvailable;
 	}
 
-	private Buffer findExistingBuffer(Block blk) {
-		for (Buffer buff : bufferpool) {
+	private BasicBuffer findExistingBuffer(Block chunk) {
+		for (BasicBuffer buff : bufferpool) {
 			Block b = buff.block();
-			if (b != null && b.equals(blk))
+			if (b != null && b.equals(chunk))
 				return buff;
 		}
 		return null;
 	}
 
-	private Buffer chooseUnpinnedBuffer() {
-		for (Buffer buff : bufferpool)
+	private BasicBuffer chooseUnpinnedBuffer() {
+		for (BasicBuffer buff : bufferpool)
 			if (!buff.isPinned())
 			return buff;
 		return null;
