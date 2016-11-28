@@ -15,7 +15,7 @@ public class CellFile {
     private String filename;
     private String attributename;
     private CellPage cp;
-    private int currentchunknum;
+    private int currentchunknum = -1;
     private int numberofblocks;
     private int numberofchunks;         // this variable is needed in order to find out if the current chunk is the last one
 
@@ -38,7 +38,7 @@ public class CellFile {
     public CellFile(ArrayInfo ai, Transaction tx, int chunknum, String attributename, int numberofblocks,int numberofchunks) {
         this.ai = ai;
         this.tx = tx;
-        this.currentchunknum = chunknum;
+       // this.currentchunknum = chunknum;
         this.attributename = attributename;
         this.numberofblocks = numberofblocks;
         this.numberofchunks = numberofchunks;
@@ -148,6 +148,8 @@ public class CellFile {
     }
 
     public void moveTo(int c) {
+        if( currentchunknum == c)
+           return;
         if (cp != null)
             cp.close();
         currentchunknum = c;

@@ -48,7 +48,7 @@ public class ArrayFileTest  extends SuaDBTestBase {
         }
 
         schema.addAttribute("attA",INTEGER,4);
-        schema.addAttribute("attB", VARCHAR, 8);
+        schema.addAttribute("attB", VARCHAR, 4);
 
         arrayinfo = new ArrayInfo("testArray", schema);
 
