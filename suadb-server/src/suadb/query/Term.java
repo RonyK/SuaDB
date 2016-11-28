@@ -224,6 +224,16 @@ public class Term {
 	 * @return true if both expressions apply to the schema
 	 */
 	public boolean appliesTo(Schema sch) {
+		if(!lhs.appliesTo(sch))
+		{
+			DimensionNameExpression e = (DimensionNameExpression)lhs;
+			this.lhs = e;
+		}
+		if(!rhs.appliesTo(sch))
+		{
+			DimensionNameExpression e = (DimensionNameExpression)rhs;
+			this.rhs = e;
+		}
 		return lhs.appliesTo(sch) && rhs.appliesTo(sch);
 	}
 

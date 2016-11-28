@@ -35,11 +35,28 @@ public class ConstantExpression implements Expression {
 	}
 
 	/**
+	 * Returns false.
+	 * @see suadb.query.Expression#isDimensionName()
+	 */
+	public boolean isDimensionName() {
+		return false;
+	}
+
+	/**
 	 * Unwraps the constant and returns it.
 	 * @see suadb.query.Expression#asConstant()
 	 */
 	public Constant asConstant() {
 		return val;
+	}
+
+	/**
+	 * This method should never be called.
+	 * Throws a ClassCastException.
+	 * @see suadb.query.Expression#asDimensionName()
+	 */
+	public String asDimensionName() {
+		throw new ClassCastException();
 	}
 
 	/**

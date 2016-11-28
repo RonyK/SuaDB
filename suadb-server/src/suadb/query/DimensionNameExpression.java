@@ -3,19 +3,18 @@ package suadb.query;
 import suadb.record.Schema;
 
 /**
- * An expression consisting entirely of a single field.
- * @author Edward Sciore
- *
+ * Created by Aram on 2016-11-28.
  */
-public class FieldNameExpression implements Expression {
-	private String fldname;
+public class DimensionNameExpression implements Expression
+{
+	private String dimname;
 
 	/**
-	 * Creates a new expression by wrapping a field.
-	 * @param fldname the name of the wrapped field
+	 * Creates a new expression by wrapping a dimension.
+	 * @param dimname the name of the wrapped dimension
 	 */
-	public FieldNameExpression(String fldname) {
-		this.fldname = fldname;
+	public DimensionNameExpression(String dimname) {
+		this.dimname = dimname;
 	}
 
 	/**
@@ -27,18 +26,18 @@ public class FieldNameExpression implements Expression {
 	}
 
 	/**
-	 * Returns true.
+	 * Returns false.
 	 * @see suadb.query.Expression#isFieldName()
 	 */
 	public boolean isFieldName() {
-		return true;
+		return false;
 	}
 
 	/**
-	 * Returns false.
+	 * Returns true.
 	 * @see suadb.query.Expression#isDimensionName()
 	 */
-	public boolean isDimensionName() { return false;	}
+	public boolean isDimensionName() { return true;	}
 
 	/**
 	 * This method should never be called.
@@ -50,39 +49,40 @@ public class FieldNameExpression implements Expression {
 	}
 
 	/**
-	 * Unwraps the field name and returns it.
+	 * This method should never be called.
+	 * Throws a ClassCastException.
 	 * @see suadb.query.Expression#asFieldName()
 	 */
 	public String asFieldName() {
-		return fldname;
-	}
-
-	/**
-	 * This method should never be called.
-	 * Throws a ClassCastException.
-	 * @see suadb.query.Expression#asDimensionName()
-	 */
-	public String asDimensionName() {
 		throw new ClassCastException();
 	}
 
+
 	/**
-	 * Evaluates the field by getting its value in the scan.
+	 * Unwraps the dimension name and returns it.
+	 * @see suadb.query.Expression#asDimensionName()
+	 */
+	public String asDimensionName() {
+		return dimname;
+	}
+
+	/**
+	 * Evaluates the dimension by getting its value in the scan.
 	 * @see suadb.query.Expression#evaluate(suadb.query.Scan)
 	 */
 	public Constant evaluate(Scan s) {
-		return s.getVal(fldname);
+		return s.getVal(dimname);
 	}
 
 	/**
-	 * Returns true if the field is in the specified schema.
+	 * Returns true if the dimension is in the specified schema.
 	 * @see suadb.query.Expression#appliesTo(suadb.record.Schema)
 	 */
 	public boolean appliesTo(Schema sch) {
-		return sch.hasField(fldname);
+		return sch.hasDimension(dimname);
 	}
 
 	public String toString() {
-		return fldname;
+		return dimname;
 	}
 }

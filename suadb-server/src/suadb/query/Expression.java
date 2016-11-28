@@ -22,6 +22,12 @@ public interface Expression {
 	public boolean  isFieldName();
 
 	/**
+	 * Returns true if the expression is a dimension reference.
+	 * @return true if the expression denotes a dimension
+	 */
+	public boolean  isDimensionName();
+
+	/**
 	 * Returns the constant corresponding to a constant expression.
 	 * Throws an exception if the expression does not
 	 * denote a constant.
@@ -36,6 +42,14 @@ public interface Expression {
 	 * @return the expression as a field name
 	 */
 	public String	asFieldName();
+
+	/**
+	 * Returns the dimension name corresponding to a constant expression.
+	 * Throws an exception if the expression does not
+	 * denote a dimension.
+	 * @return the expression as a dimension name
+	 */
+	public String	asDimensionName();
 
 	/**
 	 * Evaluates the expression with respect to the
