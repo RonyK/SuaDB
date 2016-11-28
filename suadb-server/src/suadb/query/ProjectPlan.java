@@ -33,7 +33,7 @@ public class ProjectPlan implements Plan {
 	}
 
 	/**
-	 * Estimates the number of block accesses in the projection,
+	 * Estimates the number of chunk accesses in the projection,
 	 * which is the same as in the underlying suadb.query.
 	 * @see suadb.query.Plan#blocksAccessed()
 	 */

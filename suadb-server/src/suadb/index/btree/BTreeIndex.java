@@ -1,7 +1,7 @@
 package suadb.index.btree;
 
 import static java.sql.Types.INTEGER;
-import suadb.file.Block;
+import suadb.file.Chunk;
 import suadb.tx.Transaction;
 import suadb.record.*;
 import suadb.query.*;
@@ -15,7 +15,7 @@ public class BTreeIndex implements Index {
 	private Transaction tx;
 	private TableInfo dirTi, leafTi;
 	private BTreeLeaf leaf = null;
-	private Block rootblk;
+	private Chunk rootblk;
 
 	/**
 	 * Opens a B-tree suadb.index for the specified suadb.index.
@@ -36,13 +36,13 @@ public class BTreeIndex implements Index {
 
 		// deal with the directory
 		Schema dirsch = new Schema();
-		dirsch.add("block",	leafsch);
+		dirsch.add("chunk",	leafsch);
 		dirsch.add("dataval", leafsch);
 		String dirtbl = idxname + "dir";
 		dirTi = new TableInfo(dirtbl, dirsch);
-		rootblk = new Block(dirTi.fileName(), 0);
+		rootblk = new Chunk(dirTi.fileName(), 0);
 		if (tx.size(dirTi.fileName()) == 0)
-			// create new root block
+			// create new root chunk
 			tx.append(dirTi.fileName(), new BTPageFormatter(dirTi, 0));
 		BTreePage page = new BTreePage(rootblk, dirTi, tx);
 		if (page.getNumRecs() == 0) {
@@ -57,9 +57,9 @@ public class BTreeIndex implements Index {
 	}
 
 	/**
-	 * Traverses the directory to find the leaf block corresponding
+	 * Traverses the directory to find the leaf chunk corresponding
 	 * to the specified search key.
-	 * The method then opens a page for that leaf block, and
+	 * The method then opens a page for that leaf chunk, and
 	 * positions the page before the first suadb.record (if any)
 	 * having that search key.
 	 * The leaf page is kept open, for use by the methods next
@@ -71,7 +71,7 @@ public class BTreeIndex implements Index {
 		BTreeDir root = new BTreeDir(rootblk, dirTi, tx);
 		int blknum = root.search(searchkey);
 		root.close();
-		Block leafblk = new Block(leafTi.fileName(), blknum);
+		Chunk leafblk = new Chunk(leafTi.fileName(), blknum);
 		leaf = new BTreeLeaf(leafblk, leafTi, searchkey, tx);
 	}
 
@@ -141,11 +141,11 @@ public class BTreeIndex implements Index {
 	}
 
 	/**
-	 * Estimates the number of block accesses
+	 * Estimates the number of chunk accesses
 	 * required to find all suadb.index records having
 	 * a particular search key.
 	 * @param numblocks the number of blocks in the B-tree directory
-	 * @param rpb the number of suadb.index entries per block
+	 * @param rpb the number of suadb.index entries per chunk
 	 * @return the estimated traversal cost
 	 */
 	public static int searchCost(int numblocks, int rpb) {

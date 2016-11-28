@@ -49,7 +49,7 @@ public class MultiBufferProductPlan implements Plan {
 	}
 
 	/**
-	 * Returns an estimate of the number of block accesses
+	 * Returns an estimate of the number of chunk accesses
 	 * required to execute the suadb.query. The formula is:
 	 * <pre> B(product(p1,p2)) = B(p2) + B(p1)*C(p2) </pre>
 	 * where C(p2) is the number of chunks of p2.

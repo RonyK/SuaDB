@@ -1,6 +1,7 @@
 package suadb.tx.concurrency;
 
-import suadb.file.Block;
+import suadb.file.Chunk;
+
 import java.util.*;
 
 /**
@@ -18,33 +19,33 @@ public class ConcurrencyMgr {
 	 * share the same table.
 	 */
 	private static LockTable locktbl = new LockTable();
-	private Map<Block,String> locks  = new HashMap<Block,String>();
+	private Map<Chunk,String> locks  = new HashMap<Chunk,String>();
 
 	/**
-	 * Obtains an SLock on the block, if necessary.
+	 * Obtains an SLock on the chunk, if necessary.
 	 * The method will ask the lock table for an SLock
-	 * if the transaction currently has no locks on that block.
-	 * @param blk a reference to the disk block
+	 * if the transaction currently has no locks on that chunk.
+	 * @param chunk a reference to the disk chunk
 	 */
-	public void sLock(Block blk) {
-		if (locks.get(blk) == null) {
-			locktbl.sLock(blk);
-			locks.put(blk, "S");
+	public void sLock(Chunk chunk) {
+		if (locks.get(chunk) == null) {
+			locktbl.sLock(chunk);
+			locks.put(chunk, "S");
 		}
 	}
 
 	/**
-	 * Obtains an XLock on the block, if necessary.
-	 * If the transaction does not have an XLock on that block,
-	 * then the method first gets an SLock on that block
+	 * Obtains an XLock on the chunk, if necessary.
+	 * If the transaction does not have an XLock on that chunk,
+	 * then the method first gets an SLock on that chunk
 	 * (if necessary), and then upgrades it to an XLock.
-	 * @param blk a refrence to the disk block
+	 * @param chunk a refrence to the disk chunk
 	 */
-	public void xLock(Block blk) {
-		if (!hasXLock(blk)) {
-			sLock(blk);
-			locktbl.xLock(blk);
-			locks.put(blk, "X");
+	public void xLock(Chunk chunk) {
+		if (!hasXLock(chunk)) {
+			sLock(chunk);
+			locktbl.xLock(chunk);
+			locks.put(chunk, "X");
 		}
 	}
 
@@ -53,13 +54,13 @@ public class ConcurrencyMgr {
 	 * unlock each one.
 	 */
 	public void release() {
-		for (Block blk : locks.keySet())
-			locktbl.unlock(blk);
+		for (Chunk chunk : locks.keySet())
+			locktbl.unlock(chunk);
 		locks.clear();
 	}
 
-	private boolean hasXLock(Block blk) {
-		String locktype = locks.get(blk);
+	private boolean hasXLock(Chunk chunk) {
+		String locktype = locks.get(chunk);
 		return locktype != null && locktype.equals("X");
 	}
 }

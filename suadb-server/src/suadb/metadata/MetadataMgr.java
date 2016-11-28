@@ -9,6 +9,7 @@ public class MetadataMgr {
 	private static ViewMgr	viewmgr;
 	private static StatMgr	statmgr;
 	private static IndexMgr  idxmgr;
+	private static ArrayMgr arrayMgr;
 
 	public MetadataMgr(boolean isnew, Transaction tx) {
 		tblmgr  = new TableMgr(isnew, tx);

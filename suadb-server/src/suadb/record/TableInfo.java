@@ -31,6 +31,7 @@ public class TableInfo {
 		offsets  = new HashMap<String,Integer>();
 		int pos = 0;
 		for (String fldname : schema.fields()) {
+
 			offsets.put(fldname, pos);
 			pos += lengthInBytes(fldname);
 		}

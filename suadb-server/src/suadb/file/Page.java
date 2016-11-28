@@ -1,27 +1,27 @@
 package suadb.file;
 
-import suadb.server.SuaDB;
-
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
+import suadb.server.SuaDB;
+
 /**
- * The contents of a disk block in memory.
+ * The contents of a disk chunk in memory.
  * A page is treated as an array of BLOCK_SIZE bytes.
  * There are methods to get/set values into this array,
- * and to read/write the contents of this array to a disk block.
+ * and to read/write the contents of this array to a disk chunk.
  * 
  * For an example of how to use Page and 
- * {@link Block} objects, 
+ * {@link Chunk} objects,
  * consider the following code fragment.  
- * The first portion increments the integer at offset 792 of block 6 of suadb.file junk.
+ * The first portion increments the integer at offset 792 of chunk 6 of suadb.file junk.
  * The second portion stores the string "hello" at offset 20 of a page, 
- * and then appends it to a new block of the suadb.file.
- * It then reads that block into another page 
+ * and then appends it to a new chunk of the suadb.file.
+ * It then reads that chunk into another page
  * and extracts the value "hello" into variable s.
  * <pre>
  * Page p1 = new Page();
- * Block blk = new Block("junk", 6);
+ * Chunk blk = new Chunk("junk", 6);
  * p1.read(blk);
  * int n = p1.getInt(792);
  * p1.setInt(792, n+1);
@@ -38,7 +38,7 @@ import java.nio.charset.Charset;
  */
 public class Page {
 	/**
-	 * The number of bytes in a block.
+	 * The number of bytes in a chunk.
 	 * This value is set unreasonably low, so that it is easier
 	 * to create and test databases having a lot of blocks.
 	 * A more realistic value would be 4K.
@@ -67,8 +67,13 @@ public class Page {
 		return INT_SIZE + (n * (int)bytesPerChar);
 	}
 
-	private ByteBuffer contents = ByteBuffer.allocateDirect(BLOCK_SIZE);
-	private FileMgr filemgr = SuaDB.fileMgr();
+	/**
+	 * The size of an double in bytes
+	 */
+	public static final int DOUBLE_SIZE = Double.SIZE / Byte.SIZE;
+
+	protected ByteBuffer contents = ByteBuffer.allocateDirect(BLOCK_SIZE);
+	protected FileMgr fileMgr = SuaDB.fileMgr();
 
 	/**
 	 * Creates a new page.  Although the constructor takes no arguments,
@@ -86,27 +91,27 @@ public class Page {
 
 	/**
 	 * Populates the page with the contents of the specified disk block.
-	 * @param blk a reference to a disk block
+	 * @param blk a reference to a disk chunk
 	 */
 	public synchronized void read(Block blk) {
-		filemgr.read(blk, contents);
+		fileMgr.read(blk, contents);
 	}
 
 	/**
 	 * Writes the contents of the page to the specified disk block.
-	 * @param blk a reference to a disk block
+	 * @param blk a reference to a disk chunk
 	 */
 	public synchronized void write(Block blk) {
-		filemgr.write(blk, contents);
+		fileMgr.write(blk, contents);
 	}
 
 	/**
 	 * Appends the contents of the page to the specified suadb.file.
 	 * @param filename the name of the suadb.file
-	 * @return the reference to the newly-created disk block
+	 * @return the reference to the newly-created disk chunk
 	 */
 	public synchronized Block append(String filename) {
-		return filemgr.append(filename, contents);
+		return fileMgr.append(filename, contents);
 	}
 
 	/**
@@ -156,5 +161,27 @@ public class Page {
 		byte[] byteval = val.getBytes();
 		contents.putInt(byteval.length);
 		contents.put(byteval);
+	}
+
+	/**
+	 * Returns the double value at a specified offset of the page.
+	 * If an double was not stored at that location,
+	 * the behavior of the method is unpredictable.
+	 * @param offset the byte offset within the page
+	 * @return the double value at that offset
+	 */
+	public synchronized double getDouble(int offset) {
+		contents.position(offset);
+		return contents.getDouble();
+	}
+
+	/**
+	 * Writes an double to the specified offset on the page.
+	 * @param offset the byte offset within the page
+	 * @param val the double to be written to the page
+	 */
+	public synchronized void setDouble(int offset, double val) {
+		contents.position(offset);
+		contents.putDouble(val);
 	}
 }

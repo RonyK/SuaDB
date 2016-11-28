@@ -69,7 +69,7 @@ public class HashIndex implements Index {
 	 * @see suadb.index.Index#getDataRid()
 	 */
 	public RID getDataRid() {
-		int blknum = ts.getInt("block");
+		int blknum = ts.getInt("chunk");
 		int id = ts.getInt("id");
 		return new RID(blknum, id);
 	}
@@ -81,7 +81,7 @@ public class HashIndex implements Index {
 	public void insert(Constant val, RID rid) {
 		beforeFirst(val);
 		ts.insert();
-		ts.setInt("block", rid.blockNumber());
+		ts.setInt("chunk", rid.blockNumber());
 		ts.setInt("id", rid.id());
 		ts.setVal("dataval", val);
 	}
@@ -118,7 +118,7 @@ public class HashIndex implements Index {
 	 * same size, and so the cost is simply the size of
 	 * the bucket.
 	 * @param numblocks the number of blocks of suadb.index records
-	 * @param rpb the number of records per block (not used here)
+	 * @param rpb the number of records per chunk (not used here)
 	 * @return the cost of traversing the suadb.index
 	 */
 	public static int searchCost(int numblocks, int rpb){

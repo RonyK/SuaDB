@@ -1,8 +1,8 @@
 package suadb.tx.recovery;
 
 import static suadb.tx.recovery.LogRecord.*;
-import suadb.file.Block;
-import suadb.buffer.Buffer;
+import suadb.file.Chunk;
+import suadb.buffer.ChunkBuffer;
 import suadb.server.SuaDB;
 
 import java.util.*;
@@ -62,9 +62,9 @@ public class RecoveryMgr {
 	 * @param offset the offset of the value in the page
 	 * @param newval the value to be written
 	 */
-	public int setInt(Buffer buff, int offset, int newval) {
+	public int setInt(ChunkBuffer buff, int offset, int newval) {
 		int oldval = buff.getInt(offset);
-		Block blk = buff.block();
+		Chunk blk = buff.chunk();
 		if (isTempBlock(blk))
 			return -1;
 		else
@@ -79,13 +79,22 @@ public class RecoveryMgr {
 	 * @param offset the offset of the value in the page
 	 * @param newval the value to be written
 	 */
-	public int setString(Buffer buff, int offset, String newval) {
+	public int setString(ChunkBuffer buff, int offset, String newval) {
 		String oldval = buff.getString(offset);
-		Block blk = buff.block();
+		Chunk blk = buff.chunk();
 		if (isTempBlock(blk))
 			return -1;
 		else
 			return new SetStringRecord(txnum, blk, offset, oldval).writeToLog();
+	}
+
+	public int setDouble(ChunkBuffer buff, int offset, double newval) {
+		double oldval = buff.getDouble(offset);
+		Chunk chunk = buff.chunk();
+		if (isTempBlock(chunk))
+			return -1;
+		else
+			return new SetDoubleRecord(txnum, chunk, offset, oldval).writeToLog();
 	}
 
 	/**
@@ -130,9 +139,9 @@ public class RecoveryMgr {
 	}
 
 	/**
-	 * Determines whether a block comes from a temporary suadb.file or not.
+	 * Determines whether a chunk comes from a temporary suadb.file or not.
 	 */
-	private boolean isTempBlock(Block blk) {
+	private boolean isTempBlock(Chunk blk) {
 		return blk.fileName().startsWith("temp");
 	}
 }

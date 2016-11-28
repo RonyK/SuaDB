@@ -34,7 +34,7 @@ public class TablePlan implements Plan {
 	}
 
 	/**
-	 * Estimates the number of block accesses for the table,
+	 * Estimates the number of chunk accesses for the table,
 	 * which is obtainable from the statistics manager.
 	 * @see suadb.query.Plan#blocksAccessed()
 	 */
