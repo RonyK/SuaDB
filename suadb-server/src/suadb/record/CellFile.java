@@ -138,6 +138,11 @@ public class CellFile {
         cp.moveToId(offset);
     }
 
+    public void moveToId(int offset, int record) {
+        // moveTo(rid.blockNumber());
+        cp.moveToId(offset);
+    }
+
     /**
      * Returns the RID of the current suadb.record.
      * @return a suadb.record identifier

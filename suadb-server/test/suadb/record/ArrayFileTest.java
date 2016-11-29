@@ -47,8 +47,8 @@ public class ArrayFileTest  extends SuaDBTestBase {
             schema .addDimension("dim"+i,start[i],end[i],chunksize[i]);
         }
 
-        schema.addAttribute("attA",INTEGER,4);
-        schema.addAttribute("attB", VARCHAR, 4);
+        schema.addAttribute("attA",INTEGER,999999);   // length doesn't matter for INTEGER type
+        schema.addAttribute("attB", VARCHAR, 7);
 
         arrayinfo = new ArrayInfo("testArray", schema);
 
@@ -115,24 +115,30 @@ public class ArrayFileTest  extends SuaDBTestBase {
         // 1) row major order in a single chunk
         // 2) if has no next cell in  the chunk, then move on to the next chunk
 
+
         tx = new Transaction();
         arrayfile = new ArrayFile(arrayinfo,tx);
 
         arrayfile.beforeFirst();
         index = 0;
+        boolean nextFlag;
         for(int i = start[0] ; i <= end[0] ; i++ ){
             for(int j = start[1] ; j <= end[1] ; j++ )
             {
                 for (int k = start[2]; k <= end[2]; k++) {
 
-                    arrayfile.next("attA");
+                    nextFlag = arrayfile.next("attA");
+                    assertEquals(nextFlag, true);
                     System.out.println("linear offset of the cell :" + arrayfile.getInt("attA"));
                     index++;
                 }
             }
         }
+        nextFlag= arrayfile.next("attA");
+        assertEquals(nextFlag, false);
         arrayfile.close();
         tx.commit();
+
 
     }
 

@@ -22,7 +22,7 @@ import suadb.tx.Transaction;
  */
 public class SuaDB
 {
-	public static int BUFFER_SIZE = 15;
+	public static int BUFFER_SIZE = 20;
 	public static String LOG_FILE = "suadb.log";
 
 	private static FileMgr	  fm;
