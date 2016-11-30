@@ -2,6 +2,7 @@ package suadb.record;
 
 import static suadb.file.Page.*;
 import suadb.file.Chunk;
+import suadb.file.Page;
 import suadb.tx.Transaction;
 
 /**
@@ -16,6 +17,8 @@ public class CellPage {
     private Transaction tx;
     private int slotsize;
     private int currentslot = -1;
+    // IHSUH blank for block
+    private int blank = 0;
 
     /** Creates the suadb.record manager for the specified chunk.
      * The current suadb.record is set to be prior to the first one.
@@ -45,6 +48,7 @@ public class CellPage {
         this.ai = ai;
         this.tx = tx;
         slotsize = recordlen + INT_SIZE;
+        blank = BLOCK_SIZE % slotsize;
         tx.pin(chunk);
     }
 
@@ -157,7 +161,9 @@ public class CellPage {
     }
 
     private int currentpos() {
-        return currentslot * slotsize;
+        int numberofcellsinablock = (int)Math.floor((double)BLOCK_SIZE / slotsize);
+        int blockseq = currentslot / numberofcellsinablock;
+        return (currentslot * slotsize) + blockseq * blank;
     }
 /*
     private int fieldpos() {

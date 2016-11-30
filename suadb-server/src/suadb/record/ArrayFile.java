@@ -68,6 +68,7 @@ public class ArrayFile {
     /*
     calculates the number of blocks in a chunk for a given attributename
      */
+
     private int getNumberOfBlocksPerChunk(String attributename){
         int numberofcellsinablock = 1;
         int numberofcellsinachunk = 1;

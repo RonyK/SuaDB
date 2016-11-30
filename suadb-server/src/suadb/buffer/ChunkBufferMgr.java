@@ -80,6 +80,7 @@ public class ChunkBufferMgr
 		ChunkBuffer cBuff = new ChunkBuffer();
 		cBuff.setChunk(fileName,requiredNumOfBlocks);//Chunk initialization in ChunkBuffer.
 		cBuff.assignToNew(fileName, fmtr, buffers);
+		cBuffers.add(cBuff);
 		numAvailable -= cBuff.size();
 		cBuff.pin();
 		return cBuff;
@@ -124,11 +125,12 @@ public class ChunkBufferMgr
 
 		// fixed erroneous code -  java.util.ConcurrentModificationException -IHSUh
 		if(freeBuffers.size() < requiredNumOfBlocks){
+			isAvailable = false;
 			for(Iterator<ChunkBuffer> iterator = cBuffers.iterator(); iterator.hasNext();){
 				ChunkBuffer cBuff = iterator.next();
 				if (!cBuff.isPinned()){
-					iterator.remove();
 					retriveBuffer(cBuff);
+					iterator.remove();
 				}
 
 				if (freeBuffers.size() >= requiredNumOfBlocks){
@@ -136,7 +138,7 @@ public class ChunkBufferMgr
 					break;
 				}
 			}
-			isAvailable = false;
+
 		}
 
 		if(isAvailable) {
