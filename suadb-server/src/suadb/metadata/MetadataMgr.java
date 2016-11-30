@@ -16,6 +16,7 @@ public class MetadataMgr {
 		viewmgr = new ViewMgr(isnew, tblmgr, tx);
 		statmgr = new StatMgr(tblmgr, tx);
 		idxmgr  = new IndexMgr(isnew, tblmgr, tx);
+		arrayMgr = new ArrayMgr(isnew,tx,tblmgr);
 	}
 
 	public void createTable(String tblname, Schema sch, Transaction tx) {
@@ -24,6 +25,14 @@ public class MetadataMgr {
 
 	public TableInfo getTableInfo(String tblname, Transaction tx) {
 		return tblmgr.getTableInfo(tblname, tx);
+	}
+
+	public void createArray(String arrayName, Schema sch, Transaction tx){
+		arrayMgr.createArray(arrayName,sch,tx);
+	}
+
+	public void getArrayInfo(String arrayName, Transaction tx){
+		arrayMgr.getArrayInfo(arrayName,tx);
 	}
 
 	public void createView(String viewname, String viewdef, Transaction tx) {
