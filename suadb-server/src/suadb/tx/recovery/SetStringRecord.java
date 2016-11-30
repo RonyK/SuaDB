@@ -1,23 +1,23 @@
 package suadb.tx.recovery;
 
+import suadb.file.Chunk;
 import suadb.server.SuaDB;
 import suadb.buffer.*;
-import suadb.file.Block;
 import suadb.log.BasicLogRecord;
 
 class SetStringRecord implements LogRecord {
 	private int txnum, offset;
 	private String val;
-	private Block blk;
+	private Chunk blk;
 
 	/**
 	 * Creates a new setstring log suadb.record.
 	 * @param txnum the ID of the specified transaction
-	 * @param blk the block containing the value
-	 * @param offset the offset of the value in the block
+	 * @param blk the chunk containing the value
+	 * @param offset the offset of the value in the chunk
 	 * @param val the new value
 	 */
-	public SetStringRecord(int txnum, Block blk, int offset, String val) {
+	public SetStringRecord(int txnum, Chunk blk, int offset, String val) {
 		this.txnum = txnum;
 		this.blk = blk;
 		this.offset = offset;
@@ -32,7 +32,7 @@ class SetStringRecord implements LogRecord {
 		txnum = rec.nextInt();
 		String filename = rec.nextString();
 		int blknum = rec.nextInt();
-		blk = new Block(filename, blknum);
+		blk = new Chunk(filename, blknum);
 		offset = rec.nextInt();
 		val = rec.nextString();
 	}
@@ -41,7 +41,7 @@ class SetStringRecord implements LogRecord {
 	 * Writes a setString suadb.record to the log.
 	 * This log suadb.record contains the SETSTRING operator,
 	 * followed by the transaction id, the filename, number,
-	 * and offset of the modified block, and the previous
+	 * and offset of the modified chunk, and the previous
 	 * string value at that offset.
 	 * @return the LSN of the last log value
 	 */
@@ -65,14 +65,14 @@ class SetStringRecord implements LogRecord {
 
 	/**
 	 * Replaces the specified data value with the value saved in the log suadb.record.
-	 * The method pins a suadb.buffer to the specified block,
+	 * The method pins a suadb.buffer to the specified chunk,
 	 * calls setString to restore the saved value
 	 * (using a dummy LSN), and unpins the suadb.buffer.
 	 * @see suadb.tx.recovery.LogRecord#undo(int)
 	 */
 	public void undo(int txnum) {
 		BufferMgr buffMgr = SuaDB.bufferMgr();
-		Buffer buff = buffMgr.pin(blk);
+		ChunkBuffer buff = buffMgr.pin(blk);
 		buff.setString(offset, val, txnum, -1);
 		buffMgr.unpin(buff);
 	}

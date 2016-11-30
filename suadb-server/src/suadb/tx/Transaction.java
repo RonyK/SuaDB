@@ -1,7 +1,8 @@
 package suadb.tx;
 
-import suadb.server.SuaDB;
 import suadb.file.Block;
+import suadb.file.Chunk;
+import suadb.server.SuaDB;
 import suadb.buffer.*;
 import suadb.tx.recovery.RecoveryMgr;
 import suadb.tx.concurrency.ConcurrencyMgr;
@@ -18,7 +19,7 @@ public class Transaction {
 	private RecoveryMgr	 recoveryMgr;
 	private ConcurrencyMgr concurMgr;
 	private int txnum;
-	private BufferList myBuffers = new BufferList();
+	private ChunkList myChunks = new ChunkList();//Chunk list that this transaction has - CDS
 
 	/**
 	 * Creates a new transaction and its associated
@@ -47,7 +48,7 @@ public class Transaction {
 	public void commit() {
 		recoveryMgr.commit();
 		concurMgr.release();
-		myBuffers.unpinAll();
+		myChunks.unpinAll();
 		System.out.println("transaction " + txnum + " committed");
 	}
 
@@ -61,7 +62,7 @@ public class Transaction {
 	public void rollback() {
 		recoveryMgr.rollback();
 		concurMgr.release();
-		myBuffers.unpinAll();
+		myChunks.unpinAll();
 		System.out.println("transaction " + txnum + " rolled back");
 	}
 
@@ -79,92 +80,127 @@ public class Transaction {
 	}
 
 	/**
-	 * Pins the specified block.
+	 * Pins the specified chunk.
 	 * The transaction manages the suadb.buffer for the client.
-	 * @param blk a reference to the disk block
+	 * @param chunk a reference to the disk chunk
 	 */
-	public void pin(Block blk) {
-		myBuffers.pin(blk);
+	public void pin(Chunk chunk) {
+		myChunks.pin(chunk);
 	}
 
 	/**
-	 * Unpins the specified block.
-	 * The transaction looks up the suadb.buffer pinned to this block,
+	 * Unpins the specified chunk.
+	 * The transaction looks up the suadb.buffer pinned to this chunk,
 	 * and unpins it.
-	 * @param blk a reference to the disk block
+	 * @param chunk a reference to the disk chunk
 	 */
-	public void unpin(Block blk) {
-		myBuffers.unpin(blk);
+	public void unpin(Chunk chunk) {
+		myChunks.unpin(chunk);
 	}
 
 	/**
 	 * Returns the integer value stored at the
-	 * specified offset of the specified block.
-	 * The method first obtains an SLock on the block,
+	 * specified offset of the specified chunk.
+	 * The method first obtains an SLock on the chunk,
 	 * then it calls the suadb.buffer to retrieve the value.
-	 * @param blk a reference to a disk block
-	 * @param offset the byte offset within the block
+	 * @param chunk a reference to a disk chunk
+	 * @param offset the byte offset within the chunk
 	 * @return the integer stored at that offset
 	 */
-	public int getInt(Block blk, int offset) {
-		concurMgr.sLock(blk);
-		Buffer buff = myBuffers.getBuffer(blk);
+	public int getInt(Chunk chunk, int offset) {
+		concurMgr.sLock(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
 		return buff.getInt(offset);
 	}
 
 	/**
 	 * Returns the string value stored at the
-	 * specified offset of the specified block.
-	 * The method first obtains an SLock on the block,
+	 * specified offset of the specified chunk.
+	 * The method first obtains an SLock on the chunk,
 	 * then it calls the suadb.buffer to retrieve the value.
-	 * @param blk a reference to a disk block
-	 * @param offset the byte offset within the block
+	 * @param chunk a reference to a disk chunk
+	 * @param offset the byte offset within the chunk
 	 * @return the string stored at that offset
 	 */
-	public String getString(Block blk, int offset) {
-		concurMgr.sLock(blk);
-		Buffer buff = myBuffers.getBuffer(blk);
+	public String getString(Chunk chunk, int offset) {
+		concurMgr.sLock(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
 		return buff.getString(offset);
 	}
 
 	/**
+	 * Returns the double value stored at the
+	 * specified offset of the specified chunk.
+	 * The method first obtains an SLock on the chunk,
+	 * then it calls the suadb.buffer to retrieve the value.
+	 * @param chunk a reference to a disk chunk
+	 * @param offset the byte offset within the chunk
+	 * @return the double stored at that offset
+	 */
+	public double getDouble(Chunk chunk, int offset) {
+		concurMgr.sLock(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
+		return buff.getDouble(offset);
+	}
+
+	/**
 	 * Stores an integer at the specified offset
-	 * of the specified block.
-	 * The method first obtains an XLock on the block.
+	 * of the specified chunk.
+	 * The method first obtains an XLock on the chunk.
 	 * It then reads the current value at that offset,
 	 * puts it into an update log suadb.record, and
 	 * writes that suadb.record to the log.
 	 * Finally, it calls the suadb.buffer to store the value,
 	 * passing in the LSN of the log suadb.record and the transaction's id.
-	 * @param blk a reference to the disk block
-	 * @param offset a byte offset within that block
+	 * @param chunk a reference to the disk chunk
+	 * @param offset a byte offset within that chunk
 	 * @param val the value to be stored
 	 */
-	public void setInt(Block blk, int offset, int val) {
-		concurMgr.xLock(blk);
-		Buffer buff = myBuffers.getBuffer(blk);
+	public void setInt(Chunk chunk, int offset, int val) {
+		concurMgr.xLock(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
 		int lsn = recoveryMgr.setInt(buff, offset, val);
 		buff.setInt(offset, val, txnum, lsn);
 	}
 
 	/**
 	 * Stores a string at the specified offset
-	 * of the specified block.
-	 * The method first obtains an XLock on the block.
+	 * of the specified chunk.
+	 * The method first obtains an XLock on the chunk.
 	 * It then reads the current value at that offset,
 	 * puts it into an update log suadb.record, and
 	 * writes that suadb.record to the log.
 	 * Finally, it calls the suadb.buffer to store the value,
 	 * passing in the LSN of the log suadb.record and the transaction's id.
-	 * @param blk a reference to the disk block
-	 * @param offset a byte offset within that block
+	 * @param chunk a reference to the disk chunk
+	 * @param offset a byte offset within that chunk
 	 * @param val the value to be stored
 	 */
-	public void setString(Block blk, int offset, String val) {
-		concurMgr.xLock(blk);
-		Buffer buff = myBuffers.getBuffer(blk);
+	public void setString(Chunk chunk, int offset, String val) {
+		concurMgr.xLock(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
 		int lsn = recoveryMgr.setString(buff, offset, val);
 		buff.setString(offset, val, txnum, lsn);
+	}
+
+	/**
+	 * Stores an double at the specified offset
+	 * of the specified chunk.
+	 * The method first obtains an XLock on the chunk.
+	 * It then reads the current value at that offset,
+	 * puts it into an update log suadb.record, and
+	 * writes that suadb.record to the log.
+	 * Finally, it calls the suadb.buffer to store the value,
+	 * passing in the LSN of the log suadb.record and the transaction's id.
+	 * @param chunk a reference to the disk chunk
+	 * @param offset a byte offset within that chunk
+	 * @param val the value to be stored
+	 */
+	public void setDouble(Chunk chunk, int offset, double val) {
+		concurMgr.xLock(chunk);
+		ChunkBuffer buff = myChunks.getBuffer(chunk);
+		int lsn = recoveryMgr.setDouble(buff, offset, val);
+		buff.setDouble(offset, val, txnum, lsn);
 	}
 
 	/**
@@ -176,31 +212,48 @@ public class Transaction {
 	 * @return the number of blocks in the suadb.file
 	 */
 	public int size(String filename) {
-		Block dummyblk = new Block(filename, END_OF_FILE);
+		Chunk dummyblk = new Chunk(filename, END_OF_FILE);
 		concurMgr.sLock(dummyblk);
 		return SuaDB.fileMgr().size(filename);
-	}
-
-	/**
-	 * Appends a new block to the end of the specified suadb.file
-	 * and returns a reference to it.
-	 * This method first obtains an XLock on the
-	 * "end of the suadb.file", before performing the append.
-	 * @param filename the name of the suadb.file
-	 * @param fmtr the formatter used to initialize the new page
-	 * @return a reference to the newly-created disk block
-	 */
-	public Block append(String filename, PageFormatter fmtr) {
-		Block dummyblk = new Block(filename, END_OF_FILE);
-		concurMgr.xLock(dummyblk);
-		Block blk = myBuffers.pinNew(filename, fmtr);
-		unpin(blk);
-		return blk;
 	}
 
 	private static synchronized int nextTxNumber() {
 		nextTxNum++;
 		System.out.println("new transaction: " + nextTxNum);
 		return nextTxNum;
+	}
+
+	/**
+	 * Appends a new block(one-block-sized chunk) to the end of the specified file
+	 * and returns a reference to it.
+	 * This method first obtains an XLock on the
+	 * "end of the file", before performing the append.
+	 * @param filename the name of the file
+	 * @param fmtr the formatter used to initialize the new page
+	 * @return a reference to the newly-created disk block
+	 */
+	public Chunk append(String filename, PageFormatter fmtr) {
+		Chunk dummyChunk = new Chunk(filename, END_OF_FILE);
+		concurMgr.xLock(dummyChunk);
+		Chunk chunk = myChunks.pinNew(filename, fmtr, 1);//Appends a new block(one-block-sized chunk)
+		unpin(chunk);
+		return chunk;
+	}
+	/**
+	 * create new chunk file.
+	 *
+	 * @param fileName
+	 * @param fmtr
+	 * @param numberOfBlocks
+	 * @return
+	 */
+	public Chunk createNewChunk(String fileName, PageFormatter fmtr, int numberOfBlocks){
+		Chunk dummyChunk = new Chunk(fileName, END_OF_FILE);
+		concurMgr.xLock(dummyChunk);
+
+		Chunk chunk = myChunks.pinNew(fileName, fmtr, numberOfBlocks);
+		unpin(chunk);
+
+		return chunk;
 	}
 }

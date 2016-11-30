@@ -18,9 +18,9 @@ public interface Plan {
 	public Scan	open();
 
 	/**
-	 * Returns an estimate of the number of block accesses
+	 * Returns an estimate of the number of chunk accesses
 	 * that will occur when the scan is read to completion.
-	 * @return the estimated number of block accesses
+	 * @return the estimated number of chunk accesses
 	 */
 	public int	 blocksAccessed();
 

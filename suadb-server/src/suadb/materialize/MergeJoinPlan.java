@@ -49,11 +49,11 @@ public class MergeJoinPlan implements Plan {
 	}
 
 	/**
-	 * Returns the number of block acceses required to
+	 * Returns the number of chunk acceses required to
 	 * mergejoin the sorted tables.
 	 * Since a mergejoin can be preformed with a single
 	 * pass through each table, the method returns
-	 * the sum of the block accesses of the
+	 * the sum of the chunk accesses of the
 	 * materialized sorted tables.
 	 * It does <i>not</i> include the one-time cost
 	 * of materializing and sorting the records.

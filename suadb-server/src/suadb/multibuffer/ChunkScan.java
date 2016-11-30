@@ -1,9 +1,11 @@
 package suadb.multibuffer;
 
 import static java.sql.Types.INTEGER;
+
+import suadb.file.Block;
+import suadb.file.Chunk;
 import suadb.tx.Transaction;
 import suadb.record.*;
-import suadb.file.Block;
 import suadb.query.*;
 
 import java.util.ArrayList;
@@ -22,8 +24,8 @@ public class ChunkScan implements Scan {
 	/**
 	 * Creates a chunk consisting of the specified pages.
 	 * @param ti the suadb.metadata for the chunked table
-	 * @param startbnum the starting block number
-	 * @param endbnum  the ending block number
+	 * @param startbnum the  starting chunk number
+	 * @param endbnum  the ending chunk number
 	 * @param tx the current transaction
 	 */
 	public ChunkScan(TableInfo ti, int startbnum, int endbnum, Transaction tx) {
@@ -33,6 +35,7 @@ public class ChunkScan implements Scan {
 		this.sch = ti.schema();
 		String filename = ti.fileName();
 		for (int i=startbnum; i<=endbnum; i++) {
+			// TODO :: Pass over size of chunk using ArrayInfo or Schema when you make a new Chunk.
 			Block blk = new Block(filename, i);
 			pages.add(new RecordPage(blk, ti, tx));
 		}
@@ -48,9 +51,9 @@ public class ChunkScan implements Scan {
 	}
 
 	/**
-	 * Moves to the next suadb.record in the current block of the chunk.
+	 * Moves to the next suadb.record in the current chunk of the chunk.
 	 * If there are no more records, then make
-	 * the next block be current.
+	 * the next chunk be current.
 	 * If there are no more blocks in the chunk, return false.
 	 * @see suadb.query.Scan#next()
 	 */

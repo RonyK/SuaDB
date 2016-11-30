@@ -2,8 +2,8 @@ package suadb.record;
 
 /**
  * An identifier for a suadb.record within a suadb.file.
- * A RID consists of the block number in the suadb.file,
- * and the ID of the suadb.record in that block.
+ * A RID consists of the chunk number in the suadb.file,
+ * and the ID of the suadb.record in that chunk.
  * @author Edward Sciore
  */
 public class RID {
@@ -12,8 +12,8 @@ public class RID {
 
 	/**
 	 * Creates a RID for the suadb.record having the
-	 * specified ID in the specified block.
-	 * @param blknum the block number where the suadb.record lives
+	 * specified ID in the specified chunk.
+	 * @param blknum the chunk number where the suadb.record lives
 	 * @param id the suadb.record's ID
 	 */
 	public RID(int blknum, int id) {
@@ -22,8 +22,8 @@ public class RID {
 	}
 
 	/**
-	 * Returns the block number associated with this RID.
-	 * @return the block number
+	 * Returns the chunk number associated with this RID.
+	 * @return the chunk number
 	 */
 	public int blockNumber() {
 		return blknum;
