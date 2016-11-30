@@ -35,12 +35,6 @@ public class FieldNameExpression implements Expression {
 	}
 
 	/**
-	 * Returns false.
-	 * @see suadb.query.Expression#isDimensionName()
-	 */
-	public boolean isDimensionName() { return false;	}
-
-	/**
 	 * This method should never be called.
 	 * Throws a ClassCastException.
 	 * @see suadb.query.Expression#asConstant()
@@ -55,15 +49,6 @@ public class FieldNameExpression implements Expression {
 	 */
 	public String asFieldName() {
 		return fldname;
-	}
-
-	/**
-	 * This method should never be called.
-	 * Throws a ClassCastException.
-	 * @see suadb.query.Expression#asDimensionName()
-	 */
-	public String asDimensionName() {
-		throw new ClassCastException();
 	}
 
 	/**

@@ -33,13 +33,11 @@ public class Parser
 			return new IntConstant(lex.eatIntConstant());
 	}
 
-
 	public Expression expression()
 	{
 		if (lex.matchId())
-		{
 			return new FieldNameExpression(field());
-		} else
+		else
 			return new ConstantExpression(constant());
 	}
 
