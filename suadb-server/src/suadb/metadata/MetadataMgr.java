@@ -31,8 +31,8 @@ public class MetadataMgr {
 		arrayMgr.createArray(arrayName,sch,tx);
 	}
 
-	public void getArrayInfo(String arrayName, Transaction tx){
-		arrayMgr.getArrayInfo(arrayName,tx);
+	public ArrayInfo getArrayInfo(String arrayName, Transaction tx){
+		return arrayMgr.getArrayInfo(arrayName,tx);
 	}
 
 	public void createView(String viewname, String viewdef, Transaction tx) {
