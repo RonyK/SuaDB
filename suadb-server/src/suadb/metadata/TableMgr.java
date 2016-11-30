@@ -1,8 +1,13 @@
 package suadb.metadata;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import suadb.record.ArrayInfo;
+import suadb.record.RecordFile;
+import suadb.record.Schema;
+import suadb.record.TableInfo;
 import suadb.tx.Transaction;
-import suadb.record.*;
-import java.util.*;
 
 /**
  * The table manager.
@@ -77,7 +82,7 @@ public class TableMgr {
 		dimCatSchema.addIntField(STR_DIM_START);
 		dimCatSchema.addIntField(STR_DIM_END);
 		dimCatSchema.addIntField(STR_CHUNK_SIZE);
-		fldCatInfo = new TableInfo(TABLE_DIMENSION_CATALOG, dimCatSchema);
+		dimCatInfo = new TableInfo(TABLE_DIMENSION_CATALOG, dimCatSchema);
 
 		if (isNew)
 		{
@@ -140,10 +145,8 @@ public class TableMgr {
 				break;
 			}
 		}
-			
 		tcatfile.close();
 
-		RecordFile fcatfile = new RecordFile(fldCatInfo, tx);
 		Schema sch = new Schema();
 		getFiledSchema(tblname, tx, sch);
 		
