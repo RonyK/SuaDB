@@ -1,11 +1,9 @@
 package suadb.record;
 
-import suadb.file.Chunk;
-import suadb.tx.Transaction;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+
+import suadb.tx.Transaction;
 
 import static suadb.file.Page.BLOCK_SIZE;
 import static suadb.file.Page.INT_SIZE;
@@ -18,6 +16,7 @@ public class ArrayFile {
     private Transaction tx;
     private String filename;
     private CellFile currentCFiles[];
+	
     // total number of chunks of the array - IHSUH
     private int numberofchunks = 1;
 
@@ -26,7 +25,6 @@ public class ArrayFile {
     private int numberofdimensions;
     // number of chunks per dimension - IHSUh
     private int numberofchunksperdimension[];
-
 
     private List<String> attributes;
     private int numberofattributes;
@@ -87,7 +85,7 @@ public class ArrayFile {
         int chunkindex[] = new int [numberofdimensions];
         int chunkOffset = 0;
         for(int i = 0 ; i <numberofdimensions ; i++){
-            chunkindex[i] = ( (cid.dimensionValues().get(i) - cid.arrayInfo().schema().start(dimensions.get(i)) ) / ai.schema().chunkSize(dimensions.get(i)));
+            chunkindex[i] = ( (cid.dimensionValues().get(i) - ai.schema().start(dimensions.get(i)) ) / ai.schema().chunkSize(dimensions.get(i)));
         }
         for(int i = 0  ; i < numberofdimensions ; i++){
             int numberchunksinfollowingdimension = 1;
@@ -108,15 +106,14 @@ public class ArrayFile {
         int dimensionvalueinchunk[] = new int [numberofdimensions];
         int offset = 0;
         for(int i = 0 ; i < numberofdimensions ; i++){
-            dimensionvalueinchunk[i] = cid.dimensionValues().get(i) - cid.arrayInfo().schema().start(dimensions.get(i));
-            dimensionvalueinchunk[i] %= cid.arrayInfo().schema().chunkSize(dimensions.get(i));
+            dimensionvalueinchunk[i] = cid.dimensionValues().get(i) - ai.schema().start(dimensions.get(i));
+            dimensionvalueinchunk[i] %= ai.schema().chunkSize(dimensions.get(i));
          }
-
 
         for(int i = 0  ; i < numberofdimensions ; i++){
             int numbercellsinfollowingdimension = 1;
             for (int j = i+1; j < numberofdimensions ; j++){
-                numbercellsinfollowingdimension *= cid.arrayInfo().schema().chunkSize(dimensions.get(j));
+                numbercellsinfollowingdimension *= ai.schema().chunkSize(dimensions.get(j));
             }
             offset += numbercellsinfollowingdimension * (dimensionvalueinchunk[i]);
         }
@@ -131,7 +128,6 @@ public class ArrayFile {
             currentCFiles[j].close();
         }
     }
-
 
     /**
      * Positions the current suadb.record so that a call to method next
@@ -154,21 +150,24 @@ public class ArrayFile {
    //     currentCFiles[index].moveToId(0);
     }
 
-
     /**
      * Moves to the next suadb.record. Returns false if there
      * is no next suadb.record.
      * @return false if there is no next suadb.record.
      */
-
-    public void next() {
-
-        for( int j = 0 ; j < numberofattributes ; j++){
-            currentCFiles[j].next();
-        }
-        return ;
+    public boolean next()
+    {
+	    if(numberofattributes <= 0)
+		    return false;
+	
+	    boolean result = true;
+	    for( int j = 0 ; j < numberofattributes ; j++)
+	    {
+		    result &= currentCFiles[j].next();
+	    }
+	
+	    return result;
     }
-
 
     public boolean next(String attributename) {
         int index = attributes.indexOf(attributename);
@@ -176,7 +175,6 @@ public class ArrayFile {
             return false;
         return currentCFiles[index].next();
     }
-
 
     /**
      * Returns the value of the specified field
@@ -188,7 +186,6 @@ public class ArrayFile {
         if( index < 0)
             return -1;
         return currentCFiles[index].getInt();
-
     }
 
     /**
@@ -262,7 +259,6 @@ public class ArrayFile {
         currentCFiles[index].moveToId(calculateCellOffsetInChunk(cid));
     }
 
-
     /**
      * Returns the RID of the current suadb.record.
      * @return a suadb.record identifier
@@ -276,7 +272,7 @@ public class ArrayFile {
     }
     */
 
-
-
-
+	// TODO :: Insert()                     - RonyK
+	// insert data sequentially.
+	// TODO :: Insert(Dimension[] dim)      - RonyK
 }
