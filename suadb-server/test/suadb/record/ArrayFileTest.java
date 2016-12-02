@@ -102,6 +102,12 @@ public class ArrayFileTest  extends SuaDBTestBase {
                     arrayfile.moveToCid(cid);
                     assertTrue( (arrayfile.getInt("attA"))== index) ;
                     assertTrue( (arrayfile.getString("attB")).equals(Integer.toString(index))) ;
+
+                    CID dimensionTest = arrayfile.getCurrentDimensionValues();
+                    assertTrue(dimensionTest.dimensionValues().get(0) == i);
+                    assertTrue(dimensionTest.dimensionValues().get(1) == j);
+                    assertTrue(dimensionTest.dimensionValues().get(2) == k);
+
                     index++;
                 }
             }

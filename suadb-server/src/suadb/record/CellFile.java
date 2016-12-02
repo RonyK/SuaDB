@@ -3,6 +3,10 @@ package suadb.record;
 import suadb.file.Chunk;
 import suadb.tx.Transaction;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 /**
  * Manages a suadb.file of records.
  * There are methods for iterating through the records
@@ -19,12 +23,12 @@ public class CellFile {
     private int numberofblocks;
     private int numberofchunks;         // this variable is needed in order to find out if the current chunk is the last one
 
-    /**
-     * Constructs an object to manage a suadb.file of records.
-     * If the suadb.file does not exist, it is created.
-     * @param ai the table suadb.metadata
-     * @param tx the transaction
-     */
+	/**
+	 * Constructs an object to manage a suadb.file of records.
+	 * If the suadb.file does not exist, it is created.
+	 * @param ai the table suadb.metadata
+	 * @param tx the transaction
+	 */
 
     /**
      * Constructs an object to manage a suadb.file of records.
@@ -44,6 +48,7 @@ public class CellFile {
         this.numberofchunks = numberofchunks;
         // move to the specified chunk , updates itself
         moveTo(chunknum);
+
     }
 
     private String assignName(ArrayInfo ai, String attributename, int currentchunknum){
@@ -177,5 +182,62 @@ public class CellFile {
         tx.createNewChunk(filename, fmtr,numberofblocks);
 
     }
+
+
+	/**
+
+     * Get current CID for identifying dimensions.
+     * @return CID
+     */
+    public CID getCurrentCID(){
+        return new CID(getCurrentDimensionValues(),ai);
+    }
+
+	/**
+	 * Get current dimension values.
+	 * @return List<Integer> the dimension.
+	 */
+    private List<Integer> getCurrentDimensionValues(){
+        //현재 몇번째 chunk == currentchunknum
+	    Schema schema = ai.schema();
+	    List<String> dimensions =  new ArrayList<String>(ai.schema().dimensions());
+	    int numOfDimensions = dimensions.size();
+	    List<Integer> result = new ArrayList<Integer>();
+
+		//Convert logical chunk number to the left bottom cell's coordinate of the chunk.
+	    int chunkNum = currentchunknum;
+	    int temp;
+	    for(int i=0;i<numOfDimensions;i++){
+		    temp=1;
+		    for(int j=i+1;j<numOfDimensions;j++)
+			    temp *= schema.getNumOfChunk(dimensions.get(j));
+
+		    result.add(
+				    (chunkNum/temp) * schema.chunkSize(dimensions.get(i)));
+		    chunkNum %= temp;
+	    }
+
+	    //Calculate the coordinate of the slot in the chunk.
+	    int currentSlotNum = cp.currentId();
+	    for(int i=0;i<numOfDimensions;i++){
+		    temp = 1;
+		    for(int j=i+1;j<numOfDimensions;j++)
+			    temp *= schema.chunkSize(dimensions.get(j));
+
+		    result.set(i,
+				    result.get(i) + (currentSlotNum/temp));
+		    currentSlotNum %= temp;
+	    }
+
+	    return result;
+    }
+
+	/**
+	 * Get current chunk number.
+	 * @return
+	 */
+	public int getCurrentchunknum() {
+		return currentchunknum;
+	}
 }
 

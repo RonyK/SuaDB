@@ -1,5 +1,6 @@
 package suadb.record;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,10 +35,12 @@ public class CID {
     }
 
     public String toString() {
+        ArrayList<String> dimensions = new ArrayList<String>(arrayinfo.schema().dimensions());
+
         String retString = "[";
         for(int i = 0 ; i < dimensionvalues.size() ; i++){
-            retString += " " + i + " : ";
-            retString += dimensionvalues.get(i) + " ";
+            retString += " " + dimensions.get(i) + " : ";
+            retString += dimensionvalues.get(i) + "   ";
         }
         retString += "]";
         return retString;
