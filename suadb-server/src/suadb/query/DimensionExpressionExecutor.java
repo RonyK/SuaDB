@@ -54,7 +54,7 @@ public class DimensionExpressionExecutor implements ExpressionExecutor
 	@Override
 	public Constant evaluate(Scan s)
 	{
-		return s.getDimension(dimensionName);
+		return s.getDimensionVal(dimensionName);
 	}
 	
 	@Override

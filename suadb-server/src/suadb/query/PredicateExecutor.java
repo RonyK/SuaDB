@@ -14,6 +14,8 @@ import suadb.parse.Predicate;
 import suadb.parse.Term;
 import suadb.record.Schema;
 
+import static suadb.query.ExpressionExecutorFactory.createExpressionExecutor;
+
 /**
  * Created by Rony on 2016-12-05.
  */
@@ -219,27 +221,5 @@ public class PredicateExecutor
 		while (iter.hasNext())
 			result += " and " + iter.next().toString();
 		return result;
-	}
-	
-	private ExpressionExecutor createExpressionExecutor(Expression e, Schema schema)
-	{
-		if(e instanceof ConstantExpression)
-		{
-			return new ConstantExpressionExecutor(((ConstantExpression) e).val());
-		}else if (e instanceof FieldNameExpression)
-		{
-			if(schema.hasDimension(((FieldNameExpression) e).fldname()))
-			{
-				return new DimensionExpressionExecutor(((FieldNameExpression) e).fldname());
-			} else if(schema.hasField(((FieldNameExpression) e).fldname()))
-			{
-				return new FieldExpressionExecutor(((FieldNameExpression) e).fldname());
-			}else
-			{
-				throw new BadSyntaxException();
-			}
-		}else {
-			throw new BadSyntaxException();
-		}
 	}
 }

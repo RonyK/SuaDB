@@ -130,6 +130,30 @@ public class SortScan implements Scan {
 	public boolean hasField(String fldname) {
 		return currentscan.hasField(fldname);
 	}
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		if(s1.hasDimension(dimName))
+		{
+			return s1.getDimensionVal(dimName);
+		}else
+		{
+			return s2.getDimensionVal(dimName);
+		}
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		if(s1.hasDimension(dimName))
+		{
+			return s1.getDimension(dimName);
+		}else
+		{
+			return s2.getDimension(dimName);
+		}
+	}
 
 	public boolean hasDimension(String dimname) {
 		return currentscan.hasDimension(dimname);

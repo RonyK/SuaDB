@@ -113,9 +113,33 @@ public class ProductScan implements Scan {
 	public boolean hasField(String fldname) {
 		return s1.hasField(fldname) || s2.hasField(fldname);
 	}
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		if(s1.hasDimension(dimName))
+		{
+			return s1.getDimensionVal(dimName);
+		}else
+		{
+			return s2.getDimensionVal(dimName);
+		}
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		if(s1.hasDimension(dimName))
+		{
+			return s1.getDimension(dimName);
+		}else
+		{
+			return s2.getDimension(dimName);
+		}
+	}
 
-	public boolean hasDimension(String dimname) {
-		return s1.hasDimension(dimname);
+	public boolean hasDimension(String dimName) {
+		return s1.hasDimension(dimName) || s2.hasDimension(dimName);
 	}
 
 	public void moveToCid(CID cid) { s1.moveToCid(cid); }

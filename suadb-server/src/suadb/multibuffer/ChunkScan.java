@@ -110,11 +110,22 @@ public class ChunkScan implements Scan {
 	public boolean hasField(String fldname) {
 		return sch.hasField(fldname);
 	}
-
-/**
- * @see suadb.query.Scan#hasDimension(java.lang.String)
- */
-
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		return rp.getDimensionVal(dimName);
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		return rp.getDimension(dimName);
+	}
+	
+	/**
+	 * @see suadb.query.Scan#hasDimension(java.lang.String)
+	 */
 	public boolean hasDimension(String dimname) { return sch.hasDimension(dimname); }
 
 	//TODO

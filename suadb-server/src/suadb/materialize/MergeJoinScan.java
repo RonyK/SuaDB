@@ -138,7 +138,31 @@ public class MergeJoinScan implements Scan {
 	public boolean hasField(String fldname) {
 		return s1.hasField(fldname) || s2.hasField(fldname);
 	}
-
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		if(s1.hasDimension(dimName))
+		{
+			return s1.getDimensionVal(dimName);
+		}else
+		{
+			return s2.getDimensionVal(dimName);
+		}
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		if(s1.hasDimension(dimName))
+		{
+			return s1.getDimension(dimName);
+		}else
+		{
+			return s2.getDimension(dimName);
+		}
+	}
+	
 	//TODO : Binary operator scan has two current coordinates
 	public List<Integer> getCurrentDimension() { return  s1.getCurrentDimension(); }
 	public void moveToCid(CID cid) { s1.moveToCid(cid); }

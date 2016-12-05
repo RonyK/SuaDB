@@ -70,6 +70,18 @@ public class ProjectScan implements Scan {
 	public boolean hasField(String fldname) {
 		return fieldlist.contains(fldname);
 	}
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		return s.getDimensionVal(dimName);
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		return s.getDimension(dimName);
+	}
 
 	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
 

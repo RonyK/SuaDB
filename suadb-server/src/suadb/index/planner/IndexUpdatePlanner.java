@@ -2,6 +2,8 @@ package suadb.index.planner;
 
 import java.util.Map;
 
+import suadb.record.ArrayInfo;
+import suadb.record.Schema;
 import suadb.server.SuaDB;
 import suadb.tx.Transaction;
 import suadb.index.Index;
@@ -9,6 +11,8 @@ import suadb.metadata.IndexInfo;
 import suadb.parse.*;
 import suadb.planner.*;
 import suadb.query.*;
+
+import static suadb.query.ExpressionExecutorFactory.createExpressionExecutor;
 
 /**
  * A modification of the basic update suadb.planner.
@@ -71,10 +75,13 @@ public class IndexUpdatePlanner implements UpdatePlanner {
 		Index idx = (ii == null) ? null : ii.open();
 
 		UpdateScan s = (UpdateScan) p.open();
+		ArrayInfo ai = SuaDB.mdMgr().getArrayInfo(data.tableName(), tx);
+		Schema schema = ai.schema();
+		ExpressionExecutor pe = createExpressionExecutor(data.newValue(), schema);
 		int count = 0;
 		while(s.next()) {
 			// first, update the suadb.record
-			Constant newval = data.newValue().evaluate(s);
+			Constant newval = pe.evaluate(s);
 			Constant oldval = s.getVal(fldname);
 			s.setVal(data.targetField(), newval);
 

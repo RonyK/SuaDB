@@ -1,9 +1,13 @@
 package suadb.planner;
 
+import suadb.record.ArrayInfo;
+import suadb.record.Schema;
 import suadb.server.SuaDB;
 import suadb.tx.Transaction;
 import suadb.parse.*;
 import suadb.query.*;
+
+import static suadb.query.ExpressionExecutorFactory.createExpressionExecutor;
 
 /**
  * The basic suadb.planner for SQL update statements.
@@ -28,9 +32,12 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 		Plan p = new TablePlan(data.tableName(), tx);
 		p = new SelectPlan(p, data.pred());
 		UpdateScan us = (UpdateScan) p.open();
+		ArrayInfo ai = SuaDB.mdMgr().getArrayInfo(data.tableName(), tx);
+		Schema schema = ai.schema();
+		ExpressionExecutor pe = createExpressionExecutor(data.newValue(), schema);
 		int count = 0;
 		while(us.next()) {
-			Constant val = data.newValue().evaluate(us);
+			Constant val = pe.evaluate(us);
 			us.setVal(data.targetField(), val);
 			count++;
 		}
@@ -38,6 +45,7 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 		return count;
 	}
 
+	// TODO :: UpdatePlanner For Array
 	public int executeInsert(InsertData data, Transaction tx) {
 		Plan p = new TablePlan(data.tableName(), tx);
 		UpdateScan us = (UpdateScan) p.open();

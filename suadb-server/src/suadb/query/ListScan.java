@@ -65,6 +65,18 @@ public class ListScan implements Scan
 	{
 		return s.hasField(fldname);
 	}
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		return s.getDimensionVal(dimName);
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		return s.getDimension(dimName);
+	}
 
 	@Override
 	public boolean hasDimension(String dimname)

@@ -9,5 +9,5 @@ import suadb.record.Schema;
  *
  */
 public interface Expression {
-
+	
 }

@@ -100,9 +100,15 @@ public class ArrayScan implements UpdateScan
 	}
 	
 	@Override
-	public Constant getDimension(String dimName)
+	public Constant getDimensionVal(String dimName)
 	{
-		
+		return rf.getDimensionVal(dimName);
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		return rf.getDimension(dimName);
 	}
 	
 	//TODO : Merge with ArrayFile.currentCID implementation

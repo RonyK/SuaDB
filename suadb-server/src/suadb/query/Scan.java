@@ -68,13 +68,15 @@ public interface Scan {
 	 */
 
 	public boolean hasDimension(String dimname);
-
+	
 	/**
 	 * Returns the value of the dimensions
 	 * in the current suadb.record.
 	 * @return the dimensions' value in the current suadb.record
 	 */
-	public Constant      getDimension(String dimName);
+	public Constant getDimensionVal(String dimName);
+
+	public int      getDimension(String dimName);
 	
 	public List<Integer> getCurrentDimension();
 

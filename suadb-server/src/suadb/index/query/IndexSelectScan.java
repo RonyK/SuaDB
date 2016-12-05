@@ -101,7 +101,19 @@ public class IndexSelectScan implements Scan {
 	public boolean hasField(String fldname) {
 		return ts.hasField(fldname);
 	}
-
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		return ts.getDimensionVal(dimName);
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		return ts.getDimension(dimName);
+	}
+	
 	public boolean hasDimension(String dimname) { return ts.hasDimension(dimname); }
 
 	public void moveToCid(CID cid) { ts.moveToCid(cid); }

@@ -109,7 +109,19 @@ public class MultiBufferProductScan implements Scan {
 	public boolean hasField(String fldname) {
 		return prodscan.hasField(fldname);
 	}
-
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		return prodscan.getDimensionVal(dimName);
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		return prodscan.getDimension(dimName);
+	}
+	
 	public boolean hasDimension(String dimname) {
 		return prodscan.hasDimension(dimname);
 	}

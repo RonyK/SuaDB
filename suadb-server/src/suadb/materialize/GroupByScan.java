@@ -132,7 +132,19 @@ public class GroupByScan implements Scan {
 			return true;
 		return false;
 	}
-
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		return s.getDimensionVal(dimName);
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		return s.getDimension(dimName);
+	}
+	
 	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
 
 	public void moveToCid(CID cid) { s.moveToCid(cid); }

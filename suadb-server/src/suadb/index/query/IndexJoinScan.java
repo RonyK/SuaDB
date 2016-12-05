@@ -111,8 +111,19 @@ public class IndexJoinScan implements Scan {
 		else
 			return s.getString(fldname);
 	}
-
-	//TODO : Binary operator scan has two current coordinates
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		return ts.getDimensionVal(dimName);
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		return ts.getDimension(dimName);
+	}
+	
 	public List<Integer> getCurrentDimension() { return  ts.getCurrentDimension(); }
 
 	/** Returns true if the field is in the schema.

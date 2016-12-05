@@ -23,7 +23,7 @@ public class FieldNameExpression implements Expression {
 	{
 		return fldname;
 	}
-	
+		
 	public String toString() {
 		return fldname;
 	}

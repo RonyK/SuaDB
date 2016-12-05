@@ -119,4 +119,16 @@ public class TableScan implements UpdateScan {
 	public void moveToRid(RID rid) {
 		rf.moveToRid(rid);
 	}
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		throw new UnsupportedOperationException();
+	}
 }

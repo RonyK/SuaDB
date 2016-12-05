@@ -57,6 +57,18 @@ public class FilterScan implements Scan
 	public String getString(String fldname) {
 		return s.getString(fldname);
 	}
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		return s.getDimensionVal(dimName);
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		return s.getDimension(dimName);
+	}
 
 	public List<Integer> getCurrentDimension() { return  s.getCurrentDimension(); }
 	

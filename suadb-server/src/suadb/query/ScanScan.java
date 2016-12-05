@@ -56,6 +56,18 @@ public class ScanScan implements UpdateScan
 	public boolean hasField(String fldname) {
 		return s.hasField(fldname);
 	}
+	
+	@Override
+	public Constant getDimensionVal(String dimName)
+	{
+		return s.getDimensionVal(dimName);
+	}
+	
+	@Override
+	public int getDimension(String dimName)
+	{
+		return s.getDimension(dimName);
+	}
 
 	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
 
@@ -89,8 +101,6 @@ public class ScanScan implements UpdateScan
 		UpdateScan us = (UpdateScan) s;
 		us.insert();
 	}
-
-
 	
 //	public RID getRid() {
 //		UpdateScan us = (UpdateScan) s;
