@@ -1,5 +1,7 @@
 package suadb.record;
 
+import suadb.parse.Constant;
+import suadb.parse.IntConstant;
 import suadb.tx.Transaction;
 import java.util.ArrayList;
 import java.util.List;
@@ -369,8 +371,18 @@ public class ArrayFile
     
     public int getDimension(String dimName)
     {
-	    // TODO :: Return Dimension Value
-	    return 0;
+	    CID cid = getCurrentDimensionValues();
+	    int dIndex = dimensions.indexOf(dimName);
+	    
+	    return cid.dimensionValues().get(dIndex);
+    }
+    
+    public Constant getDimensionVal(String dimName)
+    {
+	    CID cid = getCurrentDimensionValues();
+	    int dIndex = dimensions.indexOf(dimName);
+	    
+	    return new IntConstant(cid.dimensionValues().get(dIndex));
     }
 
 	// TODO :: Insert()                     - RonyK

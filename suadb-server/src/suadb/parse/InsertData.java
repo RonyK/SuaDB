@@ -1,5 +1,7 @@
 package suadb.parse;
 
+import java.util.List;
+
 /**
  * Data for the SQL <i>insert</i> statement.
  * @author Edward Sciore

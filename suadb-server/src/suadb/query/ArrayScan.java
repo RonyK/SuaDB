@@ -67,7 +67,6 @@ public class ArrayScan implements UpdateScan
 	public boolean hasDimension(String dimname) { return sch.hasDimension(dimname); }
 	
 	// UpdateScan methods
-	
 	/**
 	 * Sets the value of the specified field, as a Constant.
 	 * The schema is examined to determine the field's type.
@@ -111,9 +110,12 @@ public class ArrayScan implements UpdateScan
 		return rf.getDimension(dimName);
 	}
 	
-	//TODO : Merge with ArrayFile.currentCID implementation
-	public List<Integer> getCurrentDimension() { return rf.currentCID.dimensionValues(); }
-
+	@Override
+	public List<Integer> getCurrentDimension()
+	{
+		return rf.getCurrentDimensionValues().dimensionValues();
+	}
+	
 	public void moveToCid(CID cid) { rf.moveToCid(cid);}
 	
 //	public RID getRid() {

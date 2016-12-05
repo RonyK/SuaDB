@@ -39,4 +39,18 @@ public class Term {
 	{
 		return rhs;
 	}
+	
+	@Override
+	public String toString() {
+		switch (matchCode)
+		{
+			case MATHCODE_GREATER:
+				return lhs.toString() + ">" + rhs.toString();
+			case MATHCODE_LESS:
+				return lhs.toString() + "<" + rhs.toString();
+			case MATHCODE_EQUAL:
+			default:
+				return lhs.toString() + "=" + rhs.toString();
+		}
+	}
 }
