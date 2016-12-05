@@ -2,7 +2,6 @@ package suadb.index.planner;
 
 import java.util.Map;
 
-import suadb.record.RID;
 import suadb.server.SuaDB;
 import suadb.tx.Transaction;
 import suadb.index.Index;

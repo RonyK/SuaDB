@@ -3,7 +3,9 @@ package suadb.multibuffer;
 import static java.sql.Types.INTEGER;
 
 import suadb.file.Block;
-import suadb.file.Chunk;
+import suadb.parse.Constant;
+import suadb.parse.IntConstant;
+import suadb.parse.StringConstant;
 import suadb.tx.Transaction;
 import suadb.record.*;
 import suadb.query.*;

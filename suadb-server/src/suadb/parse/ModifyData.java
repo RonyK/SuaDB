@@ -1,7 +1,5 @@
 package suadb.parse;
 
-import suadb.query.*;
-
 /**
  * Data for the SQL <i>update</i> statement.
  * @author Edward Sciore

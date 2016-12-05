@@ -1,6 +1,6 @@
 package suadb.index.btree;
 
-import suadb.query.Constant;
+import suadb.parse.Constant;
 
 /**
  * A directory entry has two components: the number of the child chunk,

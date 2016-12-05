@@ -1,4 +1,4 @@
-package suadb.query;
+package suadb.parse;
 
 /**
  * The interface that denotes values stored in the database.

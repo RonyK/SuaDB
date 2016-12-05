@@ -1,7 +1,7 @@
 package suadb.query;
 
+import suadb.parse.Constant;
 import suadb.record.CID;
-import suadb.record.RID;
 import suadb.record.Schema;
 
 import java.util.List;

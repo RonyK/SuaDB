@@ -3,8 +3,10 @@ package suadb.index.btree;
 import static java.sql.Types.INTEGER;
 import static suadb.file.Page.*;
 import suadb.file.Chunk;
+import suadb.parse.Constant;
+import suadb.parse.IntConstant;
+import suadb.parse.StringConstant;
 import suadb.record.*;
-import suadb.query.*;
 import suadb.tx.Transaction;
 
 /**

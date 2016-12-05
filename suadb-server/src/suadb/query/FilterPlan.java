@@ -1,5 +1,6 @@
 package suadb.query;
 
+import suadb.parse.Predicate;
 import suadb.record.Schema;
 
 /**
@@ -8,12 +9,12 @@ import suadb.record.Schema;
 public class FilterPlan implements Plan
 {
 	private Plan p;
-	private Predicate predicate;
+	private PredicateExecutor predicate;
 	
 	public FilterPlan(Plan p, Predicate predicate)
 	{
 		this.p = p;
-		this.predicate = predicate;
+		this.predicate = new PredicateExecutor(predicate, schema());
 	}
 	
 	@Override

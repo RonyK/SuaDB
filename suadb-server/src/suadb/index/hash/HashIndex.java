@@ -1,5 +1,6 @@
 package suadb.index.hash;
 
+import suadb.parse.Constant;
 import suadb.tx.Transaction;
 import suadb.record.*;
 import suadb.query.*;
@@ -38,7 +39,7 @@ public class HashIndex implements Index {
 	 * and then opens a table scan on the suadb.file
 	 * corresponding to the bucket.
 	 * The table scan for the previous bucket (if any) is closed.
-	 * @see suadb.index.Index#beforeFirst(suadb.query.Constant)
+	 * @see suadb.index.Index#beforeFirst(Constant)
 	 */
 	public void beforeFirst(Constant searchkey) {
 		close();
@@ -76,7 +77,7 @@ public class HashIndex implements Index {
 
 	/**
 	 * Inserts a new suadb.record into the table scan for the bucket.
-	 * @see suadb.index.Index#insert(suadb.query.Constant, suadb.record.RID)
+	 * @see suadb.index.Index#insert(Constant, suadb.record.RID)
 	 */
 	public void insert(Constant val, RID rid) {
 		beforeFirst(val);
@@ -91,7 +92,7 @@ public class HashIndex implements Index {
 	 * the bucket.  The method starts at the beginning of the
 	 * scan, and loops through the records until the
 	 * specified suadb.record is found.
-	 * @see suadb.index.Index#delete(suadb.query.Constant, suadb.record.RID)
+	 * @see suadb.index.Index#delete(Constant, suadb.record.RID)
 	 */
 	public void delete(Constant val, RID rid) {
 		beforeFirst(val);

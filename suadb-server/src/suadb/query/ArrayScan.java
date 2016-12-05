@@ -1,5 +1,8 @@
 package suadb.query;
 
+import suadb.parse.Constant;
+import suadb.parse.IntConstant;
+import suadb.parse.StringConstant;
 import suadb.record.*;
 import suadb.tx.Transaction;
 
@@ -70,7 +73,7 @@ public class ArrayScan implements UpdateScan
 	 * The schema is examined to determine the field's type.
 	 * If INTEGER, then the suadb.record suadb.file's setInt method is called;
 	 * otherwise, the setString method is called.
-	 * @see suadb.query.UpdateScan#setVal(java.lang.String, suadb.query.Constant)
+	 * @see suadb.query.UpdateScan#setVal(java.lang.String, Constant)
 	 */
 	public void setVal(String fldname, Constant val) {
 		if (sch.type(fldname) == INTEGER)
@@ -95,6 +98,13 @@ public class ArrayScan implements UpdateScan
 	public void insert() {
 //		rf.insert();
 	}
+	
+	@Override
+	public Constant getDimension(String dimName)
+	{
+		
+	}
+	
 	//TODO : Merge with ArrayFile.currentCID implementation
 	public List<Integer> getCurrentDimension() { return rf.currentCID.dimensionValues(); }
 

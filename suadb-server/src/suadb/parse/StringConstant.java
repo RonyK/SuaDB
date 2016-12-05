@@ -1,4 +1,4 @@
-package suadb.query;
+package suadb.parse;
 
 /**
  * The class that wraps Java strings as database constants.
@@ -17,7 +17,7 @@ public class StringConstant implements Constant {
 
 	/**
 	 * Unwraps the string and returns it.
-	 * @see suadb.query.Constant#asJavaVal()
+	 * @see Constant#asJavaVal()
 	 */
 	public String asJavaVal() {
 		return val;

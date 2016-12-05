@@ -1,5 +1,7 @@
 package suadb.materialize;
 
+import suadb.parse.Constant;
+import suadb.parse.IntConstant;
 import suadb.query.*;
 
 /**

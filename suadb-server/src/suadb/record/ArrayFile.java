@@ -11,7 +11,8 @@ import static suadb.file.Page.INT_SIZE;
 /**
  * Created by ILHYUN on 2016-11-17.
  */
-public class ArrayFile {
+public class ArrayFile
+{
     private ArrayInfo ai;
     private Transaction tx;
     private String filename;
@@ -66,7 +67,6 @@ public class ArrayFile {
     /*
     calculates the number of blocks in a chunk for a given attributename
      */
-
     private int getNumberOfBlocksPerChunk(String attributename){
         int numberofcellsinablock = 1;
         int numberofcellsinachunk = 1;
@@ -79,8 +79,8 @@ public class ArrayFile {
             numberofcellsinachunk*= ai.schema().chunkSize(dimensionname);
         }
         return (int) Math.ceil( (double)numberofcellsinachunk / numberofcellsinablock);
-
     }
+    
     private int getChunknumber(CID cid){
         int chunkindex[] = new int [numberofdimensions];
         int chunkOffset = 0;
@@ -205,7 +205,6 @@ public class ArrayFile {
      * in the current suadb.record.
      * @param val the new value for the field
      */
-
     public void setInt(String attributename,int val) {
         int index = attributes.indexOf(attributename);
         if (index < 0)
@@ -271,6 +270,12 @@ public class ArrayFile {
         return new CID(currentchunknum, id);
     }
     */
+    
+    public int getDimension(String dimName)
+    {
+	    // TODO :: Return Dimension Value
+	    return 0;
+    }
 
 	// TODO :: Insert()                     - RonyK
 	// insert data sequentially.

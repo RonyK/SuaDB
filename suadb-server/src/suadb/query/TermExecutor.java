@@ -1,35 +1,24 @@
 package suadb.query;
 
+import suadb.parse.Constant;
+import static suadb.parse.Term.*;
 import suadb.record.Schema;
 
 /**
- * A term is a comparison between two expressions.
- * @author Edward Sciore
- *
+ * Created by Rony on 2016-12-05.
  */
-public class Term {
-	private Expression lhs, rhs;
-	private int mathcode;
+public class TermExecutor
+{
+	private ExpressionExecutor lhs, rhs;
+	private int matchCode;
 	
-	/**
-	 * Creates a new term that compares two expressions
-	 * @param lhs  the LHS expression
-	 * @param rhs  the RHS expression
-	 * @param mathcode comparison operator type
-	 *                 0 : =
-	 *                 1 : >
-	 *                 2 : <
-	 */
-	public static final int MATHCODE_EQUAL      = 0;
-	public static final int MATHCODE_GREATER    = 1;
-	public static final int MATHCODE_LESS       = 2;
-	
-	public Term(Expression lhs, Expression rhs, int mathcode) {
+	public TermExecutor(ExpressionExecutor lhs, ExpressionExecutor rhs, int matchCode)
+	{
 		this.lhs = lhs;
 		this.rhs = rhs;
-		this.mathcode = mathcode;
+		this.matchCode = matchCode;
 	}
-
+	
 	/**
 	 * Calculates the extent to which selecting on the term reduces
 	 * the number of records output by a suadb.query.
@@ -44,7 +33,7 @@ public class Term {
 			lhsName = lhs.asFieldName();
 			rhsName = rhs.asFieldName();
 			return Math.max(p.distinctValues(lhsName),
-								 p.distinctValues(rhsName));
+					p.distinctValues(rhsName));
 		}
 		if (lhs.isFieldName()) {
 			lhsName = lhs.asFieldName();
@@ -60,7 +49,7 @@ public class Term {
 		else
 			return Integer.MAX_VALUE;
 	}
-
+	
 	/**
 	 * Determines if this term is of the form "F=c"
 	 * where F is the specified field and c is some constant.
@@ -70,7 +59,7 @@ public class Term {
 	 * @return either the constant or null
 	 */
 	public Constant equatesWithConstant(String fldname) {
-		if (mathcode!=0)
+		if (matchCode !=0)
 			return null;
 		else
 		{
@@ -86,7 +75,7 @@ public class Term {
 				return null;
 		}
 	}
-
+	
 	/**
 	 * Determines if this term is of the form "F>c"
 	 * where F is the specified field and c is some constant.
@@ -96,7 +85,7 @@ public class Term {
 	 * @return either the constant or null
 	 */
 	public Constant biggerThanConstant(String fldname) {
-		if (mathcode!=1)
+		if (matchCode !=1)
 			return null;
 		else
 		{
@@ -112,7 +101,7 @@ public class Term {
 				return null;
 		}
 	}
-
+	
 	/**
 	 * Determines if this term is of the form "F<c"
 	 * where F is the specified field and c is some constant.
@@ -122,7 +111,7 @@ public class Term {
 	 * @return either the constant or null
 	 */
 	public Constant smallerThanConstant(String fldname) {
-		if (mathcode!=2)
+		if (matchCode !=2)
 			return null;
 		else
 		{
@@ -138,7 +127,7 @@ public class Term {
 				return null;
 		}
 	}
-
+	
 	/**
 	 * Determines if this term is of the form "F1=F2"
 	 * where F1 is the specified field and F2 is another field.
@@ -148,7 +137,7 @@ public class Term {
 	 * @return either the name of the other field, or null
 	 */
 	public String equatesWithField(String fldname) {
-		if (mathcode!=0)
+		if (matchCode !=0)
 			return null;
 		else
 		{
@@ -164,7 +153,7 @@ public class Term {
 				return null;
 		}
 	}
-
+	
 	/**
 	 * Determines if this term is of the form "F1>F2"
 	 * where F1 is the specified field and F2 is another field.
@@ -174,7 +163,7 @@ public class Term {
 	 * @return either the name of the other field, or null
 	 */
 	public String biggerThanField(String fldname) {
-		if (mathcode!=1)
+		if (matchCode !=1)
 			return null;
 		else
 		{
@@ -190,7 +179,7 @@ public class Term {
 				return null;
 		}
 	}
-
+	
 	/**
 	 * Determines if this term is of the form "F1<F2"
 	 * where F1 is the specified field and F2 is another field.
@@ -200,7 +189,7 @@ public class Term {
 	 * @return either the name of the other field, or null
 	 */
 	public String smallerThanField(String fldname) {
-		if (mathcode!=2)
+		if (matchCode !=2)
 			return null;
 		else
 		{
@@ -216,7 +205,7 @@ public class Term {
 				return null;
 		}
 	}
-
+	
 	/**
 	 * Returns true if both of the term's expressions
 	 * apply to the specified schema.
@@ -226,7 +215,7 @@ public class Term {
 	public boolean appliesTo(Schema sch) {
 		return lhs.appliesTo(sch) && rhs.appliesTo(sch);
 	}
-
+	
 	/**
 	 * Returns true if both of the term's expressions
 	 * evaluate to the same constant,
@@ -238,7 +227,7 @@ public class Term {
 		Constant lhsval = lhs.evaluate(s);
 		Constant rhsval = rhs.evaluate(s);
 		
-		switch (mathcode)
+		switch (matchCode)
 		{
 			case MATHCODE_GREATER:
 			{
@@ -261,11 +250,11 @@ public class Term {
 			}
 		}
 	}
-
-	public int getMathcode() { return mathcode; }
-
+	
+	public int getMatchCode() { return matchCode; }
+	
 	public String toString() {
-		switch (mathcode)
+		switch (matchCode)
 		{
 			case MATHCODE_GREATER:
 				return lhs.toString() + ">" + rhs.toString();

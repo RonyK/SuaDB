@@ -1,5 +1,6 @@
 package suadb.query;
 
+import suadb.parse.Predicate;
 import suadb.record.Schema;
 
 /** The Plan class corresponding to the <i>select</i>
@@ -8,7 +9,7 @@ import suadb.record.Schema;
   */
 public class SelectPlan implements Plan {
 	private Plan p;
-	private Predicate pred;
+	private PredicateExecutor pred;
 
 	/**
 	 * Creates a new select node in the suadb.query tree,
@@ -18,7 +19,7 @@ public class SelectPlan implements Plan {
 	 */
 	public SelectPlan(Plan p, Predicate pred) {
 		this.p = p;
-		this.pred = pred;
+		this.pred = new PredicateExecutor(pred, schema());
 	}
 
 	/**

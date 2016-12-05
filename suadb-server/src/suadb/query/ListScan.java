@@ -1,5 +1,6 @@
 package suadb.query;
 
+import suadb.parse.Constant;
 import suadb.record.CID;
 import suadb.record.Schema;
 

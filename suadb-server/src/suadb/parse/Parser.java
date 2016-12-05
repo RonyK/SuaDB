@@ -1,7 +1,7 @@
 package suadb.parse;
 
 import java.util.*;
-import suadb.query.*;
+
 import suadb.record.Schema;
 
 import static java.sql.Types.DOUBLE;

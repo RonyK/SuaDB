@@ -1,5 +1,6 @@
 package suadb.materialize;
 
+import suadb.parse.Constant;
 import suadb.query.*;
 import java.util.*;
 

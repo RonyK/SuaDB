@@ -1,8 +1,8 @@
 package suadb.query;
 
-import suadb.parse.FilterData;
+import suadb.parse.Constant;
+import suadb.parse.Predicate;
 import suadb.record.CID;
-import suadb.record.RID;
 import suadb.record.Schema;
 
 import java.util.List;
@@ -14,9 +14,9 @@ public class FilterScan implements Scan
 {
 	private Scan s;
 	private Schema schema;
-	private Predicate predicate;
+	private PredicateExecutor predicate;
 	
-	public FilterScan(Scan s, Schema schema, Predicate predicate)
+	public FilterScan(Scan s, Schema schema, PredicateExecutor predicate)
 	{
 		this.s = s;
 		this.schema = schema;

@@ -1,6 +1,6 @@
 package suadb.query;
 
-import suadb.record.RID;
+import suadb.parse.Constant;
 
 /**
  * The interface implemented by all updateable scans.

@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import suadb.query.Expression;
-import suadb.query.Predicate;
-import suadb.query.Term;
 import suadb.test.SuaDBTestBase;
 
 import static org.junit.Assert.assertEquals;
@@ -70,28 +67,28 @@ public class ParserTest extends SuaDBTestBase
 			{
 				case 0:
 				{
-					assertEquals(terms.get(i).getMathcode(), Term.MATHCODE_GREATER);
+					assertEquals(terms.get(i).getMathCode(), Term.MATHCODE_GREATER);
 					assertEquals(lex.toString(), "0");
 					assertEquals(rex.toString(), "x");
 					break;
 				}
 				case 1:
 				{
-					assertEquals(terms.get(i).getMathcode(), Term.MATHCODE_EQUAL);
+					assertEquals(terms.get(i).getMathCode(), Term.MATHCODE_EQUAL);
 					assertEquals(lex.toString(), "x");
 					assertEquals(rex.toString(), "5");
 					break;
 				}
 				case 2:
 				{
-					assertEquals(terms.get(i).getMathcode(), Term.MATHCODE_LESS);
+					assertEquals(terms.get(i).getMathCode(), Term.MATHCODE_LESS);
 					assertEquals(lex.toString(), "3");
 					assertEquals(rex.toString(), "y");
 					break;
 				}
 				case 3:
 				{
-					assertEquals(terms.get(i).getMathcode(), Term.MATHCODE_LESS);
+					assertEquals(terms.get(i).getMathCode(), Term.MATHCODE_LESS);
 					assertEquals(lex.toString(), "y");
 					assertEquals(rex.toString(), "5");
 					break;

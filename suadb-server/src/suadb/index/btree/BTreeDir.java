@@ -3,7 +3,7 @@ package suadb.index.btree;
 import suadb.file.Chunk;
 import suadb.tx.Transaction;
 import suadb.record.TableInfo;
-import suadb.query.Constant;
+import suadb.parse.Constant;
 
 /**
  * A B-tree directory chunk.

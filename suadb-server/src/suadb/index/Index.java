@@ -1,7 +1,7 @@
 package suadb.index;
 
 import suadb.record.RID;
-import suadb.query.Constant;
+import suadb.parse.Constant;
 
 /**
  * This interface contains methods to traverse an suadb.index.

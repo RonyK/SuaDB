@@ -1,5 +1,6 @@
 package suadb.multibuffer;
 
+import suadb.parse.Constant;
 import suadb.record.CID;
 import suadb.tx.Transaction;
 import suadb.record.TableInfo;

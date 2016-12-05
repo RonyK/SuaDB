@@ -1,5 +1,6 @@
 package suadb.query;
 
+import suadb.parse.Constant;
 import suadb.record.CID;
 
 import java.util.List;
@@ -73,6 +74,8 @@ public interface Scan {
 	 * in the current suadb.record.
 	 * @return the dimensions' value in the current suadb.record
 	 */
+	public Constant      getDimension(String dimName);
+	
 	public List<Integer> getCurrentDimension();
 
 	/**

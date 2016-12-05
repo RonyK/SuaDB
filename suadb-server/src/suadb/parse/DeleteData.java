@@ -1,7 +1,5 @@
 package suadb.parse;
 
-import suadb.query.*;
-
 /**
  * Data for the SQL <i>delete</i> statement.
  * @author Edward Sciore

@@ -1,6 +1,10 @@
 package suadb.query;
 
 import static java.sql.Types.INTEGER;
+
+import suadb.parse.Constant;
+import suadb.parse.IntConstant;
+import suadb.parse.StringConstant;
 import suadb.tx.Transaction;
 import suadb.record.*;
 
@@ -83,7 +87,7 @@ public class TableScan implements UpdateScan {
 	 * The schema is examined to determine the field's type.
 	 * If INTEGER, then the suadb.record suadb.file's setInt method is called;
 	 * otherwise, the setString method is called.
-	 * @see suadb.query.UpdateScan#setVal(java.lang.String, suadb.query.Constant)
+	 * @see suadb.query.UpdateScan#setVal(java.lang.String, Constant)
 	 */
 	public void setVal(String fldname, Constant val) {
 		if (sch.type(fldname) == INTEGER)

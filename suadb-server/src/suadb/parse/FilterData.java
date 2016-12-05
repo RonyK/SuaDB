@@ -1,7 +1,5 @@
 package suadb.parse;
 
-import suadb.query.Predicate;
-
 /**
  * The operator : filter()
  *

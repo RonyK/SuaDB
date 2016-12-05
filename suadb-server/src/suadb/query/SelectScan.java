@@ -1,5 +1,7 @@
 package suadb.query;
 
+import suadb.parse.Constant;
+import suadb.parse.Predicate;
 import suadb.record.*;
 
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.List;
  */
 public class SelectScan implements UpdateScan {
 	private Scan s;
-	private Predicate pred;
+	private PredicateExecutor pred;
 
 	/**
 	 * Creates a select scan having the specified underlying
@@ -21,7 +23,7 @@ public class SelectScan implements UpdateScan {
 	 * @param s the scan of the underlying suadb.query
 	 * @param pred the selection predicate
 	 */
-	public SelectScan(Scan s, Predicate pred) {
+	public SelectScan(Scan s, PredicateExecutor pred) {
 		this.s = s;
 		this.pred = pred;
 	}

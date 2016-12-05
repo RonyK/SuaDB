@@ -1,4 +1,4 @@
-package suadb.query;
+package suadb.parse;
 
 /**
  * The class that wraps Java ints as database constants.
@@ -17,7 +17,7 @@ public class IntConstant implements Constant {
 
 	/**
 	 * Unwraps the Integer and returns it.
-	 * @see suadb.query.Constant#asJavaVal()
+	 * @see Constant#asJavaVal()
 	 */
 	public Object asJavaVal() {
 		return val;

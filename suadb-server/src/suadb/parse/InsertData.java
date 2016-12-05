@@ -1,8 +1,5 @@
 package suadb.parse;
 
-import suadb.query.Constant;
-import java.util.*;
-
 /**
  * Data for the SQL <i>insert</i> statement.
  * @author Edward Sciore

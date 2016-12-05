@@ -2,9 +2,11 @@ package suadb.index.btree;
 
 import static java.sql.Types.INTEGER;
 import suadb.file.Chunk;
+import suadb.parse.Constant;
+import suadb.parse.IntConstant;
+import suadb.parse.StringConstant;
 import suadb.tx.Transaction;
 import suadb.record.*;
-import suadb.query.*;
 import suadb.index.Index;
 
 /**
@@ -64,7 +66,7 @@ public class BTreeIndex implements Index {
 	 * having that search key.
 	 * The leaf page is kept open, for use by the methods next
 	 * and getDataRid.
-	 * @see suadb.index.Index#beforeFirst(suadb.query.Constant)
+	 * @see suadb.index.Index#beforeFirst(Constant)
 	 */
 	public void beforeFirst(Constant searchkey) {
 		close();
@@ -102,7 +104,7 @@ public class BTreeIndex implements Index {
 	 * the method calls insert on the root,
 	 * passing it the directory entry of the new leaf page.
 	 * If the root node splits, then makeNewRoot is called.
-	 * @see suadb.index.Index#insert(suadb.query.Constant, suadb.record.RID)
+	 * @see suadb.index.Index#insert(Constant, suadb.record.RID)
 	 */
 	public void insert(Constant dataval, RID datarid) {
 		beforeFirst(dataval);
@@ -122,7 +124,7 @@ public class BTreeIndex implements Index {
 	 * The method first traverses the directory to find
 	 * the leaf page containing that suadb.record; then it
 	 * deletes the suadb.record from the page.
-	 * @see suadb.index.Index#delete(suadb.query.Constant, suadb.record.RID)
+	 * @see suadb.index.Index#delete(Constant, suadb.record.RID)
 	 */
 	public void delete(Constant dataval, RID datarid) {
 		beforeFirst(dataval);
