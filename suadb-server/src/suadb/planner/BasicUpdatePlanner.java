@@ -51,7 +51,14 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 		SuaDB.mdMgr().createTable(data.arrayName(), data.newSchema(), tx);
 		return 0;
 	}
-	
+
+	public int executeInputArray(InputArrayData data, Transaction tx)
+	{
+		Plan p = new ArrayPlan(data.arrayName(), tx);
+		UpdateScan us = (UpdateScan) p.open();
+		return 0;
+	}
+
 	public int executeCreateArray(CreateArrayData data, Transaction tx)
 	{
 		SuaDB.mdMgr().createArray(data.arrayName(), data.newSchema(), tx);

@@ -51,6 +51,8 @@ public class Planner {
 			return uplanner.executeDelete((DeleteData)obj, tx);
 		else if (obj instanceof ModifyData)
 			return uplanner.executeModify((ModifyData)obj, tx);
+		else if (obj instanceof InputArrayData)
+			return uplanner.executeInputArray((InputArrayData)obj, tx);
 		else if (obj instanceof CreateArrayData)
 			return uplanner.executeCreateArray((CreateArrayData)obj, tx);
 		else if (obj instanceof CreateViewData)
