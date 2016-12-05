@@ -45,12 +45,29 @@ public class SuaDBTest extends SuaDBTestBase
 	{
 		Transaction tx = new Transaction();
 		String query =
-				"CREATE ARRAY T_D1" +
+				"CREATE ARRAY TD1" +
 				"<" +
 				"   a : int," +
 				"   b : int" +
 				">" +
 				"[x = 0:100,10, y = 0:30,6]";
+		
+		SuaDB.planner().executeUpdate(query, tx);
+	}
+	
+	@Test
+	public void test_11_create_1D_array()
+	{
+		Transaction tx = new Transaction();
+		// TODO :: Underbar delimiter unacceptable
+		// Create array fail
+		String query =
+				"CREATE ARRAY T_D1" +
+						"<" +
+						"   a : int," +
+						"   b : int" +
+						">" +
+						"[x = 0:100,10, y = 0:30,6]";
 		
 		SuaDB.planner().executeUpdate(query, tx);
 	}

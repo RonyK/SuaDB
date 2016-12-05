@@ -1,5 +1,6 @@
 package suadb.record;
 
+import java.sql.Types;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -224,6 +225,37 @@ public class Schema {
 			this.type = type;
 			this.length = length;
 		}
+		
+		@Override
+		public String toString()
+		{
+			String str;
+			
+			switch (this.type)
+			{
+				case Types.INTEGER:
+				{
+					str = "INTEGER";
+					break;
+				}
+				case Types.DOUBLE:
+				{
+					str =  "DOUBLE";
+					break;
+				}
+				case Types.VARCHAR:
+				{
+					str = "VARCHAR";
+					break;
+				}
+				default:
+				{
+					str = "UNKNOWN";
+				}
+			}
+			
+			return str + "(" + Integer.toString(this.length) + ")";
+		}
 	}
 
 	class DimensionInfo
@@ -239,6 +271,14 @@ public class Schema {
 			this.end = end;
 			this.chunkSize = chunkSize;
 			this.numOfChunk = (int) Math.ceil((double)(end-start+1)/chunkSize);
+		}
+		
+		@Override
+		public String toString()
+		{
+			return Integer.toString(start) + ":" +
+					Integer.toString(end) + "," +
+					Integer.toString(chunkSize);
 		}
 	}
 }
