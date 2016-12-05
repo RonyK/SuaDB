@@ -206,11 +206,12 @@ public class CellFile {
 
 		//Convert logical chunk number to the left bottom cell's coordinate of the chunk.
 	    int chunkNum = currentchunknum;
-	    int temp;
+	    int temp = 1;
+	    for(int i=0;i<numOfDimensions;i++)
+		    temp *= schema.getNumOfChunk(dimensions.get(i));
+
 	    for(int i=0;i<numOfDimensions;i++){
-		    temp=1;
-		    for(int j=i+1;j<numOfDimensions;j++)
-			    temp *= schema.getNumOfChunk(dimensions.get(j));
+			temp /= schema.getNumOfChunk(dimensions.get(i));
 
 		    result.add(
 				    (chunkNum/temp) * schema.chunkSize(dimensions.get(i)));
@@ -218,11 +219,13 @@ public class CellFile {
 	    }
 
 	    //Calculate the coordinate of the slot in the chunk.
+	    temp = 1;
+	    for(int i=0;i<numOfDimensions;i++)
+		    temp *= schema.chunkSize(dimensions.get(i));
+
 	    int currentSlotNum = cp.currentId();
 	    for(int i=0;i<numOfDimensions;i++){
-		    temp = 1;
-		    for(int j=i+1;j<numOfDimensions;j++)
-			    temp *= schema.chunkSize(dimensions.get(j));
+		    temp /= schema.chunkSize(dimensions.get(i));
 
 		    result.set(i,
 				    result.get(i) + (currentSlotNum/temp));
