@@ -88,6 +88,4 @@ public class ProjectScan implements Scan
 	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
 
 	public void moveToCid(CID cid) { s.moveToCid(cid);	}
-
-
 }

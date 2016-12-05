@@ -38,6 +38,14 @@ public class ChunkBufferMgr
 			}
 		}
 	}
+	
+	synchronized void flushAll()
+	{
+		for (ChunkBuffer cBuff : cBuffers)
+		{
+			cBuff.flush();
+		}
+	}
 
 	synchronized ChunkBuffer pin(Chunk chunk){
 		ChunkBuffer cBuff = findExistingBuffer(chunk);

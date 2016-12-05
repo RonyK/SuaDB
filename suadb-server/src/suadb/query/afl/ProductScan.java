@@ -144,6 +144,4 @@ public class ProductScan implements Scan
 	}
 
 	public void moveToCid(CID cid) { s1.moveToCid(cid); }
-
-
 }
