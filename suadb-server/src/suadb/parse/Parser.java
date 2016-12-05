@@ -179,7 +179,7 @@ public class Parser
 	}
 	
 // Methods for parsing input commands
-	public InsertData input() {
+	public InputArrayData input() {
 		lex.eatKeyword("input");
 		lex.eatDelim('(');
 		String arrayname = lex.eatId();
@@ -187,7 +187,7 @@ public class Parser
 		String inputfile = lex.eatId();  // 'input_file'
 		lex.eatDelim(')');
 		
-		return new InsertData(arrayname, inputfile);
+		return new InputArrayData(arrayname, inputfile);
 	}
 
 	private List<String> fieldList() {

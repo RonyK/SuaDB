@@ -100,6 +100,7 @@ public class IndexUpdatePlanner implements UpdatePlanner {
 		return count;
 	}
 
+
 	public int executeCreateTable(CreateArrayData data, Transaction tx) {
 		SuaDB.mdMgr().createTable(data.arrayName(), data.newSchema(), tx);
 		return 0;
@@ -114,7 +115,14 @@ public class IndexUpdatePlanner implements UpdatePlanner {
 		SuaDB.mdMgr().createIndex(data.indexName(), data.tableName(), data.fieldName(), tx);
 		return 0;
 	}
-	
+
+	@Override
+	public int executeInputArray(InputArrayData data, Transaction tx) {
+		Plan p = new ArrayPlan(data.arrayName(), tx);
+		UpdateScan us = (UpdateScan) p.open();
+		return 0;
+	}
+
 	@Override
 	public int executeCreateArray(CreateArrayData data, Transaction tx)
 	{

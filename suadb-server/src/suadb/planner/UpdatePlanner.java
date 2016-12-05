@@ -45,6 +45,8 @@ public interface UpdatePlanner {
 	 * @return the number of affected records
 	 */
 	public int executeCreateTable(CreateArrayData data, Transaction tx);
+
+	public int executeInputArray(InputArrayData data, Transaction tx);
 	
 	public int executeCreateArray(CreateArrayData data, Transaction tx);
 

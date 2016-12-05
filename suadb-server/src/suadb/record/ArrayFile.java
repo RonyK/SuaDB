@@ -1,5 +1,6 @@
 package suadb.record;
 
+import suadb.tx.Transaction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,11 @@ public class ArrayFile
 
     private List<String> attributes;
     private int numberofattributes;
-    /**
+
+    private List<Integer> currentDimensionValues;//Keep current coordinates of the array.
+    private boolean[] rearestAttribute;//Manage rearest attributes. true == rearest
+
+    /**sdf
      * Constructs an object to manage a suadb.file of records.
      * If the suadb.file does not exist, it is created.
      * @param ai the table suadb.metadata
@@ -43,6 +48,9 @@ public class ArrayFile
         dimensions = new ArrayList<String>(ai.schema().dimensions());
         attributes = new ArrayList<String>(ai.schema().attributes());
         this.numberofdimensions = dimensions.size();
+        currentDimensionValues = new ArrayList<Integer>(this.numberofdimensions);//Keep current coordinates of array.
+        rearestAttribute = new boolean[this.numberofdimensions];//Manage rearest attributes.
+
         this.numberofattributes = attributes.size();
         numberofchunksperdimension = new int[numberofdimensions];
         int index = 0;
@@ -53,6 +61,7 @@ public class ArrayFile
         }
         for(int i = 0 ; i < numberofdimensions ; i++){
             numberofchunks *= numberofchunksperdimension[i];
+            currentDimensionValues.add(0);//Initialize the current coordinate of an array.(0,0,0,...)
         }
 
         // set up CellFiles that corresponds to the array ( for each attribute )
@@ -60,8 +69,11 @@ public class ArrayFile
         int j = 0;
         for(String attributename : attributes){
             currentCFiles[j] = new CellFile(ai,tx,0,attributename,getNumberOfBlocksPerChunk(attributename),numberofchunks);
+            rearestAttribute[j] = true;//Initialize rearestAttribute.
             j++;
         }
+
+
     }
 
     /*
@@ -138,6 +150,8 @@ public class ArrayFile
             currentCFiles[j].beforeFirst();
    //         currentCFiles[j].moveTo(0);
     //        currentCFiles[j].moveToId(0);
+            rearestAttribute[j] = true;//Initialize rearestAttributes to True.
+
         }
     }
 
@@ -146,27 +160,94 @@ public class ArrayFile
         if( index < 0)
             return;
         currentCFiles[index].beforeFirst();
+        rearestAttribute[index] = true;//Initialize rearestAttributes to True.
    //     currentCFiles[index].moveTo(0);
    //     currentCFiles[index].moveToId(0);
     }
 
     /**
-     * Moves to the next suadb.record. Returns false if there
-     * is no next suadb.record.
-     * @return false if there is no next suadb.record.
+     * Moves to the next suadb.cell.
+     * @return false if there is no next suadb.cell.
      */
-    public boolean next()
-    {
-	    if(numberofattributes <= 0)
-		    return false;
-	
-	    boolean result = true;
-	    for( int j = 0 ; j < numberofattributes ; j++)
-	    {
-		    result &= currentCFiles[j].next();
-	    }
-	
-	    return result;
+
+    public boolean next(){
+        return next(attributes);
+    }
+
+    int currentChunkNum = -1; //Just for the next() function.
+    public boolean next(List<String> attributesName){
+        boolean result = false;
+        boolean initial = true;
+        List<Integer> rearCandidate = new ArrayList<Integer>(numberofattributes);
+
+
+
+        for(String attribute : attributesName){
+            int index = attributes.indexOf(attribute);
+            if(index < 0)//Invalid attribute name
+                return false;
+            if(rearestAttribute[index]){
+                result |= currentCFiles[index].next();//Call next() if the attribute is rearest.
+            }
+
+            List<Integer> dimension = currentCFiles[index].getCurrentCID().dimensionValues();
+            if(initial)
+                currentChunkNum = currentCFiles[index].getCurrentchunknum();
+
+            boolean[] rearestTestResult = rearestTest(dimension,currentCFiles[index].getCurrentchunknum());
+            if(initial || rearestTestResult[0]) {//Update the current dimension value.
+                for(int i=0;i<numberofdimensions;i++)
+                    currentDimensionValues.set(i,dimension.get(i));
+                if(rearestTestResult[1])//If all equal to current dimension value
+                    rearCandidate.add(index);
+                else {//New rearer attribute is detected.
+                    rearCandidate.clear();
+                    rearCandidate.add(index);
+                }
+                initial = false;
+            }
+        }
+
+        //Update rearestAttribute
+        for(int i=0;i<numberofattributes;i++)
+            rearestAttribute[i] = false;
+        for(int i=0;i<rearCandidate.size();i++)
+            rearestAttribute[rearCandidate.get(i)] = true;
+
+        return result;
+    }
+
+	/**
+     * Compare between currentDimensionValues and an dimension value.
+     * @param dimensionValue
+     * @param chunkNum
+     * @return rearestTest[0] == true : The attribute is rearest
+     *         rearestTest[1] == true : The attribute is equal to previous attributes.
+     */
+    public boolean[] rearestTest(List<Integer> dimensionValue,int chunkNum){
+
+        if(chunkNum < currentChunkNum) {
+            currentChunkNum = chunkNum;
+            return new boolean[]{true, false};
+        }
+
+
+
+        for(int i=0;i<numberofdimensions;i++)
+            if(dimensionValue.get(i) > currentDimensionValues.get(i))
+                return new boolean[]{false,false};
+            else if(dimensionValue.get(i) < currentDimensionValues.get(i))
+                return new boolean[]{true,false};//The dimension is the rearest.
+
+        return new boolean[]{true,true};//The dimension is the rearest.
+    }
+
+	/**
+     * Current dimension of this array for ARAM.
+     * @return CID
+     */
+    public CID getCurrentDimensionValues(){
+        return new CID(currentDimensionValues,ai);
     }
 
     public boolean next(String attributename) {
@@ -247,7 +328,13 @@ public class ArrayFile
         for( int j = 0 ; j < numberofattributes ; j++) {
             currentCFiles[j].moveTo(getChunknumber(cid));
             currentCFiles[j].moveToId(calculateCellOffsetInChunk(cid));
+
+            rearestAttribute[j] = true;//Initialize rearestAttributes to True.
         }
+
+        //Update current dimension value.
+        for(int i=0;i<numberofdimensions;i++)
+            currentDimensionValues.set(i,cid.dimensionValues().get(i));
     }
 
     public void moveToCid(String attributename, CID cid) {
@@ -256,6 +343,15 @@ public class ArrayFile
             return ;
         currentCFiles[index].moveTo(getChunknumber(cid));
         currentCFiles[index].moveToId(calculateCellOffsetInChunk(cid));
+
+        //Update current dimension value.
+        for(int i=0;i<numberofdimensions;i++)
+            currentDimensionValues.set(i,cid.dimensionValues().get(i));
+
+        //Update rearestAttribute
+        for(int j=0;j<numberofattributes;j++)//If moveToCid(String,CID) is called,
+            rearestAttribute[j] = true;//Assume all attributes are the rearest.
+        //So, if next() is called followed by this method, all attributes can call next();
     }
 
     /**
