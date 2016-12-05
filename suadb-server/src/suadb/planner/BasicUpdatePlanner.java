@@ -1,5 +1,8 @@
 package suadb.planner;
 
+import suadb.query.afl.ArrayPlan;
+import suadb.query.afl.SelectPlan;
+import suadb.query.sql.TablePlan;
 import suadb.record.ArrayInfo;
 import suadb.record.Schema;
 import suadb.server.SuaDB;

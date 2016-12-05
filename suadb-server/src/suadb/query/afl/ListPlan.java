@@ -1,6 +1,9 @@
-package suadb.query;
+package suadb.query.afl;
 
 import suadb.metadata.TableMgr;
+import suadb.query.Plan;
+import suadb.query.Scan;
+import suadb.query.sql.TablePlan;
 import suadb.record.Schema;
 import suadb.tx.Transaction;
 

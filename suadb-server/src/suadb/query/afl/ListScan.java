@@ -1,6 +1,7 @@
-package suadb.query;
+package suadb.query.afl;
 
 import suadb.parse.Constant;
+import suadb.query.Scan;
 import suadb.record.CID;
 import suadb.record.Schema;
 

@@ -1,6 +1,7 @@
-package suadb.query;
+package suadb.query.afl;
 
 import suadb.parse.Constant;
+import suadb.query.Scan;
 import suadb.record.CID;
 
 import java.util.*;
@@ -12,7 +13,8 @@ import java.util.*;
  * underlying scan.
  * @author Edward Sciore
  */
-public class ProjectScan implements Scan {
+public class ProjectScan implements Scan
+{
 	private Scan s;
 	private Collection<String> fieldlist;
 

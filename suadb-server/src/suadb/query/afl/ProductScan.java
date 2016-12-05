@@ -1,6 +1,7 @@
-package suadb.query;
+package suadb.query.afl;
 
 import suadb.parse.Constant;
+import suadb.query.Scan;
 import suadb.record.CID;
 
 import java.util.List;
@@ -10,7 +11,8 @@ import java.util.List;
  * algebra operator.
  * @author Edward Sciore
  */
-public class ProductScan implements Scan {
+public class ProductScan implements Scan
+{
 	private Scan s1, s2;
 
 	/**

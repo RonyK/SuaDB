@@ -1,6 +1,7 @@
 package suadb.index.query;
 
 import suadb.parse.Constant;
+import suadb.query.sql.TableScan;
 import suadb.tx.Transaction;
 import suadb.record.Schema;
 import suadb.metadata.IndexInfo;

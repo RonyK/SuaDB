@@ -1,46 +1,50 @@
-package suadb.query;
+package suadb.query.sql;
 
-import suadb.metadata.StatInfo;
-import suadb.record.ArrayInfo;
-import suadb.record.Schema;
-import suadb.record.TableInfo;
+import suadb.query.Plan;
+import suadb.query.Scan;
 import suadb.server.SuaDB;
 import suadb.tx.Transaction;
+import suadb.metadata.*;
+import suadb.record.*;
 
-/**
- * Created by rony on 16. 11. 18.
- */
-public class ArrayPlan implements Plan
+/** The Plan class corresponding to a table.
+  * @author Edward Sciore
+  */
+public class TablePlan implements Plan
 {
 	private Transaction tx;
-	private ArrayInfo ti;
+	private TableInfo ti;
 	private StatInfo si;
-	
-	public ArrayPlan(String arrayName, Transaction tx)
-	{
+
+	/**
+	 * Creates a leaf node in the suadb.query tree corresponding
+	 * to the specified table.
+	 * @param tblname the name of the table
+	 * @param tx the calling transaction
+	 */
+	public TablePlan(String tblname, Transaction tx) {
 		this.tx = tx;
-		ti = SuaDB.mdMgr().getArrayInfo(arrayName, tx);
-		// TODO :: Get StatInfo
-//		si = SuaDB.mdMgr().getStatInfo(arrayName, ti, tx);
+		ti = SuaDB.mdMgr().getTableInfo(tblname, tx);
+		si = SuaDB.mdMgr().getStatInfo(tblname, ti, tx);
 	}
-	
+
 	/**
 	 * Creates a table scan for this suadb.query.
 	 * @see suadb.query.Plan#open()
 	 */
 	public Scan open() {
-		return new ArrayScan(ti, tx);
+		return new TableScan(ti, tx);
 	}
-	
+
 	/**
-	 * Estimates the number of block accesses for the table,
+	 * Estimates the number of chunk accesses for the table,
 	 * which is obtainable from the statistics manager.
 	 * @see suadb.query.Plan#blocksAccessed()
 	 */
 	public int blocksAccessed() {
 		return si.blocksAccessed();
 	}
-	
+
 	/**
 	 * Estimates the number of records in the table,
 	 * which is obtainable from the statistics manager.
@@ -49,7 +53,7 @@ public class ArrayPlan implements Plan
 	public int recordsOutput() {
 		return si.recordsOutput();
 	}
-	
+
 	/**
 	 * Estimates the number of distinct field values in the table,
 	 * which is obtainable from the statistics manager.
@@ -58,7 +62,7 @@ public class ArrayPlan implements Plan
 	public int distinctValues(String fldname) {
 		return si.distinctValues(fldname);
 	}
-	
+
 	/**
 	 * Determines the schema of the table,
 	 * which is obtainable from the catalog manager.

@@ -1,6 +1,7 @@
 package suadb.index.query;
 
 import suadb.parse.Constant;
+import suadb.query.sql.TableScan;
 import suadb.record.CID;
 import suadb.record.RID;
 import suadb.query.*;
