@@ -6,7 +6,7 @@ import suadb.file.Page;
 import suadb.tx.Transaction;
 
 /**
- * Manages the placement and access of records in a chunk.
+ * Manages the placement and access of cells in a chunk.
  * @author ILHYUN
  */
 public class CellPage {
@@ -19,6 +19,7 @@ public class CellPage {
     private int currentslot = -1;
     // IHSUH blank for block
     private int blank = 0;
+
 
     /** Creates the suadb.record manager for the specified chunk.
      * The current suadb.record is set to be prior to the first one.
@@ -184,5 +185,13 @@ public class CellPage {
             currentslot++;
         }
         return false;
+    }
+
+	/**
+	 * Get the chunk for identifying dimensions.
+     * @return Chunk
+     */
+    public Chunk getChunk(){
+        return chunk;
     }
 }

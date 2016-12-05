@@ -209,6 +209,15 @@ public class Schema {
 		return dimensionInfo.get(dimensionName).chunkSize;
 	}
 
+	/**
+	 * The number of chunks == (int) Math.ceil((double)(end-start+1)/chunkSize);
+	 * @param dimensionName
+	 * @return
+	 */
+	public int getNumOfChunk(String dimensionName){
+		return dimensionInfo.get(dimensionName).numOfChunk;
+	}
+
 	class attributeInfo {
 		int type, length;
 		public attributeInfo(int type, int length) {
@@ -222,12 +231,14 @@ public class Schema {
 		int start, end, chunkSize;
 		//chunkSize : The number of cells in one chunk along one dimension - CDS
 //		int overlap;
+		int numOfChunk; // The number of chunks in the dimension
 
 		public DimensionInfo(int start, int end, int chunkSize)
 		{
 			this.start = start;
 			this.end = end;
 			this.chunkSize = chunkSize;
+			this.numOfChunk = (int) Math.ceil((double)(end-start+1)/chunkSize);
 		}
 	}
 }
