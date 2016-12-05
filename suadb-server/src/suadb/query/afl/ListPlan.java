@@ -1,6 +1,10 @@
-package suadb.query;
+package suadb.query.afl;
 
+import suadb.metadata.ArrayMgr;
 import suadb.metadata.TableMgr;
+import suadb.query.Plan;
+import suadb.query.Scan;
+import suadb.query.sql.TablePlan;
 import suadb.record.Schema;
 import suadb.tx.Transaction;
 
@@ -20,13 +24,13 @@ public class ListPlan implements Plan
 		 *      macros, namespaces, operators, queries, roles, types, users
 		 */
 		//
-		if(targetName == null || targetName.length() == 0 || targetName == "arrays")
+		if(targetName == null || targetName.length() == 0 || targetName.equals("arrays"))
 		{
 			// Default : list(arrays)
-			p = new TablePlan(TableMgr.TABLE_TABLE_CATALOG, tx);
-		}else if(targetName == "filed")
+			p = new TablePlan(ArrayMgr.TABLE_ARRAY_CATALOG, tx);
+		}else if(targetName.equals("fileds"))
 		{
-			p = new TablePlan(TableMgr.TABLE_FILED_CATALOG, tx);
+			p = new TablePlan(ArrayMgr.TABLE_ATTRIBUTE_CATALOG, tx);
 		}else
 		{
 			throw new UnsupportedOperationException(targetName);

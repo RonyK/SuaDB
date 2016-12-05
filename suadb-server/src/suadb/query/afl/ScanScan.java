@@ -1,48 +1,45 @@
-package suadb.query;
+package suadb.query.afl;
 
 import suadb.parse.Constant;
-import suadb.parse.Predicate;
+import suadb.query.Scan;
+import suadb.query.UpdateScan;
 import suadb.record.CID;
 import suadb.record.Schema;
 
 import java.util.List;
 
 /**
- * Created by Rony on 2016-11-16.
+ * Created by Aram on 2016-11-18.
  */
-public class FilterScan implements Scan
+public class ScanScan implements UpdateScan
 {
 	private Scan s;
-	private Schema schema;
-	private PredicateExecutor predicate;
-	
-	public FilterScan(Scan s, Schema schema, PredicateExecutor predicate)
+	private Schema sch;
+
+	public ScanScan(Scan s)
 	{
 		this.s = s;
-		this.schema = schema;
-		this.predicate = predicate;
 	}
 	
-	public void beforeFirst()
-	{
+	// Scan methods
+	
+	public void beforeFirst() {
 		s.beforeFirst();
 	}
-
-	public boolean next()
-	{
-		while(s.next())
-		{
-			if (predicate.isSatisfied(s))
-			{
-				return true;
-			}
-		}
-		
+	
+	/**
+	 * Move to the next suadb.record satisfying the predicate.
+	 * The method repeatedly calls next on the underlying scan
+	 * until the underlying scan contains no more records.
+	 * @see suadb.query.Scan#next()
+	 */
+	public boolean next() {
+		while (s.next())
+			return true;
 		return false;
 	}
 	
-	public void close()
-	{
+	public void close() {
 		s.close();
 	}
 	
@@ -58,6 +55,10 @@ public class FilterScan implements Scan
 		return s.getString(fldname);
 	}
 	
+	public boolean hasField(String fldname) {
+		return s.hasField(fldname);
+	}
+	
 	@Override
 	public Constant getDimensionVal(String dimName)
 	{
@@ -70,17 +71,14 @@ public class FilterScan implements Scan
 		return s.getDimension(dimName);
 	}
 
-	public List<Integer> getCurrentDimension() { return  s.getCurrentDimension(); }
-	
-	public boolean hasField(String fldname) {
-		return s.hasField(fldname);
-	}
+	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
 
-	public boolean hasDimension(String dimname) {
-		return s.hasDimension(dimname);
-	}
+	public List<Integer> getCurrentDimension() { return s.getCurrentDimension(); }
+
+	public void moveToCid(CID cid) { s.moveToCid(cid); }
 	
 	// UpdateScan methods
+	
 	public void setVal(String fldname, Constant val) {
 		UpdateScan us = (UpdateScan) s;
 		us.setVal(fldname, val);
@@ -104,11 +102,6 @@ public class FilterScan implements Scan
 	public void insert() {
 		UpdateScan us = (UpdateScan) s;
 		us.insert();
-	}
-
-	public void moveToCid(CID cid)
-	{
-		s.moveToCid(cid);
 	}
 	
 //	public RID getRid() {

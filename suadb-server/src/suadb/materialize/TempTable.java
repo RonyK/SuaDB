@@ -1,5 +1,6 @@
 package suadb.materialize;
 
+import suadb.query.sql.TableScan;
 import suadb.tx.Transaction;
 import suadb.record.*;
 import suadb.query.*;

@@ -1,5 +1,4 @@
 package suadb.planner;
-import java.util.List;
 
 import suadb.parse.ArrayData;
 import suadb.parse.FilterData;
@@ -7,12 +6,12 @@ import suadb.parse.ListData;
 import suadb.parse.ProjectData;
 import suadb.parse.QueryData;
 import suadb.parse.ScanData;
-import suadb.query.ArrayPlan;
-import suadb.query.FilterPlan;
-import suadb.query.ListPlan;
+import suadb.query.afl.ArrayPlan;
+import suadb.query.afl.FilterPlan;
+import suadb.query.afl.ListPlan;
 import suadb.query.Plan;
-import suadb.query.ProjectPlan;
-import suadb.query.ScanPlan;
+import suadb.query.afl.ProjectPlan;
+import suadb.query.afl.ScanPlan;
 import suadb.tx.Transaction;
 
 /**

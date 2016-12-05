@@ -1,5 +1,7 @@
-package suadb.query;
+package suadb.query.afl;
 
+import suadb.query.Plan;
+import suadb.query.Scan;
 import suadb.record.Schema;
 import java.util.Collection;
 
@@ -7,7 +9,8 @@ import java.util.Collection;
   * relational algebra operator.
   * @author Edward Sciore
   */
-public class ProjectPlan implements Plan {
+public class ProjectPlan implements Plan
+{
 	private Plan p;
 	private Schema schema = new Schema();
 

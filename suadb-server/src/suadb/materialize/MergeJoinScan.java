@@ -163,9 +163,10 @@ public class MergeJoinScan implements Scan {
 		}
 	}
 	
-	//TODO : Binary operator scan has two current coordinates
 	public List<Integer> getCurrentDimension() { return  s1.getCurrentDimension(); }
+	
 	public void moveToCid(CID cid) { s1.moveToCid(cid); }
+	
 	public boolean hasDimension(String dimname) {return s1.hasDimension(dimname); }
 
 

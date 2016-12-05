@@ -98,9 +98,24 @@ public class SuaDB
 	 * Creates a suadb.planner for SQL commands.
 	 * To change how the suadb.planner works, modify this method.
 	 * @return the system's suadb.planner for SQL commands
-	 */public static Planner planner() {
+	 */
+	public static Planner planner() {
 		QueryPlanner  qplanner = new BasicArrayQueryPlanner();
 		UpdatePlanner uplanner = new BasicUpdatePlanner();
 		return new Planner(qplanner, uplanner);
+	}
+	
+	public static void shutDown()
+	{
+		try
+		{
+			fm.flushAllFiles();
+		}catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		bm.flushAll();
 	}
 }

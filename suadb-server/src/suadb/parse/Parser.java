@@ -173,7 +173,6 @@ public class Parser
 	private Object create()
 	{
 		lex.eatKeyword("create");
-		lex.eatKeyword("array");
 		
 		return createArray();
 	}

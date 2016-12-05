@@ -1,13 +1,17 @@
-package suadb.query;
+package suadb.query.afl;
 
 import suadb.parse.Predicate;
+import suadb.query.Plan;
+import suadb.query.PredicateExecutor;
+import suadb.query.Scan;
 import suadb.record.Schema;
 
 /** The Plan class corresponding to the <i>select</i>
   * relational algebra operator.
   * @author Edward Sciore
   */
-public class SelectPlan implements Plan {
+public class SelectPlan implements Plan
+{
 	private Plan p;
 	private PredicateExecutor pred;
 

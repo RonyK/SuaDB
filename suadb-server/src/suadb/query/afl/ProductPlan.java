@@ -1,12 +1,15 @@
-package suadb.query;
+package suadb.query.afl;
 
+import suadb.query.Plan;
+import suadb.query.Scan;
 import suadb.record.Schema;
 
 /** The Plan class corresponding to the <i>product</i>
   * relational algebra operator.
   * @author Edward Sciore
   */
-public class ProductPlan implements Plan {
+public class ProductPlan implements Plan
+{
 	private Plan p1, p2;
 	private Schema schema = new Schema();
 

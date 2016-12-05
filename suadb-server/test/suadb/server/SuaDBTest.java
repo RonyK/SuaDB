@@ -1,5 +1,7 @@
 package suadb.server;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -18,12 +20,13 @@ import static org.junit.Assert.*;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SuaDBTest extends SuaDBTestBase
 {
-	@Test
-	public void test_00_init()
+	@BeforeClass
+	public static void init()
 	{
 		SuaDB.init(dbName);
 	}
 	
+	@Test
 	public void test_01_list()
 	{
 		Transaction tx = new Transaction();
@@ -42,7 +45,7 @@ public class SuaDBTest extends SuaDBTestBase
 	{
 		Transaction tx = new Transaction();
 		String query =
-				"CREATE ARRAY T_D1" +
+				"CREATE ARRAY TD1" +
 				"<" +
 				"   a : int," +
 				"   b : int" +
@@ -50,5 +53,28 @@ public class SuaDBTest extends SuaDBTestBase
 				"[x = 0:100,10, y = 0:30,6]";
 		
 		SuaDB.planner().executeUpdate(query, tx);
+	}
+	
+	@Test
+	public void test_11_create_1D_array()
+	{
+		Transaction tx = new Transaction();
+		// TODO :: Underbar delimiter unacceptable
+		// Create array fail
+		String query =
+				"CREATE ARRAY T_D1" +
+						"<" +
+						"   a : int," +
+						"   b : int" +
+						">" +
+						"[x = 0:100,10, y = 0:30,6]";
+		
+		SuaDB.planner().executeUpdate(query, tx);
+	}
+	
+	@AfterClass
+	public static void tearDown()
+	{
+		SuaDB.shutDown();
 	}
 }

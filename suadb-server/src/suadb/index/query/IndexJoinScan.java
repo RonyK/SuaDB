@@ -3,6 +3,7 @@ package suadb.index.query;
 import suadb.parse.Constant;
 import suadb.query.*;
 import suadb.index.Index;
+import suadb.query.sql.TableScan;
 import suadb.record.CID;
 
 import java.util.List;
