@@ -95,8 +95,11 @@ public class ArrayScan implements UpdateScan
 	public void insert() {
 //		rf.insert();
 	}
-	//TODO : Merge with ArrayFile.currentCID implementation
-	public List<Integer> getCurrentDimension() { return rf.currentCID.dimensionValues(); }
+
+	public List<Integer> getCurrentDimension() {
+		return rf.getCurrentDimensionValues().dimensionValues();
+	}
+
 
 	public void moveToCid(CID cid) { rf.moveToCid(cid);}
 	
