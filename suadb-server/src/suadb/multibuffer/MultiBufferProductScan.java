@@ -1,8 +1,11 @@
 package suadb.multibuffer;
 
+import suadb.record.CID;
 import suadb.tx.Transaction;
 import suadb.record.TableInfo;
 import suadb.query.*;
+
+import java.util.List;
 
 /** 
  * The Scan class for the muti-suadb.buffer version of the
@@ -95,6 +98,8 @@ public class MultiBufferProductScan implements Scan {
 		return prodscan.getString(fldname);
 	}
 
+	//TODO : Binary operator scan has two current coordinates
+	public List<Integer> getCurrentDimension() { return  prodscan.getCurrentDimension(); }
 	/**
 	 * Returns true if the specified field is in
 	 * either of the underlying scans.
@@ -102,6 +107,10 @@ public class MultiBufferProductScan implements Scan {
 	 */
 	public boolean hasField(String fldname) {
 		return prodscan.hasField(fldname);
+	}
+
+	public boolean hasDimension(String dimname) {
+		return prodscan.hasDimension(dimname);
 	}
 
 	private boolean useNextChunk() {
@@ -118,5 +127,7 @@ public class MultiBufferProductScan implements Scan {
 		nextblknum = end + 1;
 		return true;
 	}
+
+	public void moveToCid(CID cid) { prodscan.moveToCid(cid); }
 }
 

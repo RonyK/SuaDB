@@ -1,5 +1,9 @@
 package suadb.query;
 
+import suadb.record.CID;
+
+import java.util.List;
+
 /**
  * The interface will be implemented by each suadb.query scan.
  * There is a Scan class for each relational
@@ -40,6 +44,7 @@ public interface Scan {
 	 */
 	public int		getInt(String fldname);
 
+
 	/**
 	 * Returns the value of the specified string field
 	 * in the current suadb.record.
@@ -54,5 +59,29 @@ public interface Scan {
 	 * @return true if the scan has that field
 	 */
 	public boolean  hasField(String fldname);
+
+	/**
+	 * Returns true if the scan has the specified dimension.
+	 * @param dimname the name of the field
+	 * @return true if the scan has that field
+	 */
+
+	public boolean hasDimension(String dimname);
+
+	/**
+	 * Returns the value of the dimensions
+	 * in the current suadb.record.
+	 * @return the dimensions' value in the current suadb.record
+	 */
+	public List<Integer> getCurrentDimension();
+
+	/**
+	 * Positions the scan so that the current suadb.record has
+	 * the specified CID.
+	 * @param cid the CID of the desired suadb.record
+	 */
+	public void moveToCid(CID cid);
+
+
 
 }

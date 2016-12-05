@@ -1,6 +1,9 @@
 package suadb.materialize;
 
 import suadb.query.*;
+import suadb.record.CID;
+
+import java.util.List;
 
 /**
  * The Scan class for the <i>mergejoin</i> operator.
@@ -134,5 +137,11 @@ public class MergeJoinScan implements Scan {
 	public boolean hasField(String fldname) {
 		return s1.hasField(fldname) || s2.hasField(fldname);
 	}
-}
 
+	//TODO : Binary operator scan has two current coordinates
+	public List<Integer> getCurrentDimension() { return  s1.getCurrentDimension(); }
+	public void moveToCid(CID cid) { s1.moveToCid(cid); }
+	public boolean hasDimension(String dimname) {return s1.hasDimension(dimname); }
+
+
+}

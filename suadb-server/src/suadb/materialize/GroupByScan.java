@@ -1,6 +1,8 @@
 package suadb.materialize;
 
 import suadb.query.*;
+import suadb.record.CID;
+
 import java.util.*;
 
 /**
@@ -116,6 +118,7 @@ public class GroupByScan implements Scan {
 		return (String)getVal(fldname).asJavaVal();
 	}
 
+	public List<Integer> getCurrentDimension() { return s.getCurrentDimension(); }
 	/* Returns true if the specified field is either a
 	 * grouping field or created by an aggregation function.
 	 * @see suadb.suadb.query.Scan#hasField(java.lang.String)
@@ -128,5 +131,9 @@ public class GroupByScan implements Scan {
 			return true;
 		return false;
 	}
+
+	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
+
+	public void moveToCid(CID cid) { s.moveToCid(cid); }
 }
 

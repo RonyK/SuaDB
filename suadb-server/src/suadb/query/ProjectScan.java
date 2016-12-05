@@ -1,5 +1,7 @@
 package suadb.query;
 
+import suadb.record.CID;
+
 import java.util.*;
 
 /**
@@ -57,6 +59,8 @@ public class ProjectScan implements Scan {
 			throw new RuntimeException("field " + fldname + " not found.");
 	}
 
+	public List<Integer> getCurrentDimension() { return  s.getCurrentDimension(); }
+
 	/**
 	 * Returns true if the specified field
 	 * is in the projection list.
@@ -65,4 +69,10 @@ public class ProjectScan implements Scan {
 	public boolean hasField(String fldname) {
 		return fieldlist.contains(fldname);
 	}
+
+	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
+
+	public void moveToCid(CID cid) { s.moveToCid(cid);	}
+
+
 }

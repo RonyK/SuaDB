@@ -1,5 +1,9 @@
 package suadb.query;
 
+import suadb.record.CID;
+
+import java.util.List;
+
 /**
  * The scan class corresponding to the <i>product</i> relational
  * algebra operator.
@@ -84,6 +88,9 @@ public class ProductScan implements Scan {
 			return s2.getInt(fldname);
 	}
 
+	//TODO : Binary operator scan has two current coordinates
+	public List<Integer> getCurrentDimension() { return  s1.getCurrentDimension(); }
+
 	/**
 	 * Returns the string value of the specified field.
 	 * The value is obtained from whichever scan
@@ -105,4 +112,12 @@ public class ProductScan implements Scan {
 	public boolean hasField(String fldname) {
 		return s1.hasField(fldname) || s2.hasField(fldname);
 	}
+
+	public boolean hasDimension(String dimname) {
+		return s1.hasDimension(dimname);
+	}
+
+	public void moveToCid(CID cid) { s1.moveToCid(cid); }
+
+
 }

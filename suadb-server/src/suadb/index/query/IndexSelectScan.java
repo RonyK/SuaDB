@@ -1,8 +1,11 @@
 package suadb.index.query;
 
+import suadb.record.CID;
 import suadb.record.RID;
 import suadb.query.*;
 import suadb.index.Index;
+
+import java.util.List;
 
 /**
  * The scan class corresponding to the select relational
@@ -88,6 +91,8 @@ public class IndexSelectScan implements Scan {
 		return ts.getString(fldname);
 	}
 
+	public List<Integer> getCurrentDimension() { return ts.getCurrentDimension(); }
+
 	/**
 	 * Returns whether the data suadb.record has the specified field.
 	 * @see suadb.query.Scan#hasField(java.lang.String)
@@ -95,4 +100,8 @@ public class IndexSelectScan implements Scan {
 	public boolean hasField(String fldname) {
 		return ts.hasField(fldname);
 	}
+
+	public boolean hasDimension(String dimname) { return ts.hasDimension(dimname); }
+
+	public void moveToCid(CID cid) { ts.moveToCid(cid); }
 }

@@ -1,5 +1,6 @@
 package suadb.materialize;
 
+import suadb.record.CID;
 import suadb.record.RID;
 import suadb.query.*;
 import java.util.*;
@@ -119,6 +120,8 @@ public class SortScan implements Scan {
 		return currentscan.getString(fldname);
 	}
 
+	public List<Integer> getCurrentDimension() { return  currentscan.getCurrentDimension(); }
+
 	/**
 	 * Returns true if the specified field is in the current scan.
 	 * @see suadb.query.Scan#hasField(java.lang.String)
@@ -127,6 +130,11 @@ public class SortScan implements Scan {
 		return currentscan.hasField(fldname);
 	}
 
+	public boolean hasDimension(String dimname) {
+		return currentscan.hasDimension(dimname);
+	}
+
+	public void moveToCid(CID cid) { currentscan.moveToCid(cid); }
 	/**
 	 * Saves the position of the current suadb.record,
 	 * so that it can be restored at a later time.

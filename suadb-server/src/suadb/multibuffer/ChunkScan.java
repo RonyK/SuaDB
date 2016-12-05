@@ -99,12 +99,24 @@ public class ChunkScan implements Scan {
 		return rp.getString(fldname);
 	}
 
+	//TODO : Chunk Scan has only Record Page
+	public List<Integer> getCurrentDimension() { List<Integer> array = new ArrayList<Integer>(rp.currentId()); return array; }
+
 	/**
 	 * @see suadb.query.Scan#hasField(java.lang.String)
 	 */
 	public boolean hasField(String fldname) {
 		return sch.hasField(fldname);
 	}
+
+/**
+ * @see suadb.query.Scan#hasDimension(java.lang.String)
+ */
+
+	public boolean hasDimension(String dimname) { return sch.hasDimension(dimname); }
+
+	//TODO
+	public void moveToCid(CID cid) {}
 
 	private void moveToBlock(int blknum) {
 		current = blknum;

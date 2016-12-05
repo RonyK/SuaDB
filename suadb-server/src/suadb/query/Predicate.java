@@ -41,12 +41,15 @@ public class Predicate {
 	 * @param s the scan
 	 * @return true if the predicate is true in the scan
 	 */
+
+
 	public boolean isSatisfied(Scan s) {
 		for (Term t : terms)
 			if (!t.isSatisfied(s))
-			return false;
+				return false;
 		return true;
 	}
+
 
 	/**
 	 * Calculates the extent to which selecting on the predicate

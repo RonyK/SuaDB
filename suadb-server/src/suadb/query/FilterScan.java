@@ -1,7 +1,11 @@
 package suadb.query;
 
 import suadb.parse.FilterData;
+import suadb.record.CID;
 import suadb.record.RID;
+import suadb.record.Schema;
+
+import java.util.List;
 
 /**
  * Created by Rony on 2016-11-16.
@@ -9,11 +13,13 @@ import suadb.record.RID;
 public class FilterScan implements Scan
 {
 	private Scan s;
+	private Schema schema;
 	private Predicate predicate;
 	
-	public FilterScan(Scan s, Predicate predicate)
+	public FilterScan(Scan s, Schema schema, Predicate predicate)
 	{
 		this.s = s;
+		this.schema = schema;
 		this.predicate = predicate;
 	}
 	
@@ -21,7 +27,7 @@ public class FilterScan implements Scan
 	{
 		s.beforeFirst();
 	}
-	
+
 	public boolean next()
 	{
 		while(s.next())
@@ -51,9 +57,15 @@ public class FilterScan implements Scan
 	public String getString(String fldname) {
 		return s.getString(fldname);
 	}
+
+	public List<Integer> getCurrentDimension() { return  s.getCurrentDimension(); }
 	
 	public boolean hasField(String fldname) {
 		return s.hasField(fldname);
+	}
+
+	public boolean hasDimension(String dimname) {
+		return s.hasDimension(dimname);
 	}
 	
 	// UpdateScan methods
@@ -80,6 +92,11 @@ public class FilterScan implements Scan
 	public void insert() {
 		UpdateScan us = (UpdateScan) s;
 		us.insert();
+	}
+
+	public void moveToCid(CID cid)
+	{
+		s.moveToCid(cid);
 	}
 	
 //	public RID getRid() {

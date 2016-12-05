@@ -1,12 +1,9 @@
 package suadb.query;
 
-import suadb.record.ArrayFile;
-import suadb.record.ArrayInfo;
-import suadb.record.RID;
-import suadb.record.RecordFile;
-import suadb.record.Schema;
-import suadb.record.TableInfo;
+import suadb.record.*;
 import suadb.tx.Transaction;
+
+import java.util.List;
 
 import static java.sql.Types.INTEGER;
 
@@ -63,6 +60,8 @@ public class ArrayScan implements UpdateScan
 	public boolean hasField(String fldname) {
 		return sch.hasField(fldname);
 	}
+
+	public boolean hasDimension(String dimname) { return sch.hasDimension(dimname); }
 	
 	// UpdateScan methods
 	
@@ -96,6 +95,10 @@ public class ArrayScan implements UpdateScan
 	public void insert() {
 //		rf.insert();
 	}
+	//TODO : Merge with ArrayFile.currentCID implementation
+	public List<Integer> getCurrentDimension() { return rf.currentCID.dimensionValues(); }
+
+	public void moveToCid(CID cid) { rf.moveToCid(cid);}
 	
 //	public RID getRid() {
 //		return rf.currentRid();

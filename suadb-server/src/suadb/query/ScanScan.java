@@ -1,7 +1,10 @@
 package suadb.query;
 
+import suadb.record.CID;
 import suadb.record.RID;
 import suadb.record.Schema;
+
+import java.util.List;
 
 /**
  * Created by Aram on 2016-11-18.
@@ -53,6 +56,12 @@ public class ScanScan implements UpdateScan
 	public boolean hasField(String fldname) {
 		return s.hasField(fldname);
 	}
+
+	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
+
+	public List<Integer> getCurrentDimension() { return s.getCurrentDimension(); }
+
+	public void moveToCid(CID cid) { s.moveToCid(cid); }
 	
 	// UpdateScan methods
 	
@@ -80,6 +89,8 @@ public class ScanScan implements UpdateScan
 		UpdateScan us = (UpdateScan) s;
 		us.insert();
 	}
+
+
 	
 //	public RID getRid() {
 //		UpdateScan us = (UpdateScan) s;

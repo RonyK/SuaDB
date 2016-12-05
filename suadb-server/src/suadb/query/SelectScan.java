@@ -2,6 +2,8 @@ package suadb.query;
 
 import suadb.record.*;
 
+import java.util.List;
+
 /**
  * The scan class corresponding to the <i>select</i> relational
  * algebra operator.
@@ -63,6 +65,12 @@ public class SelectScan implements UpdateScan {
 	public boolean hasField(String fldname) {
 		return s.hasField(fldname);
 	}
+
+	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
+
+	public List<Integer> getCurrentDimension() { return s.getCurrentDimension(); }
+
+	public void moveToCid(CID cid) { s.moveToCid(cid); }
 
 	// UpdateScan methods
 

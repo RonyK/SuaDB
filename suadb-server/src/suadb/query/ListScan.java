@@ -1,6 +1,9 @@
 package suadb.query;
 
+import suadb.record.CID;
 import suadb.record.Schema;
+
+import java.util.List;
 
 /**
  * Created by Rony on 2016-11-28.
@@ -51,14 +54,23 @@ public class ListScan implements Scan
 	}
 	
 	@Override
-	public String getString(String fldname)
-	{
-		return s.getString(fldname);
-	}
-	
+	public String getString(String fldname) { return s.getString(fldname); }
+
+	@Override
+	public List<Integer> getCurrentDimension() { return s.getCurrentDimension(); }
+
 	@Override
 	public boolean hasField(String fldname)
 	{
 		return s.hasField(fldname);
 	}
+
+	@Override
+	public boolean hasDimension(String dimname)
+	{
+		return s.hasDimension(dimname);
+	}
+
+	@Override
+	public void moveToCid(CID cid) { s.moveToCid(cid);	}
 }

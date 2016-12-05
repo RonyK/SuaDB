@@ -20,7 +20,7 @@ public class FilterPlan implements Plan
 	public Scan open()
 	{
 		Scan s = p.open();
-		return new FilterScan(s, predicate);
+		return new FilterScan(s, p.schema(), predicate);
 	}
 	
 	@Override

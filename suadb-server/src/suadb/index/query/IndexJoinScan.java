@@ -2,6 +2,9 @@ package suadb.index.query;
 
 import suadb.query.*;
 import suadb.index.Index;
+import suadb.record.CID;
+
+import java.util.List;
 
 /**
  * The scan class corresponding to the indexjoin relational
@@ -108,6 +111,9 @@ public class IndexJoinScan implements Scan {
 			return s.getString(fldname);
 	}
 
+	//TODO : Binary operator scan has two current coordinates
+	public List<Integer> getCurrentDimension() { return  ts.getCurrentDimension(); }
+
 	/** Returns true if the field is in the schema.
 	  * @see suadb.query.Scan#hasField(java.lang.String)
 	  */
@@ -115,8 +121,12 @@ public class IndexJoinScan implements Scan {
 		return ts.hasField(fldname) || s.hasField(fldname);
 	}
 
+	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
+
 	private void resetIndex() {
 		Constant searchkey = s.getVal(joinfield);
 		idx.beforeFirst(searchkey);
 	}
+
+	public void moveToCid(CID cid) { s.moveToCid(cid); }
 }
