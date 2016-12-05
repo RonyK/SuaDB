@@ -1,6 +1,9 @@
-package suadb.query;
+package suadb.query.afl;
 
 import suadb.parse.Predicate;
+import suadb.query.Plan;
+import suadb.query.PredicateExecutor;
+import suadb.query.Scan;
 import suadb.record.Schema;
 
 /**

@@ -1,9 +1,9 @@
 package suadb.index.hash;
 
 import suadb.parse.Constant;
+import suadb.query.sql.TableScan;
 import suadb.tx.Transaction;
 import suadb.record.*;
-import suadb.query.*;
 import suadb.index.Index;
 
 /**

@@ -1,71 +1,64 @@
-package suadb.query;
+package suadb.query.afl;
 
 import suadb.parse.Constant;
 import suadb.parse.Predicate;
-import suadb.record.*;
+import suadb.query.PredicateExecutor;
+import suadb.query.Scan;
+import suadb.query.UpdateScan;
+import suadb.record.CID;
+import suadb.record.Schema;
 
 import java.util.List;
 
 /**
- * The scan class corresponding to the <i>select</i> relational
- * algebra operator.
- * All methods except next delegate their work to the
- * underlying scan.
- * @author Edward Sciore
+ * Created by Rony on 2016-11-16.
  */
-public class SelectScan implements UpdateScan {
+public class FilterScan implements Scan
+{
 	private Scan s;
-	private PredicateExecutor pred;
-
-	/**
-	 * Creates a select scan having the specified underlying
-	 * scan and predicate.
-	 * @param s the scan of the underlying suadb.query
-	 * @param pred the selection predicate
-	 */
-	public SelectScan(Scan s, PredicateExecutor pred) {
+	private Schema schema;
+	private PredicateExecutor predicate;
+	
+	public FilterScan(Scan s, Schema schema, PredicateExecutor predicate)
+	{
 		this.s = s;
-		this.pred = pred;
+		this.schema = schema;
+		this.predicate = predicate;
 	}
-
-	// Scan methods
-
-	public void beforeFirst() {
+	
+	public void beforeFirst()
+	{
 		s.beforeFirst();
 	}
 
-	/**
-	 * Move to the next suadb.record satisfying the predicate.
-	 * The method repeatedly calls next on the underlying scan
-	 * until a suitable suadb.record is found, or the underlying scan
-	 * contains no more records.
-	 * @see suadb.query.Scan#next()
-	 */
-	public boolean next() {
-		while (s.next())
-			if (pred.isSatisfied(s))
-			return true;
+	public boolean next()
+	{
+		while(s.next())
+		{
+			if (predicate.isSatisfied(s))
+			{
+				return true;
+			}
+		}
+		
 		return false;
 	}
-
-	public void close() {
+	
+	public void close()
+	{
 		s.close();
 	}
-
+	
 	public Constant getVal(String fldname) {
 		return s.getVal(fldname);
 	}
-
+	
 	public int getInt(String fldname) {
 		return s.getInt(fldname);
 	}
-
+	
 	public String getString(String fldname) {
 		return s.getString(fldname);
-	}
-
-	public boolean hasField(String fldname) {
-		return s.hasField(fldname);
 	}
 	
 	@Override
@@ -80,39 +73,47 @@ public class SelectScan implements UpdateScan {
 		return s.getDimension(dimName);
 	}
 
-	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
+	public List<Integer> getCurrentDimension() { return  s.getCurrentDimension(); }
+	
+	public boolean hasField(String fldname) {
+		return s.hasField(fldname);
+	}
 
-	public List<Integer> getCurrentDimension() { return s.getCurrentDimension(); }
-
-	public void moveToCid(CID cid) { s.moveToCid(cid); }
-
+	public boolean hasDimension(String dimname) {
+		return s.hasDimension(dimname);
+	}
+	
 	// UpdateScan methods
-
 	public void setVal(String fldname, Constant val) {
 		UpdateScan us = (UpdateScan) s;
 		us.setVal(fldname, val);
 	}
-
+	
 	public void setInt(String fldname, int val) {
 		UpdateScan us = (UpdateScan) s;
 		us.setInt(fldname, val);
 	}
-
+	
 	public void setString(String fldname, String val) {
 		UpdateScan us = (UpdateScan) s;
 		us.setString(fldname, val);
 	}
-
+	
 	public void delete() {
 		UpdateScan us = (UpdateScan) s;
 		us.delete();
 	}
-
+	
 	public void insert() {
 		UpdateScan us = (UpdateScan) s;
 		us.insert();
 	}
 
+	public void moveToCid(CID cid)
+	{
+		s.moveToCid(cid);
+	}
+	
 //	public RID getRid() {
 //		UpdateScan us = (UpdateScan) s;
 //		return us.getRid();
