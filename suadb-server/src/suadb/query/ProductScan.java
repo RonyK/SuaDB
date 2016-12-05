@@ -89,7 +89,6 @@ public class ProductScan implements Scan {
 			return s2.getInt(fldname);
 	}
 
-	//TODO : Binary operator scan has two current coordinates
 	public List<Integer> getCurrentDimension() { return  s1.getCurrentDimension(); }
 
 	/**

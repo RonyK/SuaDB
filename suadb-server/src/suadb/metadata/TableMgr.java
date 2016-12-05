@@ -64,8 +64,6 @@ public class TableMgr {
 			createTable(TABLE_TABLE_CATALOG, tcatSchema, tx);
 			createTable(TABLE_FILED_CATALOG, fcatSchema, tx);
 		}
-		
-		// TODO :: Get Array ID - RonyK
 	}
 
 	/**
