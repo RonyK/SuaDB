@@ -158,8 +158,11 @@ public class CellFile {
     }
 
     public void moveTo(int c) {
-        if( currentchunknum == c)
-           return;
+        if( currentchunknum == c) {
+	        cp.setCurrentId(-1);//Initialize slot
+	        return;
+        }
+
         if (cp != null)
             cp.close();
         currentchunknum = c;

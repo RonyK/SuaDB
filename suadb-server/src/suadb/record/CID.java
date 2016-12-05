@@ -32,12 +32,21 @@ public class CID {
     public String toString() {
         ArrayList<String> dimensions = new ArrayList<String>(arrayInfo.schema().dimensions());
 
-        String retString = "[";
-        for(int i = 0 ; i < dimensionvalues.size() ; i++){
-            retString += " " + dimensions.get(i) + " : ";
-            retString += dimensionvalues.get(i) + "   ";
+//        String retString = "[";
+//        for(int i = 0 ; i < dimensionvalues.size() ; i++){
+//            retString += " " + dimensions.get(i) + " : ";
+//            retString += dimensionvalues.get(i) + "   ";
+//        }
+//        retString += "]";
+
+        String retString = "{";//SciDB style
+        int dimensionValuesSize = dimensionvalues.size();
+        for(int i=0;i<dimensionValuesSize;i++){
+            retString += dimensionvalues.get(i);
+            if(i != dimensionValuesSize-1)
+                retString +=",";
         }
-        retString += "]";
+        retString += "}";
         return retString;
     }
 }

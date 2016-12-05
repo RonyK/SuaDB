@@ -160,7 +160,9 @@ public class CellPage {
     public int currentId() {
         return currentslot;
     }
-
+    public void setCurrentId(int currentslot){
+        this.currentslot = currentslot;
+    }
     private int currentpos() {
         int numberofcellsinablock = (int)Math.floor((double)BLOCK_SIZE / slotsize);
         int blockseq = currentslot / numberofcellsinablock;

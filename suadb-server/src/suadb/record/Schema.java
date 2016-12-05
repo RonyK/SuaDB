@@ -18,7 +18,7 @@ import static java.sql.Types.VARCHAR;
  */
 public class Schema {
 	//key : attribute name, value : attribute type & length(if String type) - CDS
-	private Map<String, attributeInfo> attributeInfo = new HashMap<String, attributeInfo>();
+	private Map<String, attributeInfo> attributeInfo = new LinkedHashMap<String, attributeInfo>();
 	//key : dimensionName, value : DimensionInfo(start,end,chunkSize) - CDS
 	private Map<String, DimensionInfo> dimensionInfo = new LinkedHashMap<String, DimensionInfo>();
 
@@ -164,11 +164,11 @@ public class Schema {
 	 /**
 	 * Returns the type of the specified field, using the
 	 * constants in {@link java.sql.Types}.
-	 * @param fldname the name of the field
+	 * @param attributeName the name of the field
 	 * @return the integer type of the field
 	 */
-	public int type(String fldname) {
-		return attributeInfo.get(fldname).type;
+	public int type(String attributeName) {
+		return attributeInfo.get(attributeName).type;
 	}
 	
 	/**
@@ -198,6 +198,11 @@ public class Schema {
 	 */
 	public int end(String dimensionName) {
 		return dimensionInfo.get(dimensionName).end;
+	}
+
+	public int dimensionLength(String dimensionName){
+		DimensionInfo info = dimensionInfo.get(dimensionName);
+		return info.end-info.start+1;
 	}
 
 	/**

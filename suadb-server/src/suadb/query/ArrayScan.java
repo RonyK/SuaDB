@@ -25,7 +25,6 @@ public class ArrayScan implements UpdateScan
 	}
 	
 	// Scan methods
-	
 	public void beforeFirst() {
 		rf.beforeFirst();
 	}

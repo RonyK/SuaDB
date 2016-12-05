@@ -136,6 +136,7 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 						assertTrue(arrayfile.next());
 						CID currentCID = arrayfile.getCurrentDimensionValues();
 						List<Integer> currentDimension = currentCID.dimensionValues();
+
 						assertTrue(currentDimension.get(0) == i);
 						assertTrue(currentDimension.get(1) == j);
 						assertTrue(currentDimension.get(2) == k);

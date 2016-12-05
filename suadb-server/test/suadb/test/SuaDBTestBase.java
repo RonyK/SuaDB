@@ -58,10 +58,7 @@ public class SuaDBTestBase
 			{
 				boolean b1 = file.exists();
 				boolean b2 = file.delete();
-				
-				System.out.println(b1);
-				System.out.println(b2);
-				
+
 				assertTrue(
 						"Delete " + file.getPath(),
 						file.exists() == file.delete());

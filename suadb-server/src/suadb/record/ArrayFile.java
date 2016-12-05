@@ -3,13 +3,17 @@ package suadb.record;
 import suadb.parse.Constant;
 import suadb.parse.IntConstant;
 import suadb.tx.Transaction;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import suadb.tx.Transaction;
-
 import static suadb.file.Page.BLOCK_SIZE;
 import static suadb.file.Page.INT_SIZE;
+import static java.sql.Types.*;
 
 /**
  * Created by ILHYUN on 2016-11-17.
@@ -50,10 +54,11 @@ public class ArrayFile
         dimensions = new ArrayList<String>(ai.schema().dimensions());
         attributes = new ArrayList<String>(ai.schema().attributes());
         this.numberofdimensions = dimensions.size();
-        currentDimensionValues = new ArrayList<Integer>(this.numberofdimensions);//Keep current coordinates of array.
-        rearestAttribute = new boolean[this.numberofdimensions];//Manage rearest attributes.
-
         this.numberofattributes = attributes.size();
+        currentDimensionValues = new ArrayList<Integer>(this.numberofdimensions);//Keep current coordinates of array.
+        rearestAttribute = new boolean[this.numberofattributes];//Manage rearest attributes.
+
+
         numberofchunksperdimension = new int[numberofdimensions];
         int index = 0;
         for(String dimname: dimensions){
@@ -167,6 +172,14 @@ public class ArrayFile
    //     currentCFiles[index].moveToId(0);
     }
 
+	/**
+     * Is this attribute 'Null' in the current dimension value?
+     * @param whichAttribute
+     * @return
+     */
+    boolean isNullAttribute(int whichAttribute){
+        return !rearestAttribute[whichAttribute];
+    }
     /**
      * Moves to the next suadb.cell.
      * @return false if there is no next suadb.cell.
@@ -228,9 +241,13 @@ public class ArrayFile
      */
     public boolean[] rearestTest(List<Integer> dimensionValue,int chunkNum){
 
+        //If each attribute has a different chunk number,
         if(chunkNum < currentChunkNum) {
             currentChunkNum = chunkNum;
             return new boolean[]{true, false};
+        }
+        else if(chunkNum > currentChunkNum){
+            return new boolean[]{false, false};
         }
 
 
@@ -270,6 +287,11 @@ public class ArrayFile
             return -1;
         return currentCFiles[index].getInt();
     }
+    public int getInt(int attributeIndex) {
+        if( attributeIndex < 0)
+            return -1;
+        return currentCFiles[attributeIndex].getInt();
+    }
 
     /**
      * Returns the value of the specified field
@@ -281,6 +303,11 @@ public class ArrayFile
         if (index < 0)
             return null;
         return currentCFiles[index].getString();
+    }
+    public String getString(int attributeIndex) {
+        if (attributeIndex < 0)
+            return null;
+        return currentCFiles[attributeIndex].getString();
     }
 
     /**
@@ -294,6 +321,11 @@ public class ArrayFile
             return ;
         currentCFiles[index].setInt(val);
     }
+    public void setInt(int attributeIndex,int val) {
+        if (attributeIndex < 0)
+            return ;
+        currentCFiles[attributeIndex].setInt(val);
+    }
 
     /**
      * Sets the value of the specified field
@@ -306,7 +338,9 @@ public class ArrayFile
             return ;
         currentCFiles[index].setString(val);
     }
-
+    public void setString(int attributeIndex,String val) {
+        currentCFiles[attributeIndex].setString(val);
+    }
     /**
      * Deletes the current suadb.record.
      * The client must call next() to move to
@@ -388,4 +422,120 @@ public class ArrayFile
 	// TODO :: Insert()                     - RonyK
 	// insert data sequentially.
 	// TODO :: Insert(Dimension[] dim)      - RonyK
+
+
+    /**
+     * Load data from the file.
+     * @param fileName
+     * @return
+     */
+    public boolean input(String fileName){
+        String s;
+        Schema schema = ai.schema();
+
+        List<Integer> dimensionValue = new ArrayList<Integer>();
+        int[] dimensionLengths = new int[numberofdimensions];
+        for(int i=0;i<numberofdimensions;i++) {
+            dimensionValue.add(0);
+            dimensionLengths[i] = schema.dimensionLength(dimensions.get(i));
+        }
+        CID cid = new CID(dimensionValue , ai);
+
+        //Identify the types of attributes.
+        int[] attributeTypes = new int[numberofattributes];
+        for(int i=0;i<numberofattributes;i++)
+            attributeTypes[i] = schema.type(attributes.get(i));
+
+
+
+
+        //Open the file.
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(fileName));
+            while ((s = in.readLine()) != null) {
+                String[] line = s.split("\\)");
+
+                //One cell
+                for(int i=0;i<line.length;i++){
+                    String token = line[i];
+                    if(!token.contains("("))
+                        continue;
+
+                    moveToCid(cid);
+                    String[] realToken = token.split("\\(");
+                    if(realToken.length > 1) {
+                        String[] value = realToken[1].split(",");
+                        for(int j=0;j<value.length;j++){
+                            if(value[j].equals("")) {//empty attribute
+
+                            }
+                            else if(attributeTypes[j] == INTEGER)
+                                currentCFiles[j].setInt(Integer.parseInt(value[j]));
+                            else if(attributeTypes[j] == VARCHAR)
+                                currentCFiles[j].setString(value[j]);
+                        }
+                    }
+
+                    dimensionValue.set(numberofdimensions-1,dimensionValue.get(numberofdimensions-1)+1);
+                    //Update the coordinate.
+                    for(int d=numberofdimensions-1;d>0;d--) {
+                        if(dimensionValue.get(d) == dimensionLengths[d]){
+                            dimensionValue.set(d,0);
+                            dimensionValue.set(d-1,dimensionValue.get(d-1)+1);
+                        }
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+	/**
+     * Print a cell with next().
+     * @return
+     */
+    private String printCell(){
+        String result = getCurrentDimensionValues()+" ";
+        Schema schema = ai.schema();
+        for(int i=0;i<numberofattributes;i++){
+            if(!isNullAttribute(i)) {
+                if(schema.type(attributes.get(i)) == INTEGER)
+                    result += getInt(attributes.get(i));
+                else if(schema.type(attributes.get(i)) == VARCHAR)
+                    result += getString(attributes.get(i));
+                else if(schema.type(attributes.get(i)) == DOUBLE){
+
+                }
+            }
+            else
+                result += "null";
+
+            if(i != numberofattributes-1)
+                result += ",";
+        }
+
+        return result;
+    }
+
+	/**
+	 * Print array to the console.
+     */
+    public int printArray(){
+        int count=0;
+        beforeFirst();
+
+        while(next()){
+            System.out.println(printCell());
+            count++;
+        }
+        return count;
+    }
+
+
+
 }
