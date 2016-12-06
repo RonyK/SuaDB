@@ -180,15 +180,16 @@ public class ArrayMgr {
 
 
 		// 2. delete array metadata
-		RecordFile dimensionCatFile = new RecordFile(dimensionCatInfo, tx);
-		while (dimensionCatFile.next()) {
-			if (dimensionCatFile.getString(STR_ARRAY_NAME).equals(arrayName)) {
-				dimensionCatFile.delete();
-				dimensionCatFile.close();
+		RecordFile arrayCatFile = new RecordFile(arrayCatInfo, tx);
+		while (arrayCatFile.next()) {
+			if (arrayCatFile.getString(STR_ARRAY_NAME).equals(arrayName)) {
+				arrayCatFile.delete();
+				SuaDB.bufferMgr().flushAll();
+				arrayCatFile.close();
 				return true;
 			}
 		}
-		dimensionCatFile.close();
+		arrayCatFile.close();
 		return false;
 	}
 }

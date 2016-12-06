@@ -241,7 +241,10 @@ public class Parser
 		}
 		else{
 			lex.eatKeyword("string");
-			schema.addAttribute(fldname,VARCHAR, 8);
+			lex.eatDelim('(');
+			int stringMaxLength = lex.eatIntConstant();
+			lex.eatDelim(')');
+			schema.addAttribute(fldname,VARCHAR, stringMaxLength);
 		}
 		while (lex.matchDelim(',')) {
 			lex.eatDelim(',');
@@ -257,7 +260,10 @@ public class Parser
 			}
 			else{
 				lex.eatKeyword("string");
-				schema.addAttribute(fldname,VARCHAR, 8);
+				lex.eatDelim('(');
+				int stringMaxLength = lex.eatIntConstant();
+				lex.eatDelim(')');
+				schema.addAttribute(fldname,VARCHAR, stringMaxLength);
 			}
 		}
 

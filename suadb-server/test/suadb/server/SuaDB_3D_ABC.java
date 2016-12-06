@@ -12,6 +12,8 @@ import java.lang.reflect.Field;
 import suadb.parse.InputArrayData;
 import suadb.planner.BasicUpdatePlanner;
 import suadb.planner.Planner;
+import suadb.query.Plan;
+import suadb.query.Scan;
 import suadb.record.ArrayInfo;
 import suadb.server.SuaDB;
 import suadb.test.DummyData;
@@ -36,7 +38,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 	{
 		FILE_PATH = homeDir + "/" + ARRAY_NAME + ".txt";
 	}
-	
+
 	@Test
 	public void test_10_create_3D_array()
 	{
@@ -45,31 +47,50 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 				"CREATE ARRAY " + ARRAY_NAME +
 				"<" +
 				"   a : int," +
-				"   b : int," +
+				"   b : string(8)," +
 				"   c : int" +
 				">" +
 				"[x = 0:1,2, y = 0:3,4, z = 0:1,2]";
-		
+
 		SuaDB.planner().executeUpdate(query, tx);
-		
+
 		ArrayInfo ai = SuaDB.mdMgr().getArrayInfo(ARRAY_NAME, tx);
-		
+
 		assertEquals(ai.arrayName(), ARRAY_NAME);
-		
+
 		assertEquals(ai.schema().attributes().size(), 3);
 		assertTrue(ai.schema().hasAttribute("a"));
 		assertTrue(ai.schema().hasAttribute("b"));
 		assertTrue(ai.schema().hasAttribute("c"));
 		assertFalse(ai.schema().hasAttribute("d"));
-		
+
 		assertEquals(ai.schema().dimensions().size(), 3);
 		assertTrue(ai.schema().hasDimension("x"));
 		assertTrue(ai.schema().hasDimension("y"));
 		assertTrue(ai.schema().hasDimension("z"));
 		assertFalse(ai.schema().hasDimension("t"));
-		
+
 		tx.commit();
 	}
+
+
+	@Test
+	public void test_11_list_array()
+	{
+
+		Transaction tx = new Transaction();
+		String query =
+				"LIST(arrays)";
+
+		Plan plan = SuaDB.planner().createQueryPlan(query, tx);
+		Scan s = plan.open();
+
+		assertTrue("list array check", s.next());
+		assertFalse("last array", s.next());
+		tx.commit();
+
+	}
+
 	
 	@Test
 	public void test_20_insert_3D_array_input_mannual() throws IOException
@@ -115,5 +136,30 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		tx.commit();
 		
 		eraseFile(FILE_PATH);
+	}
+
+	@Test
+	public void test_80_remove_3D_array()
+	{
+		Transaction tx = new Transaction();
+		String query = "REMOVE(" + ARRAY_NAME +")";
+		SuaDB.planner().executeUpdate(query, tx);
+		tx.commit();
+	}
+
+	@Test
+	public void test_81_list_array()
+	{
+
+		Transaction tx = new Transaction();
+		String query =
+				"LIST(arrays)";
+
+		Plan plan = SuaDB.planner().createQueryPlan(query, tx);
+		Scan s = plan.open();
+
+		assertFalse("empty database", s.next());
+		tx.commit();
+
 	}
 }
