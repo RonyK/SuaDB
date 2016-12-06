@@ -35,13 +35,19 @@ public class SuaDBTestBase
 		}
 	}
 	
-	static protected void eraseAllTestFile(File file)
+	protected static void eraseFile(String fileName)
+	{
+		File file = new File(fileName);
+		assertTrue(file.exists() == file.delete());
+	}
+	
+	protected static void eraseAllTestFile(File file)
 	{
 		assertTrue(file.exists() == deleteDirectory(file));
 		assertFalse(file.exists());
 	}
 	
-	static protected boolean deleteDirectory(File path)
+	protected static boolean deleteDirectory(File path)
 	{
 		if(!path.exists())
 		{

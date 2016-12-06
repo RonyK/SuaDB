@@ -34,13 +34,11 @@ public class ArrayFileTest  extends SuaDBTestBase {
     //IHSUh
     @Test
     public void test_00_array_creation_write_read(){
-
         // this is an example of creating an 3-dimensional array with to attributes
         int start[] = {0,0,0};
         int end[] = {9,9,9};
         int chunksize[] = {5,5,5};
-
-
+	    
         schema  = new Schema();
 
         for(int i = 0 ; i < 3 ; i++){
@@ -83,10 +81,8 @@ public class ArrayFileTest  extends SuaDBTestBase {
         }
         arrayfile.close();
         tx.commit();
-
-
+	    
         // the below code shows how to read values from array cells
-
         tx = new Transaction();
         arrayfile = new ArrayFile(arrayinfo,tx);
 
@@ -112,6 +108,7 @@ public class ArrayFileTest  extends SuaDBTestBase {
                 }
             }
         }
+        
         arrayfile.close();
         tx.commit();
 
@@ -120,7 +117,6 @@ public class ArrayFileTest  extends SuaDBTestBase {
         // note the order of cells read by using next method
         // 1) row major order in a single chunk
         // 2) if has no next cell in  the chunk, then move on to the next chunk
-
 
         tx = new Transaction();
         arrayfile = new ArrayFile(arrayinfo,tx);
@@ -140,14 +136,12 @@ public class ArrayFileTest  extends SuaDBTestBase {
                 }
             }
         }
+        
         nextFlag= arrayfile.next("attA");
         assertEquals(nextFlag, false);
         arrayfile.close();
         tx.commit();
-
-
     }
-
 
     @AfterClass
     public static void tearDown(){
@@ -157,5 +151,4 @@ public class ArrayFileTest  extends SuaDBTestBase {
             e.printStackTrace();
         }
     }
-
 }

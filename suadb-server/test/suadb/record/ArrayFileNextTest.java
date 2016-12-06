@@ -36,12 +36,10 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 	//IHSUh
 	@Test
 	public void test_00_arrayfile_next() {
-
 		// this is an example of creating an 3-dimensional array with to attributes
 		int start[] = {0, 0, 0};
 		int end[] = {11, 11, 7};
 		int chunksize[] = {4, 3, 2};
-
 
 		schema = new Schema();
 
@@ -56,7 +54,6 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 		arrayinfo = new ArrayInfo("testArray", schema);
 
 		// the below code shows how to write values to array cells
-
 		Transaction tx = new Transaction();
 		arrayfile = new ArrayFile(arrayinfo, tx);
 
@@ -90,7 +87,6 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 
 		arrayfile.close();
 		tx.commit();
-
 
 		//ArrayFile.getCurrentDimensionValues() Test
 		tx = new Transaction();
@@ -127,7 +123,6 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 				chunkNum %= temp;
 			}
 
-
 			//One chunk size iteration.
 			for (int i = result[0]; i < result[0]+schema.chunkSize(dimensions.get(0)); i++) {
 				for (int j = result[1]; j < result[1]+schema.chunkSize(dimensions.get(1)); j++) {
@@ -142,8 +137,8 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 					}
 				}
 			}
-
 		}
+		
 		assertFalse(arrayfile.next());
 
 		arrayfile.close();
@@ -169,7 +164,6 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 		tx.commit();
 	}
 
-
 	@AfterClass
 	public static void tearDown() {
 		try {
@@ -178,5 +172,4 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 			e.printStackTrace();
 		}
 	}
-
 }
