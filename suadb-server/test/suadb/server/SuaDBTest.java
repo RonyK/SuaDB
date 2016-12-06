@@ -104,33 +104,51 @@ public class SuaDBTest extends SuaDBTestBase
 	public void test_10_create_2D_array_with_duplicate_attributename()
 	{
 		Transaction tx = new Transaction();
-		String query =
-				"CREATE ARRAY TD3" +
-				"<" +
-				"   a : int," +
-				"   b : int," +
-				"   a : int" +
-				">" +
-				"[x = 0:100,10, y = 0:30,6]";
 		
-		SuaDB.planner().executeUpdate(query, tx);
-		tx.commit();
+		try
+		{
+			String query =
+					"CREATE ARRAY TD3" +
+							"<" +
+							"   a : int," +
+							"   b : int," +
+							"   a : int" +
+							">" +
+							"[x = 0:100,10, y = 0:30,6]";
+			
+			SuaDB.planner().executeUpdate(query, tx);
+		}catch (Exception e)
+		{
+			throw e;
+		}finally
+		{
+			tx.commit();
+		}
 	}
 	
 	@Test(expected = BadSyntaxException.class)
 	public void test_10_create_3D_array_with_duplicate_dimensionname()
 	{
 		Transaction tx = new Transaction();
-		String query =
-				"CREATE ARRAY TD4" +
-				"<" +
-				"   a : int," +
-				"   b : int" +
-				">" +
-				"[x = 0:100,10, y = 0:30,6, x = 0:50,2]";
 		
-		SuaDB.planner().executeUpdate(query, tx);
-		tx.commit();
+		try
+		{
+			String query =
+					"CREATE ARRAY TD4" +
+							"<" +
+							"   a : int," +
+							"   b : int" +
+							">" +
+							"[x = 0:100,10, y = 0:30,6, x = 0:50,2]";
+			
+			SuaDB.planner().executeUpdate(query, tx);
+		}catch (Exception e)
+		{
+			throw e;
+		}finally
+		{
+			tx.commit();
+		}
 	}
 
 	@Test

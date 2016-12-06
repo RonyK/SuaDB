@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 import suadb.metadata.ArrayMgr;
+import suadb.parse.Expression;
 import suadb.parse.InputArrayData;
 import suadb.planner.BasicUpdatePlanner;
 import suadb.planner.Planner;
@@ -84,11 +85,9 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		tx.commit();
 	}
 
-
 	@Test
 	public void test_11_list_array()
 	{
-
 		Transaction tx = new Transaction();
 		String query =
 				"LIST(arrays)";
@@ -99,11 +98,9 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		assertTrue("list array check", s.next());
 		assertFalse("last array", s.next());
 		tx.commit();
-
 	}
-
 	
-	@Test
+//	@Test
 	public void test_19_list()
 	{
 		Boolean result = false;
@@ -154,17 +151,26 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 	@Test
 	public void test_20_array_input() throws IOException
 	{
-		FileWriter fw = new FileWriter(FILE_PATH);
-		fw.write(DummyData.getInputDummy_3A_3D());
-		fw.close();
-		
 		Transaction tx = new Transaction();
-		String query = "INPUT(" + ARRAY_NAME + ", \'" + FILE_PATH + "\')";
 		
-		SuaDB.planner().executeUpdate(query, tx);
-		tx.commit();
-		
-		eraseFile(FILE_PATH);
+		try
+		{
+			FileWriter fw = new FileWriter(FILE_PATH);
+			fw.write(DummyData.getInputDummy_3A_3D());
+			fw.close();
+			
+			String query = "INPUT(" + ARRAY_NAME + ", \'" + FILE_PATH + "\')";
+			
+			SuaDB.planner().executeUpdate(query, tx);
+			
+			eraseFile(FILE_PATH);
+		}catch (Exception e)
+		{
+			throw e;
+		}finally
+		{
+			tx.commit();
+		}
 	}
 
 	@Test
