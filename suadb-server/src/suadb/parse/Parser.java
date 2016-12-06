@@ -5,6 +5,9 @@ import java.util.*;
 import suadb.record.Schema;
 
 import static java.sql.Types.DOUBLE;
+import static java.sql.Types.INTEGER;
+import static java.sql.Types.VARCHAR;
+
 /**
  * The SuaDB parser.
  * @author Edward Sciore
@@ -179,7 +182,7 @@ public class Parser
 		return createArray();
 	}
 	
-// Methods for parsing input commands
+	// Methods for parsing input commands
 	public InputArrayData input() {
 		lex.eatKeyword("input");
 		lex.eatDelim('(');
@@ -230,15 +233,15 @@ public class Parser
 		lex.eatDelim(':');
 		if (lex.matchKeyword("int")) {
 			lex.eatKeyword("int");
-			schema.addIntField(fldname);
+			schema.addAttribute(fldname,INTEGER,0);
 		}
 		else if(lex.matchKeyword("double")) {
 			lex.eatKeyword("double");
-			schema.addField(fldname, DOUBLE, 0); //add double
+			schema.addAttribute(fldname, DOUBLE, 0);
 		}
 		else{
 			lex.eatKeyword("string");
-			schema.addStringField(fldname, 8);
+			schema.addAttribute(fldname,VARCHAR, 8);
 		}
 		while (lex.matchDelim(',')) {
 			lex.eatDelim(',');
@@ -246,15 +249,15 @@ public class Parser
 			lex.eatDelim(':');
 			if (lex.matchKeyword("int")) {
 				lex.eatKeyword("int");
-				schema.addIntField(fldname);
+				schema.addAttribute(fldname,INTEGER,0);
 			}
 			else if(lex.matchKeyword("double")) {
 				lex.eatKeyword("double");
-				schema.addField(fldname, DOUBLE, 0); //add double
+				schema.addAttribute(fldname, DOUBLE, 0);
 			}
 			else{
 				lex.eatKeyword("string");
-				schema.addStringField(fldname, 8);
+				schema.addAttribute(fldname,VARCHAR, 8);
 			}
 		}
 

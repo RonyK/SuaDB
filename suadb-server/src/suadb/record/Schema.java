@@ -1,5 +1,7 @@
 package suadb.record;
 
+import suadb.parse.BadSyntaxException;
+
 import java.sql.Types;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,6 +42,8 @@ public class Schema {
 	 * @param length the conceptual length of a string attribute.
 	 */
 	public void addField(String attributeName, int type, int length) {
+		if(attributeInfo.containsKey(attributeName))
+			throw new BadSyntaxException();
 		attributeInfo.put(attributeName, new attributeInfo(type, length));
 	}
 	
@@ -53,6 +57,8 @@ public class Schema {
 	 * @param length the conceptual length of a string attribute.
 	 */
 	public void addAttribute(String attributeName, int type, int length) {
+		if(attributeInfo.containsKey(attributeName))
+			throw new BadSyntaxException();
 		attributeInfo.put(attributeName, new attributeInfo(type, length));
 	}
 	
@@ -65,6 +71,8 @@ public class Schema {
 	 * @param chunkSize the size of chunk
 	 */
 	public void addDimension(String dimensionName, int start, int end, int chunkSize) {
+		if(dimensionInfo.containsKey(dimensionName))
+			throw new BadSyntaxException();
 		dimensionInfo.put(dimensionName, new DimensionInfo(start,end,chunkSize));
 	}
 
@@ -73,6 +81,8 @@ public class Schema {
 	 * @param fldname the name of the field
 	 */
 	public void addIntField(String fldname) {
+		if(attributeInfo.containsKey(fldname))
+			throw new BadSyntaxException();
 		addAttribute(fldname, INTEGER, 0);
 	}
 
@@ -85,6 +95,8 @@ public class Schema {
 	 * @param length the number of chars in the varchar definition
 	 */
 	public void addStringField(String fldname, int length) {
+		if(attributeInfo.containsKey(fldname))
+			throw new BadSyntaxException();
 		addAttribute(fldname, VARCHAR, length);
 	}
 	
