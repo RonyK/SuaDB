@@ -188,7 +188,7 @@ public class Parser
 		lex.eatDelim('(');
 		String arrayname = lex.eatId();
 		lex.eatDelim(',');
-		String inputfile = lex.eatId();  // 'input_file'
+		String inputfile = lex.eatFilePath();  // 'input_file'
 		lex.eatDelim(')');
 		
 		return new InputArrayData(arrayname, inputfile);

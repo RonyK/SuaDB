@@ -110,6 +110,12 @@ public class Lexer {
 		return s;
 	}
 
+	public String eatFilePath() {
+		String s = tok.sval();
+		nextToken();
+		return s;
+	}
+
 	/**
 	 * Throws an exception if the current token is not the
 	 * specified keyword.
