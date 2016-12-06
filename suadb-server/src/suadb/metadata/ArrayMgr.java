@@ -16,7 +16,7 @@ public class ArrayMgr {
 	//catalog for array, attribute, dimension - CDS
 	private TableInfo arrayCatInfo, attributeCatInfo, dimensionCatInfo;
 
-	public static final int MAX_DIM_STR = 256;
+	public static final int MAX_DIM_STR = 20;
 
 	private static final String STR_ARRAY_NAME      = "arrayName";
 	public static final String TABLE_ARRAY_CATALOG = "arrayCat";

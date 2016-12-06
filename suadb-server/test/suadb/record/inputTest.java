@@ -36,7 +36,7 @@ public class inputTest extends SuaDBTestBase {
 
 
 	/**
-	 * This test doesn't have assert statement
+	 * This test doesn't have assert statements
 	 * Just for checking input() & print() array.
 	 *
 	 * homeDir/test.txt

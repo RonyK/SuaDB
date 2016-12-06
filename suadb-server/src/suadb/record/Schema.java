@@ -162,6 +162,17 @@ public class Schema {
 	 return dimensions().contains(dimName);
 	 }
 
+	/**
+	 * Return true if the specified attribute
+	 * is in the schema
+	 *
+	 * @param attributeName	the name of the dimension
+	 * @return			 true if the dimension in the schema
+	 */
+	 public boolean hasAttribute(String attributeName){
+		 return attributes().contains(attributeName);
+	 }
+
 	 /**
 	 * Returns the type of the specified field, using the
 	 * constants in {@link java.sql.Types}.
@@ -176,11 +187,11 @@ public class Schema {
 	 * Returns the conceptual length of the specified field.
 	 * If the field is not a string field, then
 	 * the return value is undefined.
-	 * @param fldname the name of the field
+	 * @param attributeName the name of the field
 	 * @return the conceptual length of the field
 	 */
-	public int length(String fldname) {
-		return attributeInfo.get(fldname).length;
+	public int length(String attributeName) {
+		return attributeInfo.get(attributeName).length;
 	}
 
 	/**

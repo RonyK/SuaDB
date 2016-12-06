@@ -486,6 +486,8 @@ public class ArrayFile
                     }
                 }
             }
+
+            in.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -528,6 +530,24 @@ public class ArrayFile
     public int printArray(){
         int count=0;
         beforeFirst();
+
+
+        //Print dimension and attribute information at first line.
+        String firstLine="{";
+        for(int i=0;i<numberofdimensions;i++){
+            firstLine += dimensions.get(i);
+            if(i != numberofdimensions-1)
+                firstLine += ",";
+            else
+                firstLine += "} ";
+        }
+
+        for(int i=0;i<numberofattributes;i++){
+            firstLine += attributes.get(i);
+            if(i != numberofattributes-1)
+                firstLine += ",";
+        }
+        System.out.println(firstLine);
 
         while(next()){
             System.out.println(printCell());

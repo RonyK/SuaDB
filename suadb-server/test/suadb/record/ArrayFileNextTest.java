@@ -31,7 +31,6 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 	@BeforeClass
 	public static void beforeClass() {
 		SuaDB.init(dbName);
-
 	}
 
 	//IHSUh
