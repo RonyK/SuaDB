@@ -167,8 +167,14 @@ public class CellFile {
 	        return;
         }
 
-        if (cp != null)
+        if (cp != null) {
             cp.close();
+            try {
+                SuaDB.fileMgr().flushFile(filename);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         currentchunknum = c;
         // Update filename  - ILHYUN
         this.filename = assignName(this.ai,this.attributename,currentchunknum);

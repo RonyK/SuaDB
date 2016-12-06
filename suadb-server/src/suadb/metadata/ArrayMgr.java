@@ -22,7 +22,7 @@ public class ArrayMgr {
 
 	public static final int MAX_DIM_STR = 20;
 
-	private static final String STR_ARRAY_NAME      = "arrayName";
+	public static final String STR_ARRAY_NAME      = "arrayName";
 	public static final String TABLE_ARRAY_CATALOG = "arrayCat";
 	public static final String TABLE_ATTRIBUTE_CATALOG = "attributeCat";
 	public static final String TABLE_DIMENSION_CATALOG = "dimensionCat";

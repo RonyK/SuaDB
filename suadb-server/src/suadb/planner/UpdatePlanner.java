@@ -67,4 +67,7 @@ public interface UpdatePlanner {
 	 * @return the number of affected records
 	 */
 	public int executeCreateIndex(CreateIndexData data, Transaction tx);
+
+	// Issue #05
+	public int executeRemoveArray(RemoveArrayData data, Transaction tx);
 }

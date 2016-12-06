@@ -59,6 +59,8 @@ public class Planner {
 			return uplanner.executeCreateView((CreateViewData)obj, tx);
 		else if (obj instanceof CreateIndexData)
 			return uplanner.executeCreateIndex((CreateIndexData)obj, tx);
+		else if (obj instanceof RemoveArrayData)
+			return uplanner.executeRemoveArray((RemoveArrayData)obj, tx);
 		else
 			return 0;
 	}

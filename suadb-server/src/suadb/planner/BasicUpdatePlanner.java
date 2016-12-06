@@ -78,7 +78,7 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 	// Issue #5
 	public int executeRemoveArray(RemoveArrayData data, Transaction tx)
 	{
-		return 0;
+		return SuaDB.mdMgr().removeArray(data.arrayName(),tx) ? 1 : 0;
 	}
 
 	public int executeCreateArray(CreateArrayData data, Transaction tx)
