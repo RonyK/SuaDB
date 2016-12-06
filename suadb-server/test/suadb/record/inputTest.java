@@ -39,7 +39,7 @@ public class InputTest extends SuaDBTestBase
 		FILE_PATH = homeDir+"/test.txt";
 		
 		FileWriter fw = new FileWriter(FILE_PATH);
-		fw.write(DummyData.InputDummy);
+		fw.write(DummyData.InputDummy_3A_3D);
 		fw.close();
 		
 		SuaDB.init(dbName);

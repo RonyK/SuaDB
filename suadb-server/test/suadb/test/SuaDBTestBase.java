@@ -62,9 +62,6 @@ public class SuaDBTestBase
 				deleteDirectory(file);
 			} else
 			{
-				boolean b1 = file.exists();
-				boolean b2 = file.delete();
-
 				assertTrue(
 						"Delete " + file.getPath(),
 						file.exists() == file.delete());

@@ -1,6 +1,7 @@
 package suadb.planner;
 
 import suadb.query.afl.ArrayPlan;
+import suadb.query.afl.ArrayScan;
 import suadb.query.afl.SelectPlan;
 import suadb.query.sql.TablePlan;
 import suadb.record.ArrayInfo;
@@ -66,7 +67,11 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 	public int executeInputArray(InputArrayData data, Transaction tx)
 	{
 		Plan p = new ArrayPlan(data.arrayName(), tx);
-		UpdateScan us = (UpdateScan) p.open();
+		ArrayScan us = (ArrayScan) p.open();
+		
+		us.insert(data.fileName());
+		us.close();
+		
 		return 0;
 	}
 

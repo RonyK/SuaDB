@@ -93,9 +93,13 @@ public class ArrayScan implements UpdateScan
 		rf.delete();
 	}
 
-	// TODO :: Insert() - RonyK
 	public void insert() {
-//		rf.insert();
+		// TODO :: EMPTY insert - RonyK
+	}
+	
+	public void insert(String fileName)
+	{
+		rf.input(fileName);
 	}
 	
 	@Override
