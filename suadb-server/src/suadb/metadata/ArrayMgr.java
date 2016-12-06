@@ -1,10 +1,14 @@
 package suadb.metadata;
 
-import suadb.record.ArrayInfo;
-import suadb.record.RecordFile;
-import suadb.record.Schema;
-import suadb.record.TableInfo;
+import suadb.query.Plan;
+import suadb.query.UpdateScan;
+import suadb.query.afl.SelectPlan;
+import suadb.query.sql.TablePlan;
+import suadb.record.*;
+import suadb.server.SuaDB;
 import suadb.tx.Transaction;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -142,5 +146,49 @@ public class ArrayMgr {
 		dimensionCatFile.close();
 
 		return new ArrayInfo(arrayName, sch);
+	}
+
+	// Issue #05
+	public boolean removeArray(String arrayName, Transaction tx){
+		int numberofchunksperdimension[];
+		int numberofdimensions = 0;
+		int numberofchunks = 1;
+		//  1. delete array files
+		// 1.1 retrive information to get file names that corresponds to the array that is going to be deleted
+		ArrayInfo arrayinfo = getArrayInfo(arrayName, tx);
+		Schema schema = arrayinfo.schema();
+		Collection<String> attributes = arrayinfo.schema().attributes();
+		Collection<String> dimensions = arrayinfo.schema().dimensions();
+		numberofdimensions = dimensions.size();
+		numberofchunksperdimension = new int[numberofdimensions];
+		int index = 0;
+		for(String dimname: dimensions){
+			// total number of chunks is multiplication of chunks of each dimension
+			numberofchunksperdimension[index] = (int)Math.ceil(((float)(schema.end(dimname) - schema.start(dimname)+1))/schema.chunkSize(dimname));
+			index++;
+		}
+		for(int i = 0 ; i < numberofdimensions ; i++){
+			numberofchunks *= numberofchunksperdimension[i];
+		}
+		// 1.2 delete the files
+		for(String attribute: attributes){
+			for(int i = 0 ; i< numberofchunks ; i++){
+				String filename = arrayName + "_" + attribute + "_" + i;
+				SuaDB.fileMgr().deleteFile(filename);
+			}
+		}
+
+
+		// 2. delete array metadata
+		RecordFile dimensionCatFile = new RecordFile(dimensionCatInfo, tx);
+		while (dimensionCatFile.next()) {
+			if (dimensionCatFile.getString(STR_ARRAY_NAME).equals(arrayName)) {
+				dimensionCatFile.delete();
+				dimensionCatFile.close();
+				return true;
+			}
+		}
+		dimensionCatFile.close();
+		return false;
 	}
 }

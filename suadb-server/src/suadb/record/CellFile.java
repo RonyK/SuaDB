@@ -1,8 +1,11 @@
 package suadb.record;
 
 import suadb.file.Chunk;
+import suadb.file.FileMgr;
+import suadb.server.SuaDB;
 import suadb.tx.Transaction;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,8 +61,9 @@ public class CellFile {
     /**
      * Closes the suadb.record suadb.file.
      */
-    public void close() {
+    public void close() throws IOException{
         cp.close();
+        SuaDB.fileMgr().flushFile(filename);
     }
 
     /**

@@ -146,6 +146,21 @@ public class FileMgr {
 		}
 		return fc;
 	}
+
+	// Issue #05
+	public boolean deleteFile(String fileName)
+	{
+		FileChannel fc = openFiles.get(fileName);
+		if(fc != null)
+		{
+			return false;
+		}
+		else
+		{
+			File arrayFile = new File(dbDirectory, fileName);
+			return arrayFile.delete();
+		}
+	}
 	
 	public void flushFile(String fileName) throws IOException
 	{

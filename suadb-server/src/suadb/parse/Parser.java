@@ -166,6 +166,8 @@ public class Parser
 	{
 		if (lex.matchKeyword("input"))
 			return input();
+		else if(lex.matchKeyword("remove"))
+			return remove();
 		else
 			return create();
 	}
@@ -187,6 +189,16 @@ public class Parser
 		lex.eatDelim(')');
 		
 		return new InputArrayData(arrayname, inputfile);
+	}
+
+	// issue #5
+	RemoveArrayData remove() {
+		lex.eatKeyword("remove");
+		lex.eatDelim('(');
+		String arrayname = lex.eatId();
+		lex.eatDelim(')');
+
+		return new RemoveArrayData(arrayname);
 	}
 
 	private List<String> fieldList() {

@@ -144,7 +144,11 @@ public class ArrayFile
      */
     public void close() {
         for( int j = 0 ; j < numberofattributes ; j++){
-            currentCFiles[j].close();
+            try {
+                currentCFiles[j].close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

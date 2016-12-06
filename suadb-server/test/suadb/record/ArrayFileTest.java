@@ -65,20 +65,20 @@ public class ArrayFileTest  extends SuaDBTestBase {
 
         arrayfile.beforeFirst();
         int index = 0;
-        for(int i = start[0] ; i <= end[0] ; i++ ){
-            for(int j = start[1] ; j <= end[1] ; j++ )
-                {
-                    for (int k = start[2]; k <= end[2]; k++) {
-                        dimensionvalue.set(0, i);
-                        dimensionvalue.set(1, j);
-                        dimensionvalue.set(2, k);
-                        arrayfile.moveToCid(cid);
-                        arrayfile.setInt("attA", index);
-                        arrayfile.setString("attB", Integer.toString(index));
-                        index++;
-                    }
+        for(int i = start[0] ; i <= end[0] ; i++ ) {
+            for (int j = start[1]; j <= end[1]; j++) {
+                for (int k = start[2]; k <= end[2]; k++) {
+                    dimensionvalue.set(0, i);
+                    dimensionvalue.set(1, j);
+                    dimensionvalue.set(2, k);
+                    arrayfile.moveToCid(cid);
+                    arrayfile.setInt("attA", index);
+                    arrayfile.setString("attB", Integer.toString(index));
+                    index++;
                 }
+            }
         }
+
         arrayfile.close();
         tx.commit();
 	    

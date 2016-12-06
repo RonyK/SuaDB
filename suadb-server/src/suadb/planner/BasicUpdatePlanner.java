@@ -75,6 +75,12 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 		return 0;
 	}
 
+	// Issue #5
+	public int executeRemoveArray(RemoveArrayData data, Transaction tx)
+	{
+		return 0;
+	}
+
 	public int executeCreateArray(CreateArrayData data, Transaction tx)
 	{
 		SuaDB.mdMgr().createArray(data.arrayName(), data.newSchema(), tx);
@@ -89,4 +95,4 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 		SuaDB.mdMgr().createIndex(data.indexName(), data.tableName(), data.fieldName(), tx);
 		return 0;
 	}
-}
+	}
