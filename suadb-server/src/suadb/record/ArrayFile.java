@@ -445,10 +445,7 @@ public class ArrayFile
         int[] attributeTypes = new int[numberofattributes];
         for(int i=0;i<numberofattributes;i++)
             attributeTypes[i] = schema.type(attributes.get(i));
-
-
-
-
+	    
         //Open the file.
         try {
             BufferedReader in = new BufferedReader(new FileReader(fileName));
@@ -486,6 +483,7 @@ public class ArrayFile
                     }
                 }
             }
+            in.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
