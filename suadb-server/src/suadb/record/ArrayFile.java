@@ -440,7 +440,7 @@ public class ArrayFile
         List<Integer> dimensionValue = new ArrayList<Integer>();
         int[] dimensionLengths = new int[numberofdimensions];
         for(int i=0;i<numberofdimensions;i++) {
-            dimensionValue.add(0);
+            dimensionValue.add(schema.start(dimensions.get(i)));
             dimensionLengths[i] = schema.dimensionLength(dimensions.get(i));
         }
         CID cid = new CID(dimensionValue , ai);
