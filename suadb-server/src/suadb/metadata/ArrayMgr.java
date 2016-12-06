@@ -22,18 +22,18 @@ public class ArrayMgr {
 
 	public static final int MAX_DIM_STR = 20;
 
-	public static final String STR_ARRAY_NAME      = "arrayName";
-	public static final String TABLE_ARRAY_CATALOG = "arrayCat";
+	public static final String TABLE_ARRAY_CATALOG     = "arrayCat";
 	public static final String TABLE_ATTRIBUTE_CATALOG = "attributeCat";
 	public static final String TABLE_DIMENSION_CATALOG = "dimensionCat";
-
-	private static final String STR_ATTRIBUTE_NAME = "attributeName";
-	private static final String STR_DIMENSION_NAME = "dimensionName";
-	private static final String STR_DIM_START       = "start";
-	private static final String STR_DIM_END         = "end";
-	private static final String STR_CHUNK_SIZE      = "chunkSize";
-	private static final String STR_TYPE            = "type";
-	private static final String STR_LENGTH          = "length";
+	
+	public static final String STR_ARRAY_NAME      = "arrayName";
+	public static final String STR_ATTRIBUTE_NAME  = "attributeName";
+	public static final String STR_DIMENSION_NAME  = "dimensionName";
+	public static final String STR_DIM_START       = "start";
+	public static final String STR_DIM_END         = "end";
+	public static final String STR_CHUNK_SIZE      = "chunkSize";
+	public static final String STR_TYPE            = "type";
+	public static final String STR_LENGTH          = "length";
 
 	/**
 	 * Creates a new catalog manager for the database system.

@@ -31,7 +31,6 @@ public class Planner {
 		return qplanner.createPlan(data,tx);
 	}
 
-
 	/**
 	 * Executes an SQL insert, delete, modify, or
 	 * create statement.
