@@ -20,14 +20,19 @@ public class SuaDBTestBase
 	protected static File dbDirectory;
 	
 	@BeforeClass
-	final public static void SuaDBTestBaseSetup()
+	public final static void SuaDBTestBase_Init()
 	{
 		homeDir = System.getProperty("user.home");
 		dbDirectory = new File(homeDir, dbName);
+		
+		if(dbDirectory.exists())
+		{
+			eraseAllTestFile(dbDirectory);
+		}
 	}
 	
 	@AfterClass
-	final public static void SuaDBTestBaseTearDown()
+	public final static void SuaDBTestBase_TearDown()
 	{
 		if(dbDirectory.exists())
 		{

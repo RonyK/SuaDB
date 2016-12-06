@@ -8,11 +8,19 @@ import org.junit.runners.MethodSorters;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
 
 import suadb.parse.BadSyntaxException;
+import suadb.parse.InputArrayData;
 import suadb.parse.Parser;
+import suadb.planner.BasicUpdatePlanner;
+import suadb.planner.Planner;
 import suadb.query.Plan;
 import suadb.query.Scan;
+import suadb.record.ArrayInfo;
+import suadb.record.Schema;
 import suadb.test.DummyData;
 import suadb.test.SuaDBTestBase;
 import suadb.tx.Transaction;
@@ -58,8 +66,21 @@ public class SuaDBTest extends SuaDBTestBase
 				"[x = 0:100,10]";
 		
 		SuaDB.planner().executeUpdate(query, tx);
+		
+		ArrayInfo ai = SuaDB.mdMgr().getArrayInfo("TD1", tx);
+		
+		assertEquals(ai.arrayName(), "TD1");
+		
+		assertEquals(ai.schema().attributes().size(), 2);
+		assertTrue(ai.schema().hasAttribute("a"));
+		assertTrue(ai.schema().hasAttribute("b"));
+		
+		assertEquals(ai.schema().dimensions().size(), 1);
+		assertTrue(ai.schema().hasDimension("x"));
+		
+		tx.commit();
 	}
-	
+
 	@Test
 	public void test_10_create_1D_array_with_underbar()
 	{
@@ -75,6 +96,8 @@ public class SuaDBTest extends SuaDBTestBase
 				"[x = 0:100,10]";
 		
 		SuaDB.planner().executeUpdate(query, tx);
+		
+		tx.commit();
 	}
 	
 	@Test(expected = BadSyntaxException.class)
@@ -91,6 +114,7 @@ public class SuaDBTest extends SuaDBTestBase
 				"[x = 0:100,10, y = 0:30,6]";
 		
 		SuaDB.planner().executeUpdate(query, tx);
+		tx.commit();
 	}
 	
 	@Test(expected = BadSyntaxException.class)
@@ -106,41 +130,9 @@ public class SuaDBTest extends SuaDBTestBase
 				"[x = 0:100,10, y = 0:30,6, x = 0:50,2]";
 		
 		SuaDB.planner().executeUpdate(query, tx);
+		tx.commit();
 	}
-	
-	@Test
-	public void test_10_create_3D_array()
-	{
-		Transaction tx = new Transaction();
-		String query =
-				"CREATE ARRAY TARRAY_3D_ABC" +
-				"<" +
-				"   a : int," +
-				"   b : int," +
-				"   c : int" +
-				">" +
-				"[x = 0:10,2, y = 0:20,4, z = 0:5,1]";
-		
-		SuaDB.planner().executeUpdate(query, tx);
-	}
-	
-	@Test
-	public void test_20_insert_1D_array_input() throws IOException
-	{
-		String FILE_PATH = homeDir+"/test.txt";
-		
-		FileWriter fw = new FileWriter(FILE_PATH);
-		fw.write(DummyData.InputDummy_3A_3D);
-		fw.close();
-		
-		Transaction tx = new Transaction();
-		String query = "INPUT(TARRAY_3D_ABC, " + FILE_PATH + ")";
-		
-		SuaDB.planner().executeUpdate(query, tx);
-		
-		eraseFile(FILE_PATH);
-	}
-	
+
 	@Test
 	public void test_80_remove_1D_array()
 	{
@@ -148,6 +140,7 @@ public class SuaDBTest extends SuaDBTestBase
 		String query = "REMOVE(TD1)";
 
 		SuaDB.planner().executeUpdate(query, tx);
+		tx.commit();
 	}
 	
 	@AfterClass

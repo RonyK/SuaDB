@@ -180,7 +180,7 @@ public class Parser
 		return createArray();
 	}
 	
-// Methods for parsing input commands
+	// Methods for parsing input commands
 	public InputArrayData input() {
 		lex.eatKeyword("input");
 		lex.eatDelim('(');
