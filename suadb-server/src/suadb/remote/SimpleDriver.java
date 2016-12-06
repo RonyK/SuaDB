@@ -26,9 +26,9 @@ public class SimpleDriver extends DriverAdapter {
 	 */
 	public Connection connect(String url, Properties prop) throws SQLException {
 		try {
-			String host = url.replace("jdbc:simpledb://", "");  //assumes no port specified
+			String host = url.replace("jdbc:suadb://", "");  //assumes no port specified
 			Registry reg = LocateRegistry.getRegistry(host);
-			RemoteDriver rdvr = (RemoteDriver) reg.lookup("simpledb");
+			RemoteDriver rdvr = (RemoteDriver) reg.lookup("suadb");
 			RemoteConnection rconn = rdvr.connect();
 			return new SimpleConnection(rconn);
 		}

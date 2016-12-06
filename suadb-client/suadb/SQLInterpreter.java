@@ -8,7 +8,7 @@ public class SQLInterpreter {
     public static void main(String[] args) {
 	   try {
 			Driver d = new SimpleDriver();
-			conn = d.connect("jdbc:simpledb://localhost", null);
+			conn = d.connect("jdbc:suadb://localhost", null);
 
 			Reader rdr = new InputStreamReader(System.in);
 			BufferedReader br = new BufferedReader(rdr);

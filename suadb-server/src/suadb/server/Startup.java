@@ -16,7 +16,7 @@ public class Startup {
 
 		// and post the server entry in it
 		RemoteDriver d = new RemoteDriverImpl();
-		reg.rebind("simpledb", d);
+		reg.rebind("suadb", d);
 
 		System.out.println("database server ready");
 	}
