@@ -46,7 +46,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 	@BeforeClass
 	public static void init()
 	{
-		FILE_PATH = homeDir + "/" + ARRAY_NAME + ".txt";
+		FILE_PATH = homeDir + "\\" + ARRAY_NAME + ".txt";
 	}
 
 	@Test
@@ -166,6 +166,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 			eraseFile(FILE_PATH);
 		}catch (Exception e)
 		{
+			System.out.println(e.getMessage());
 			throw e;
 		}finally
 		{

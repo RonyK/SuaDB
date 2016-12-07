@@ -57,7 +57,7 @@ public class Lexer {
 	 * @return true if that keyword is the current token
 	 */
 	public boolean matchKeyword(String w) {
-		return tok.ttype == StreamTokenizer.TT_WORD && tok.sval().equals(w);
+		return tok.ttype == StreamTokenizer.TT_WORD && tok.sval.equals(w);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class Lexer {
 	 * @return true if the current token is an identifier
 	 */
 	public boolean matchId() {
-		return  tok.ttype==StreamTokenizer.TT_WORD && !keywords.contains(tok.sval());
+		return  tok.ttype==StreamTokenizer.TT_WORD && !keywords.contains(tok.sval);
 	}
 
 //Methods to "eat" the current token
@@ -105,13 +105,13 @@ public class Lexer {
 	public String eatStringConstant() {
 		if (!matchStringConstant())
 			throw new BadSyntaxException();
-		String s = tok.sval(); //constants are not converted to lower case
+		String s = tok.sval; //constants are not converted to lower case
 		nextToken();
 		return s;
 	}
 
 	public String eatFilePath() {
-		String s = tok.sval();
+		String s = tok.sval;
 		nextToken();
 		return s;
 	}
@@ -142,11 +142,12 @@ public class Lexer {
 		while('_'== (char)tok.ttype || matchId())
 		{
 			if(matchId())
-				s+=tok.svalOriginal();
+				s+=tok.originalSval;
 			else
 				s+="_";
 			nextToken();
 		}
+		
 		return s;
 	}
 
