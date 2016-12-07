@@ -136,10 +136,17 @@ public class Lexer {
 	 * @return the string value of the current token
 	 */
 	public String eatId() {
-		if (!matchId())
+		if (!matchId() & '_' != (char)tok.ttype)
 			throw new BadSyntaxException();
-		String s = tok.svalOriginal();
-		nextToken();
+		String s = "";
+		while('_'== (char)tok.ttype || matchId())
+		{
+			if(matchId())
+				s+=tok.svalOriginal();
+			else
+				s+="_";
+			nextToken();
+		}
 		return s;
 	}
 
