@@ -48,4 +48,17 @@ public class T3A<A, B, C>
 		
 		return result;
 	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj instanceof T3A)
+		{
+			T3A<A, B, C> t = (T3A<A, B, C>)obj;
+			return a.equals(t.a) && b.equals(t.b) && c.equals(t.c);
+		}
+		
+		return false;
+		
+	}
 }

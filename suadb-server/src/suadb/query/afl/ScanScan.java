@@ -14,7 +14,6 @@ import java.util.List;
 public class ScanScan implements UpdateScan
 {
 	private Scan s;
-	private Schema sch;
 
 	public ScanScan(Scan s)
 	{

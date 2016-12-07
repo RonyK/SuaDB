@@ -8,6 +8,8 @@ import org.junit.runners.MethodSorters;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 import suadb.metadata.ArrayMgr;
 import suadb.parse.Expression;
@@ -85,7 +87,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		tx.commit();
 	}
 
-	@Test
+//	@Test
 	public void test_11_list_array()
 	{
 		Transaction tx = new Transaction();
@@ -148,7 +150,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		}
 	}
 	
-	@Test
+//	@Test
 	public void test_20_array_input() throws IOException
 	{
 		Transaction tx = new Transaction();
@@ -186,6 +188,8 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
 		Scan s = scanPlan.open();
 		
+		int num = 0;
+		
 		while (s.next())
 		{
 			int attr_01 = s.getInt(ATTR_01);
@@ -214,7 +218,49 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 				
 				e.printStackTrace();
 			}
+			
+			num++;
 		}
+		
+		assertTrue(num == 12);
+		
+		tx.commit();
+	}
+	
+	@Test
+	public void test_50_filter_3D_array()
+	{
+		List<T3A<Integer, Integer, Integer>> targets = new ArrayList<>();
+		targets.add(new T3A<>(0, 1, 2));
+		targets.add(new T3A<>(0, 2, 0));
+		targets.add(new T3A<>(0, 2, 1));
+		
+		Transaction tx = new Transaction();
+		
+		int attr_01_condition = 9;
+		String condition = ATTR_01 + " = " + Integer.toString(attr_01_condition);
+		String query = String.format(
+				"FILTER(%s, %s)", ARRAY_NAME, condition);
+		
+		Plan p = SuaDB.planner().createQueryPlan(query, tx);
+		Scan s = p.open();
+		
+		while (s.next())
+		{
+			int attr_01 = s.getInt(ATTR_01);
+			
+			int dim_01 = s.getDimension(DIM_01);
+			int dim_02 = s.getDimension(DIM_02);
+			int dim_03 = s.getDimension(DIM_03);
+			
+			System.out.println("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") ");
+			
+			assertEquals(attr_01, attr_01_condition);
+			assertTrue(targets.contains(new T3A<>(dim_01, dim_02, dim_03)));
+			targets.remove(new T3A<>(dim_01, dim_02, dim_03));
+		}
+		
+		assertTrue(targets.size() == 0);
 		
 		tx.commit();
 	}

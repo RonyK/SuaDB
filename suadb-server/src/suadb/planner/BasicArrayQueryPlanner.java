@@ -50,13 +50,13 @@ public class BasicArrayQueryPlanner implements QueryPlanner
 	
     public Plan createFilterPlan(FilterData data, Transaction tx)
 	{
-		Plan p = new FilterPlan(createPlan(data, tx), data.predicate());
+		Plan p = new FilterPlan(createPlan(data.array(), tx), data.predicate());
 		return p;
 	}
 	
 	public Plan createProjectPlan(ProjectData data, Transaction tx)
 	{
-		Plan p = new ProjectPlan(createPlan(data, tx), data.getAttributes());
+		Plan p = new ProjectPlan(createPlan(data.array(), tx), data.getAttributes());
 		return p;
 	}
 	

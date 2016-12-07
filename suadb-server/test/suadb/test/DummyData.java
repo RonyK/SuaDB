@@ -11,7 +11,7 @@ public class DummyData
 				{
 						{
 								{new T3A<>(0, 100, 1), new T3A(1, 99, null), new T3A(2, null, 3), new T3A(null, 97, 4)},
-								{new T3A<>(4, null, null), new T3A(null, 95, null), new T3A(6, null, null), new T3A(null, null, null)},
+								{new T3A<>(4, null, null), new T3A(null, 95, null), new T3A(9, null, null), new T3A(null, null, null)},
 								{new T3A<>(9, 92, null), new T3A(9, 91, null), new T3A(null, null, 11), new T3A(11, 89, null)},
 								{new T3A<>(12, 88, 13), new T3A(null, 13, 14), new T3A(14, 86, 15), new T3A(15, 85, 16)}
 						}

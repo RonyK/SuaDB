@@ -98,6 +98,23 @@ public class SuaDBTest extends SuaDBTestBase
 		tx.commit();
 	}
 	
+	@Test
+	public void test_10_create_1D_array_attributes_with_underbar()
+	{
+		Transaction tx = new Transaction();
+		String query =
+				"CREATE ARRAY T_D3" +
+						"<" +
+						"   a_a : int," +
+						"   b_b : int" +
+						">" +
+						"[x = 0:100,10]";
+		
+		SuaDB.planner().executeUpdate(query, tx);
+		
+		tx.commit();
+	}
+	
 	@Test(expected = BadSyntaxException.class)
 	public void test_10_create_2D_array_with_duplicate_attributename()
 	{

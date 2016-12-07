@@ -16,13 +16,11 @@ import java.util.List;
 public class FilterScan implements Scan
 {
 	private Scan s;
-	private Schema schema;
 	private PredicateExecutor predicate;
 	
 	public FilterScan(Scan s, Schema schema, PredicateExecutor predicate)
 	{
 		this.s = s;
-		this.schema = schema;
 		this.predicate = predicate;
 	}
 	
