@@ -181,7 +181,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 	{
 		T3A<Integer, Integer, Integer>[][][] dummy = DummyData.getArrayDummy_3A_3D();
 		System.out.println(DummyData.getInputDummy_3A_3D());
-		
+
 		Transaction tx = new Transaction();
 		String query = "SCAN(" + ARRAY_NAME + ")";
 		

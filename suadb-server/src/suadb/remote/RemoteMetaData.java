@@ -9,9 +9,10 @@ import java.rmi.*;
  * @author Edward Sciore
  */
 public interface RemoteMetaData extends Remote {
-	public int	 getColumnCount()				  throws RemoteException;
-	public String getColumnName(int column)	  throws RemoteException;
-	public int	 getColumnType(int column)	  throws RemoteException;
-	public int getColumnDisplaySize(int column) throws RemoteException;
+	public int getDimensionCount() throws RemoteException;
+	public int getAttributeCount() throws RemoteException;
+	public String getDimensionName(int index) throws RemoteException;
+	public String getAttributeName(int index) throws RemoteException;
+	public int getAttributeType(int index) throws RemoteException;
 }
 

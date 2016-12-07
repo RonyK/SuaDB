@@ -37,7 +37,7 @@ public class InputTest extends SuaDBTestBase
 	public static void beforeClass() throws IOException
 	{
 		FILE_PATH = homeDir+"/test.txt";
-		
+
 		FileWriter fw = new FileWriter(FILE_PATH);
 		fw.write(DummyData.getInputDummy_3A_3D());
 		fw.close();

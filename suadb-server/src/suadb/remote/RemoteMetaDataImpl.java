@@ -13,7 +13,8 @@ import java.util.*;
 @SuppressWarnings("serial")
 public class RemoteMetaDataImpl extends UnicastRemoteObject implements RemoteMetaData {
 	private Schema sch;
-	private List<String> fields = new ArrayList<String>();
+	private List<String> dimensions = new ArrayList<String>();
+	private List<String> attributes = new ArrayList<String>();
 
 	/**
 	 * Creates a suadb.metadata object that wraps the specified schema.
@@ -25,57 +26,72 @@ public class RemoteMetaDataImpl extends UnicastRemoteObject implements RemoteMet
 	 */
 	public RemoteMetaDataImpl(Schema sch) throws RemoteException {
 		this.sch = sch;
-		fields.addAll(sch.fields());
+		dimensions.addAll(sch.dimensions());
+		attributes.addAll(sch.attributes());
 	}
 
 	/**
-	 * Returns the size of the field list.
-	 * @see suadb.remote.RemoteMetaData#getColumnCount()
+	 * Returns the size of the dimension list.
 	 */
-	public int getColumnCount() throws RemoteException {
-		return fields.size();
+	public int getDimensionCount() throws RemoteException{
+		return dimensions.size();
 	}
-
 	/**
-	 * Returns the field name for the specified column number.
-	 * In JDBC, column numbers start with 1, so the field
-	 * is taken from position (column-1) in the list.
-	 * @see suadb.remote.RemoteMetaData#getColumnName(int)
+	 * Returns the size of the attribute list.
 	 */
-	public String getColumnName(int column) throws RemoteException {
-		return fields.get(column-1);
+	public int getAttributeCount() throws RemoteException{
+		return attributes.size();
 	}
 
 	/**
-	 * Returns the type of the specified column.
-	 * The method first finds the name of the field in that column,
+	 * Returns the dimension name for the specified index number.
+	 * In JDBC, index numbers start with 1, so the field
+	 * is taken from position (index-1) in the list.
+	 */
+	public String getDimensionName(int index) throws RemoteException{
+		return dimensions.get(index-1);
+	}
+	/**
+	 * Returns the attribute name for the specified index number.
+	 * In JDBC, index numbers start with 1, so the field
+	 * is taken from position (index-1) in the list.
+	 */
+	public String getAttributeName(int index) throws RemoteException{
+		return attributes.get(index-1);
+	}
+
+	/**
+	 * Returns the type of the specified index.
+	 * The method first finds the name of the attribute in that index,
 	 * and then looks up its type in the schema.
-	 * @see suadb.remote.RemoteMetaData#getColumnType(int)
 	 */
-	public int getColumnType(int column) throws RemoteException {
-		String fldname = getColumnName(column);
-		return sch.type(fldname);
+	public int getAttributeType(int index) throws RemoteException {
+		String attribute = getAttributeName(index);
+		return sch.type(attribute);
 	}
 
-	/**
-	 * Returns the number of characters required to display the
-	 * specified column.
-	 * For a string-type field, the method simply looks up the
-	 * field's length in the schema and returns that.
-	 * For an int-type field, the method needs to decide how
-	 * large integers can be.
-	 * Here, the method arbitrarily chooses 6 characters,
-	 * which means that integers over 999,999 will
-	 * probably get displayed improperly.
-	 * @see suadb.remote.RemoteMetaData#getColumnDisplaySize(int)
-	 */
-	public int getColumnDisplaySize(int column) throws RemoteException {
-		String fldname = getColumnName(column);
-		int fldtype = sch.type(fldname);
-		int fldlength = sch.length(fldname);
-		if (fldtype == INTEGER)
-			return 6;  // accommodate 6-digit integers
-		else
-			return fldlength;
-	}
+
+		/**
+		 * Returns the number of characters required to display the
+		 * specified column.
+		 * For a string-type field, the method simply looks up the
+		 * field's length in the schema and returns that.
+		 * For an int-type field, the method needs to decide how
+		 * large integers can be.
+		 * Here, the method arbitrarily chooses 6 characters,
+		 * which means that integers over 999,999 will
+		 * probably get displayed improperly.
+		 * @see suadb.remote.RemoteMetaData#getColumnDisplaySize(int)
+		 */
+//	public int getColumnDisplaySize(int column) throws RemoteException {
+//		String fldname = getColumnName(column);
+//		int fldtype = sch.type(fldname);
+//		int fldlength = sch.length(fldname);
+//		if (fldtype == INTEGER)
+//			return 6;  // accommodate 6-digit integers
+//		else
+//			return fldlength;
+//	}
+//
+//
 }

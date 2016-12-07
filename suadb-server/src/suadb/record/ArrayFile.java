@@ -184,6 +184,10 @@ public class ArrayFile
     boolean isNullAttribute(int whichAttribute){
         return !rearestAttribute[whichAttribute];
     }
+    boolean isNullAttribute(String attribute){
+        return !rearestAttribute[attributes.indexOf(attribute)];
+    }
+
     /**
      * Moves to the next suadb.cell.
      * @return false if there is no next suadb.cell.

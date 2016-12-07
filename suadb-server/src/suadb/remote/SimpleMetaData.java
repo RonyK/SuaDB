@@ -3,6 +3,7 @@ package suadb.remote;
 import java.sql.*;
 
 /**
+ * client-side
  * An adapter class that wraps RemoteMetaData.
  * Its methods do nothing except transform RemoteExceptions
  * into SQLExceptions.
@@ -15,36 +16,43 @@ public class SimpleMetaData extends ResultSetMetaDataAdapter {
 		rmd = md;
 	}
 
-	public int getColumnCount() throws SQLException {
+	public int getAttributeCount() throws SQLException {
 		try {
-			return rmd.getColumnCount();
+			return rmd.getAttributeCount();
+		}
+		catch(Exception e) {
+			throw new SQLException(e);
+		}
+	}
+	public int getDimensionCount() throws SQLException {
+		try {
+			return rmd.getDimensionCount();
 		}
 		catch(Exception e) {
 			throw new SQLException(e);
 		}
 	}
 
-	public String getColumnName(int column) throws SQLException {
+	public String getAttributeName(int column) throws SQLException {
 		try {
-			return rmd.getColumnName(column);
+			return rmd.getAttributeName(column);
+		}
+		catch (Exception e) {
+			throw new SQLException(e);
+		}
+	}
+	public String getDimensionName(int column) throws SQLException {
+		try {
+			return rmd.getDimensionName(column);
 		}
 		catch (Exception e) {
 			throw new SQLException(e);
 		}
 	}
 
-	public int getColumnType(int column) throws SQLException {
+	public int getAttributeType(int column) throws SQLException {
 		try {
-			return rmd.getColumnType(column);
-		}
-		catch (Exception e) {
-			throw new SQLException(e);
-		}
-	}
-
-	public int getColumnDisplaySize(int column) throws SQLException {
-		try {
-			return rmd.getColumnDisplaySize(column);
+			return rmd.getAttributeType(column);
 		}
 		catch (Exception e) {
 			throw new SQLException(e);
