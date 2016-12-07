@@ -85,8 +85,6 @@ public class SuaDBTest extends SuaDBTestBase
 	public void test_10_create_1D_array_with_underbar()
 	{
 		Transaction tx = new Transaction();
-		// TODO :: Underbar delimiter unacceptable
-		// Create array fail
 		String query =
 				"CREATE ARRAY T_D2" +
 				"<" +
