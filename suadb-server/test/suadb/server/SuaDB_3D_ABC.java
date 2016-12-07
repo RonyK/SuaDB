@@ -58,7 +58,53 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 	}
 
 	@Test
+	public void test_09_list_empty_check()
+	{
+		Transaction tx = new Transaction();
+		Scan s = list(tx);
+
+		assertFalse("Check Empty Result", s.next());
+		tx.commit();
+	}
+	
+	@Test
 	public void test_10_create_array()
+	{
+		Transaction tx = new Transaction();
+		String query = String.format(
+				"CREATE ARRAY %s" +
+						"<" +
+						"   %s : int," +
+						"   %s : int," +
+						"   %s : int" +
+						">" +
+						"[%s = 0:1,2, %s = 0:3,4, %s = 0:1,2]",
+				ARRAY_NAME, ATTR_01, ATTR_02, ATTR_03,
+				DIM_01, DIM_02, DIM_03);
+		
+		SuaDB.planner().executeUpdate(query, tx);
+		
+		ArrayInfo ai = SuaDB.mdMgr().getArrayInfo(ARRAY_NAME, tx);
+		
+		assertEquals(ai.arrayName(), ARRAY_NAME);
+		
+		assertEquals(ai.schema().attributes().size(), 3);
+		assertTrue(ai.schema().hasAttribute(ATTR_01));
+		assertTrue(ai.schema().hasAttribute(ATTR_02));
+		assertTrue(ai.schema().hasAttribute(ATTR_03));
+		assertFalse(ai.schema().hasAttribute("d"));
+		
+		assertEquals(ai.schema().dimensions().size(), 3);
+		assertTrue(ai.schema().hasDimension(DIM_01));
+		assertTrue(ai.schema().hasDimension(DIM_02));
+		assertTrue(ai.schema().hasDimension(DIM_03));
+		assertFalse(ai.schema().hasDimension("t"));
+		
+		tx.commit();
+	}
+	
+	@Test
+	public void test_11_create_array()
 	{
 		Transaction tx = new Transaction();
 		String query = String.format(
@@ -69,41 +115,31 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 				"   %s : int" +
 				">" +
 				"[%s = 0:1,2, %s = 0:3,4, %s = 0:1,2]",
-				ARRAY_NAME, ATTR_01, ATTR_02, ATTR_03,
+				ARRAY_NAME + "_1", ATTR_01, ATTR_02, ATTR_03,
 				DIM_01, DIM_02, DIM_03);
 		
 		SuaDB.planner().executeUpdate(query, tx);
-
+		
 		ArrayInfo ai = SuaDB.mdMgr().getArrayInfo(ARRAY_NAME, tx);
-
+		
 		assertEquals(ai.arrayName(), ARRAY_NAME);
-
+		
 		assertEquals(ai.schema().attributes().size(), 3);
 		assertTrue(ai.schema().hasAttribute(ATTR_01));
 		assertTrue(ai.schema().hasAttribute(ATTR_02));
 		assertTrue(ai.schema().hasAttribute(ATTR_03));
 		assertFalse(ai.schema().hasAttribute("d"));
-
+		
 		assertEquals(ai.schema().dimensions().size(), 3);
 		assertTrue(ai.schema().hasDimension(DIM_01));
 		assertTrue(ai.schema().hasDimension(DIM_02));
 		assertTrue(ai.schema().hasDimension(DIM_03));
 		assertFalse(ai.schema().hasDimension("t"));
-
+		
 		tx.commit();
 	}
-
-	@Test
-	public void test_09_list_empty_check()
-	{
-		Transaction tx = new Transaction();
-		Scan s = list(tx);
-
-		assertTrue("list array check", s.next());
-		assertFalse("last array", s.next());
-		tx.commit();
-	}
-
+	
+	
 	@Test
 	public void test_19_list_create_check()
 	{
@@ -111,15 +147,17 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		Boolean result = false;
 		Scan s = list(tx);
 		
-		while (s.next())
-		{
+		System.out.println("List() result : ");
+		assertTrue(s.next());
+		do{
 			String arrayName = s.getString(ArrayMgr.STR_ARRAY_NAME);
+			System.out.println(arrayName);
 			if(arrayName.equals(ARRAY_NAME))
 			{
 				result = true;
 				break;
 			}
-		}
+		}while (s.next());
 		
 		tx.commit();
 

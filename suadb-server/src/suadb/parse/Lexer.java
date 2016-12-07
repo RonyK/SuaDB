@@ -139,12 +139,22 @@ public class Lexer {
 		if (!matchId() & '_' != (char)tok.ttype)
 			throw new BadSyntaxException();
 		String s = "";
-		while('_'== (char)tok.ttype || matchId())
+		while('_'== (char)tok.ttype || matchId() || (s.length() > 0 && matchIntConstant()))
 		{
 			if(matchId())
+			{
 				s+=tok.originalSval;
-			else
-				s+="_";
+			} else if(matchIntConstant())
+			{
+				s += Integer.toString((int) tok.nval);
+			} else if((char)tok.ttype == '_')
+			{
+				s += "_";
+			} else
+			{
+				throw new BadSyntaxException("Wrong charactor : " + (char)tok.ttype);
+			}
+				
 			nextToken();
 		}
 		

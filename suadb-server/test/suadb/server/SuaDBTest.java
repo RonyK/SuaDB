@@ -47,6 +47,11 @@ public class SuaDBTest extends SuaDBExeTestBase
 	@Test
 	public void test_10_create_1D_array()
 	{
+		String ARRAY_NAME = "TD1";
+		String ATTR_01 = "a";
+		String ATTR_02 = "b";
+		String DIM_01 = "x";
+		
 		Transaction tx = new Transaction();
 		String query =
 				"CREATE ARRAY TD1" +
@@ -58,16 +63,17 @@ public class SuaDBTest extends SuaDBExeTestBase
 		
 		SuaDB.planner().executeUpdate(query, tx);
 		
-		ArrayInfo ai = SuaDB.mdMgr().getArrayInfo("TD1", tx);
+		ArrayInfo ai = SuaDB.mdMgr().getArrayInfo(ARRAY_NAME, tx);
+		assertEquals(ai.arrayName(), ARRAY_NAME);
 		
-		assertEquals(ai.arrayName(), "TD1");
-		
+		// Check Attributes
 		assertEquals(ai.schema().attributes().size(), 2);
-		assertTrue(ai.schema().hasAttribute("a"));
-		assertTrue(ai.schema().hasAttribute("b"));
+		assertTrue(ai.schema().hasAttribute(ATTR_01));
+		assertTrue(ai.schema().hasAttribute(ATTR_02));
 		
+		// Check Dimensions
 		assertEquals(ai.schema().dimensions().size(), 1);
-		assertTrue(ai.schema().hasDimension("x"));
+		assertTrue(ai.schema().hasDimension(DIM_01));
 		
 		tx.commit();
 	}
@@ -75,16 +81,34 @@ public class SuaDBTest extends SuaDBExeTestBase
 	@Test
 	public void test_10_create_1D_array_with_underbar()
 	{
+		String ARRAY_NAME = "T_D2";
+		String ATTR_01 = "c";
+		String ATTR_02 = "d";
+		String DIM_01 = "z";
+		
 		Transaction tx = new Transaction();
-		String query =
-				"CREATE ARRAY T_D2" +
+		String query = String.format(
+				"CREATE ARRAY %s" +
 				"<" +
-				"   c : int," +
-				"   d : int" +
+				"   %s : int," +
+				"   %s : int" +
 				">" +
-				"[z = 0:100,10]";
+				"[%s = 0:100,10]",
+				ARRAY_NAME, ATTR_01, ATTR_02, DIM_01);
 		
 		SuaDB.planner().executeUpdate(query, tx);
+		
+		ArrayInfo ai = SuaDB.mdMgr().getArrayInfo(ARRAY_NAME, tx);
+		assertEquals(ai.arrayName(), ARRAY_NAME);
+		
+		// Check Attributes
+		assertEquals(ai.schema().attributes().size(), 2);
+		assertTrue(ai.schema().hasAttribute(ATTR_01));
+		assertTrue(ai.schema().hasAttribute(ATTR_02));
+		
+		// Check Dimensions
+		assertEquals(ai.schema().dimensions().size(), 1);
+		assertTrue(ai.schema().hasDimension(DIM_01));
 		
 		tx.commit();
 	}
@@ -92,16 +116,34 @@ public class SuaDBTest extends SuaDBExeTestBase
 	@Test
 	public void test_10_create_1D_array_attributes_with_underbar()
 	{
+		String ARRAY_NAME = "T_D3";
+		String ATTR_01 = "a_a";
+		String ATTR_02 = "b_b";
+		String DIM_01 = "x";
+		
 		Transaction tx = new Transaction();
-		String query =
-				"CREATE ARRAY T_D3" +
+		String query = String.format(
+				"CREATE ARRAY %s" +
 				"<" +
-				"   a_a : int," +
-				"   b_b : int" +
+				"   %s : int," +
+				"   %s : int" +
 				">" +
-				"[x = 0:100,10]";
+				"[%s = 0:100,10]",
+				ARRAY_NAME, ATTR_01, ATTR_02, DIM_01);
 		
 		SuaDB.planner().executeUpdate(query, tx);
+		
+		ArrayInfo ai = SuaDB.mdMgr().getArrayInfo(ARRAY_NAME, tx);
+		assertEquals(ai.arrayName(), ARRAY_NAME);
+		
+		// Check Attributes
+		assertEquals(ai.schema().attributes().size(), 2);
+		assertTrue(ai.schema().hasAttribute(ATTR_01));
+		assertTrue(ai.schema().hasAttribute(ATTR_02));
+		
+		// Check Dimensions
+		assertEquals(ai.schema().dimensions().size(), 1);
+		assertTrue(ai.schema().hasDimension(DIM_01));
 		
 		tx.commit();
 	}

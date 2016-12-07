@@ -20,4 +20,9 @@ public class BadSyntaxException extends RuntimeException
 	{
 		super(message);
 	}
+	
+	public BadSyntaxException(String message, Throwable cause)
+	{
+		super(message, cause);
+	}
 }
