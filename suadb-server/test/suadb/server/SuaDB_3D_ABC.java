@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import suadb.metadata.ArrayMgr;
@@ -37,18 +38,23 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 {
 	static final String ARRAY_NAME = "TARRAY3DABC";
 	static String FILE_PATH;
-	static String ATTR_01 = "a";
-	static String ATTR_02 = "b";
-	static String ATTR_03 = "c";
+	static final String ATTR_01 = "a";
+	static final String ATTR_02 = "b";
+	static final String ATTR_03 = "c";
 	
-	static String DIM_01 = "x";
-	static String DIM_02 = "y";
-	static String DIM_03 = "z";
+	static final String DIM_01 = "x";
+	static final String DIM_02 = "y";
+	static final String DIM_03 = "z";
+	
+	static final T3A<Integer, Integer, Integer>[][][] dummy = DummyData.getArrayDummy_3A_3D();
+	static final int dummyCellNum = 16;
 	
 	@BeforeClass
 	public static void init()
 	{
 		FILE_PATH = homeDir + "\\" + ARRAY_NAME + ".txt";
+		
+		System.out.println(DummyData.getInputDummy_3A_3D());
 	}
 
 	@Test
@@ -88,25 +94,23 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 	}
 
 	@Test
-	public void test_11_list_array()
+	public void test_09_list_empty_check()
 	{
 		Transaction tx = new Transaction();
-		String query =
-				"LIST(arrays)";
-
-		Plan plan = SuaDB.planner().createQueryPlan(query, tx);
-		Scan s = plan.open();
+		Scan s = list(tx);
 
 		assertTrue("list array check", s.next());
 		assertFalse("last array", s.next());
 		tx.commit();
 	}
-	
+
 	@Test
-	public void test_19_list()
+	public void test_19_list_create_check()
 	{
+		Transaction tx = new Transaction();
 		Boolean result = false;
-		Scan s = list();
+		Scan s = list(tx);
+		
 		while (s.next())
 		{
 			String arrayName = s.getString(ArrayMgr.STR_ARRAY_NAME);
@@ -117,6 +121,8 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 			}
 		}
 		
+		tx.commit();
+
 		assertTrue(result);
 	}
 	
@@ -179,9 +185,6 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 	@Test
 	public void test_30_scan_array()
 	{
-		T3A<Integer, Integer, Integer>[][][] dummy = DummyData.getArrayDummy_3A_3D();
-		System.out.println(DummyData.getInputDummy_3A_3D());
-
 		Transaction tx = new Transaction();
 		String query = "SCAN(" + ARRAY_NAME + ")";
 		
@@ -189,7 +192,6 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		Scan s = scanPlan.open();
 		
 		int num = 0;
-		
 		while (s.next())
 		{
 			int attr_01 = s.getInt(ATTR_01);
@@ -202,24 +204,24 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 			
 			try
 			{
-				System.out.println("Assert");
 				System.out.print("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") ");
-				System.out.println("a : " + attr_01 + ", b : " + attr_02 + ", c : " + attr_03);
+				System.out.print("a : " + attr_01 + ", b : " + attr_02 + ", c : " + attr_03);
 				
 				assertTrue(dummy[dim_01][dim_02][dim_03].a == s.getInt(ATTR_01));
 				assertTrue(dummy[dim_01][dim_02][dim_03].b == s.getInt(ATTR_02));
 				assertTrue(dummy[dim_01][dim_02][dim_03].c == s.getInt(ATTR_03));
 				
-				System.out.println("True\n=====");
+				System.out.println("\tTrue");
 			} catch (Exception e)
 			{
+				System.out.println("\tFalse");
 				e.printStackTrace();
 			}
 			
 			num++;
 		}
 		
-		assertEquals(num, 12);
+		assertEquals(num, dummyCellNum);
 		
 		tx.commit();
 	}
@@ -259,6 +261,56 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		
 		assertTrue(targets.size() == 0);
 		
+		tx.commit();
+	}
+	
+	@Test
+	public void test_50_project()
+	{
+		Transaction tx = new Transaction();
+		List<String> attributes = Arrays.asList("b", "c");
+		String projectCondition = String.join(", ", attributes);
+		
+		String query = String.format(
+				"PROJECT(%s, %s)", ARRAY_NAME, projectCondition);
+		Plan p = SuaDB.planner().createQueryPlan(query, tx);
+		Scan s = p.open();
+		
+		int num = 0;
+		while (s.next())
+		{
+			assertFalse(s.hasField(ATTR_01));
+			assertTrue(s.hasField(ATTR_02));
+			assertTrue(s.hasField(ATTR_03));
+			
+			int attr_01 = s.getInt(ATTR_01);
+			int attr_02 = s.getInt(ATTR_02);
+			int attr_03 = s.getInt(ATTR_03);
+			
+			int dim_01 = s.getDimension(DIM_01);
+			int dim_02 = s.getDimension(DIM_02);
+			int dim_03 = s.getDimension(DIM_03);
+			
+			try
+			{
+				System.out.print("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") ");
+				System.out.print("a : " + attr_01 + ", b : " + attr_02 + ", c : " + attr_03);
+				
+				assertTrue(dummy[dim_01][dim_02][dim_03].a == s.getInt(ATTR_01));
+				assertTrue(dummy[dim_01][dim_02][dim_03].b == s.getInt(ATTR_02));
+				assertTrue(dummy[dim_01][dim_02][dim_03].c == s.getInt(ATTR_03));
+				
+				System.out.println("\tTrue");
+			} catch (Exception e)
+			{
+				System.out.println("\tFalse");
+				e.printStackTrace();
+			}
+			
+			num++;
+		}
+		
+		assertEquals(num, dummyCellNum);
 		tx.commit();
 	}
 	

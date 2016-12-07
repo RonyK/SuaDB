@@ -27,9 +27,8 @@ public class SuaDBExeTestBase extends SuaDBTestBase
 		SuaDB.shutDown();
 	}
 	
-	protected Scan list()
+	protected Scan list(Transaction tx)
 	{
-		Transaction tx = new Transaction();
 		String query = "LIST()";
 		
 		Plan plan = SuaDB.planner().createQueryPlan(query, tx);

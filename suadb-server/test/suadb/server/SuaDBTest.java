@@ -22,6 +22,7 @@ import suadb.query.Scan;
 import suadb.record.ArrayInfo;
 import suadb.record.Schema;
 import suadb.test.DummyData;
+import suadb.test.SuaDBExeTestBase;
 import suadb.test.SuaDBTestBase;
 import suadb.tx.Transaction;
 
@@ -31,23 +32,13 @@ import static org.junit.Assert.*;
  * Created by Rony on 2016-11-28.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SuaDBTest extends SuaDBTestBase
+public class SuaDBTest extends SuaDBExeTestBase
 {
-	@BeforeClass
-	public static void init()
-	{
-		SuaDB.init(dbName);
-	}
-	
 	@Test
 	public void test_01_list()
 	{
 		Transaction tx = new Transaction();
-		String query =
-				"LIST(arrays)";
-		
-		Plan plan = SuaDB.planner().createQueryPlan(query, tx);
-		Scan s = plan.open();
+		Scan s = list(tx);
 		
 		assertFalse("Check empty database", s.next());
 		tx.commit();
@@ -88,10 +79,10 @@ public class SuaDBTest extends SuaDBTestBase
 		String query =
 				"CREATE ARRAY T_D2" +
 				"<" +
-				"   a : int," +
-				"   b : int" +
+				"   c : int," +
+				"   d : int" +
 				">" +
-				"[x = 0:100,10]";
+				"[z = 0:100,10]";
 		
 		SuaDB.planner().executeUpdate(query, tx);
 		
@@ -104,11 +95,11 @@ public class SuaDBTest extends SuaDBTestBase
 		Transaction tx = new Transaction();
 		String query =
 				"CREATE ARRAY T_D3" +
-						"<" +
-						"   a_a : int," +
-						"   b_b : int" +
-						">" +
-						"[x = 0:100,10]";
+				"<" +
+				"   a_a : int," +
+				"   b_b : int" +
+				">" +
+				"[x = 0:100,10]";
 		
 		SuaDB.planner().executeUpdate(query, tx);
 		
@@ -124,12 +115,12 @@ public class SuaDBTest extends SuaDBTestBase
 		{
 			String query =
 					"CREATE ARRAY TD3" +
-							"<" +
-							"   a : int," +
-							"   b : int," +
-							"   a : int" +
-							">" +
-							"[x = 0:100,10, y = 0:30,6]";
+					"<" +
+					"   a : int," +
+					"   b : int," +
+					"   a : int" +
+					">" +
+					"[x = 0:100,10, y = 0:30,6]";
 			
 			SuaDB.planner().executeUpdate(query, tx);
 		}catch (Exception e)
@@ -150,11 +141,11 @@ public class SuaDBTest extends SuaDBTestBase
 		{
 			String query =
 					"CREATE ARRAY TD4" +
-							"<" +
-							"   a : int," +
-							"   b : int" +
-							">" +
-							"[x = 0:100,10, y = 0:30,6, x = 0:50,2]";
+					"<" +
+					"   a : int," +
+					"   b : int" +
+					">" +
+					"[x = 0:100,10, y = 0:30,6, x = 0:50,2]";
 			
 			SuaDB.planner().executeUpdate(query, tx);
 		}catch (Exception e)
@@ -174,11 +165,5 @@ public class SuaDBTest extends SuaDBTestBase
 
 		SuaDB.planner().executeUpdate(query, tx);
 		tx.commit();
-	}
-	
-	@AfterClass
-	public static void tearDown()
-	{
-		SuaDB.shutDown();
 	}
 }
