@@ -87,7 +87,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		tx.commit();
 	}
 
-//	@Test
+	@Test
 	public void test_11_list_array()
 	{
 		Transaction tx = new Transaction();
@@ -102,7 +102,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		tx.commit();
 	}
 	
-//	@Test
+	@Test
 	public void test_19_list()
 	{
 		Boolean result = false;
@@ -150,7 +150,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		}
 	}
 	
-//	@Test
+	@Test
 	public void test_20_array_input() throws IOException
 	{
 		Transaction tx = new Transaction();
@@ -213,16 +213,13 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 				System.out.println("True\n=====");
 			} catch (Exception e)
 			{
-				System.out.println("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") ");
-				System.out.println("a : " + attr_01 + ", b : " + attr_02 + ", c : " + attr_03);
-				
 				e.printStackTrace();
 			}
 			
 			num++;
 		}
 		
-		assertTrue(num == 12);
+		assertEquals(num, 12);
 		
 		tx.commit();
 	}
@@ -287,6 +284,5 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		
 		assertFalse("empty database", s.next());
 		tx.commit();
-		
 	}
 }

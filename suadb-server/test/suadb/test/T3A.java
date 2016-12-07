@@ -19,21 +19,21 @@ public class T3A<A, B, C>
 	@Override
 	public String toString()
 	{
-		String result = "[";
+		String result = "(";
 		if(this.a != null)
 		{
-			result += a.toString() + ", ";
+			result += a.toString() + ",";
 		}else
 		{
-			result += ", ";
+			result += ",";
 		}
 		
 		if(this.b != null)
 		{
-			result += b.toString() + ", ";
+			result += b.toString() + ",";
 		}else
 		{
-			result += ", ";
+			result += ",";
 		}
 		
 		if(this.c != null)
@@ -44,7 +44,7 @@ public class T3A<A, B, C>
 			result += "";
 		}
 		
-		result += "]";
+		result += ")";
 		
 		return result;
 	}
