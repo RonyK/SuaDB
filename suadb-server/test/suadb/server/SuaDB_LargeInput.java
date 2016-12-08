@@ -8,6 +8,7 @@ import suadb.query.Scan;
 import suadb.record.ArrayInfo;
 import suadb.test.DummyData;
 import suadb.test.SuaDBExeTestBase;
+import suadb.test.T3A;
 import suadb.tx.Transaction;
 
 import java.io.FileWriter;
@@ -98,6 +99,29 @@ public class SuaDB_LargeInput extends SuaDBExeTestBase {
         }
     }
 
+    @Test
+    public void test_30_array_large_filter(){
+
+        Transaction tx = new Transaction();
+        String query = "FILTER(FILTER(TARRAY3DABC, lat > 100), long > 100)";
+
+        Plan p = SuaDB.planner().createQueryPlan(query, tx);
+        Scan s = p.open();
+
+        while (s.next())
+        {
+            int attr_01 = s.getInt(ATTR_01);
+            String attr_02 = s.getString(ATTR_02);
+
+            int dim_01 = s.getDimension(DIM_01);
+            int dim_02 = s.getDimension(DIM_02);
+            int dim_03 = s.getDimension(DIM_03);
+
+            System.out.println("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") " + "[" + attr_01 + "," + attr_02+"]");
+        }
+
+    }
+
 
 
     @Test
@@ -123,5 +147,6 @@ public class SuaDB_LargeInput extends SuaDBExeTestBase {
         assertFalse("empty database", s.next());
         tx.commit();
     }
+
 }
 
