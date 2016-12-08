@@ -1,5 +1,6 @@
 package suadb.parse;
 
+
 /**
  * The class that wraps Java strings as database constants.
  * @author Edward Sciore
@@ -28,7 +29,8 @@ public class StringConstant implements Constant {
 		return sc != null && val.equals(sc.val);
 	}
 
-	public int compareTo(Constant c) {
+	public int compareTo(Constant c)
+	{
 		StringConstant sc = (StringConstant) c;
 		return val.compareTo(sc.val);
 	}

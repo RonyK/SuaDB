@@ -34,6 +34,10 @@ public class MetadataMgr {
 	public ArrayInfo getArrayInfo(String arrayName, Transaction tx){
 		return arrayMgr.getArrayInfo(arrayName,tx);
 	}
+    // Issue #05
+	public boolean removeArray(String arrayName, Transaction tx){
+		return arrayMgr.removeArray(arrayName,tx);
+	}
 
 	public void createView(String viewname, String viewdef, Transaction tx) {
 		viewmgr.createView(viewname, viewdef, tx);

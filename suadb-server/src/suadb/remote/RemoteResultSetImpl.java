@@ -4,6 +4,7 @@ import suadb.record.Schema;
 import suadb.query.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 
 /**
  * The RMI server-side implementation of RemoteResultSet.
@@ -28,6 +29,14 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 		this.rconn = rconn;
 	}
 
+	public List<Integer> getCurrentDimension() throws RemoteException{
+		try{
+			return s.getCurrentDimension();
+		}catch(RuntimeException e){
+			rconn.rollback();
+			throw e;
+		}
+	}
 	/**
 	 * Moves to the next suadb.record in the result set,
 	 * by moving to the next suadb.record in the saved scan.

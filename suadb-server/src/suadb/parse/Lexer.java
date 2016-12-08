@@ -57,7 +57,7 @@ public class Lexer {
 	 * @return true if that keyword is the current token
 	 */
 	public boolean matchKeyword(String w) {
-		return tok.ttype == StreamTokenizer.TT_WORD && tok.sval().equals(w);
+		return tok.ttype == StreamTokenizer.TT_WORD && tok.sval.equals(w);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class Lexer {
 	 * @return true if the current token is an identifier
 	 */
 	public boolean matchId() {
-		return  tok.ttype==StreamTokenizer.TT_WORD && !keywords.contains(tok.sval());
+		return  tok.ttype==StreamTokenizer.TT_WORD && !keywords.contains(tok.sval);
 	}
 
 //Methods to "eat" the current token
@@ -105,7 +105,13 @@ public class Lexer {
 	public String eatStringConstant() {
 		if (!matchStringConstant())
 			throw new BadSyntaxException();
-		String s = tok.sval(); //constants are not converted to lower case
+		String s = tok.sval; //constants are not converted to lower case
+		nextToken();
+		return s;
+	}
+
+	public String eatFilePath() {
+		String s = tok.sval;
 		nextToken();
 		return s;
 	}
@@ -130,10 +136,28 @@ public class Lexer {
 	 * @return the string value of the current token
 	 */
 	public String eatId() {
-		if (!matchId())
+		if (!matchId() & '_' != (char)tok.ttype)
 			throw new BadSyntaxException();
-		String s = tok.svalOriginal();
-		nextToken();
+		String s = "";
+		while('_'== (char)tok.ttype || matchId() || (s.length() > 0 && matchIntConstant()))
+		{
+			if(matchId())
+			{
+				s+=tok.originalSval;
+			} else if(matchIntConstant())
+			{
+				s += Integer.toString((int) tok.nval);
+			} else if((char)tok.ttype == '_')
+			{
+				s += "_";
+			} else
+			{
+				throw new BadSyntaxException("Wrong charactor : " + (char)tok.ttype);
+			}
+				
+			nextToken();
+		}
+		
 		return s;
 	}
 
@@ -148,6 +172,6 @@ public class Lexer {
 
 	private void initKeywords() {
 		keywords = Arrays.asList("create","input","scan","filter",
-				"list","project","array","and","string","double","int");
+				"list","remove","project","array","and","string","double","int");
 	}
 }

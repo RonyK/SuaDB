@@ -61,7 +61,13 @@ public class ProjectScan implements Scan
 		else
 			throw new RuntimeException("field " + fldname + " not found.");
 	}
-
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		return s.isNull(attrName);
+	}
+	
 	public List<Integer> getCurrentDimension() { return  s.getCurrentDimension(); }
 
 	/**
@@ -88,6 +94,4 @@ public class ProjectScan implements Scan
 	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
 
 	public void moveToCid(CID cid) { s.moveToCid(cid);	}
-
-
 }

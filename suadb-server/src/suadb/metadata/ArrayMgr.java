@@ -1,10 +1,14 @@
 package suadb.metadata;
 
-import suadb.record.ArrayInfo;
-import suadb.record.RecordFile;
-import suadb.record.Schema;
-import suadb.record.TableInfo;
+import suadb.query.Plan;
+import suadb.query.UpdateScan;
+import suadb.query.afl.SelectPlan;
+import suadb.query.sql.TablePlan;
+import suadb.record.*;
+import suadb.server.SuaDB;
 import suadb.tx.Transaction;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,20 +20,20 @@ public class ArrayMgr {
 	//catalog for array, attribute, dimension - CDS
 	private TableInfo arrayCatInfo, attributeCatInfo, dimensionCatInfo;
 
-	public static final int MAX_DIM_STR = 256;
+	public static final int MAX_DIM_STR = 20;
 
-	private static final String STR_ARRAY_NAME      = "arrayName";
-	public static final String TABLE_ARRAY_CATALOG = "arrayCat";
+	public static final String TABLE_ARRAY_CATALOG     = "arrayCat";
 	public static final String TABLE_ATTRIBUTE_CATALOG = "attributeCat";
 	public static final String TABLE_DIMENSION_CATALOG = "dimensionCat";
-
-	private static final String STR_ATTRIBUTE_NAME = "attributeName";
-	private static final String STR_DIMENSION_NAME = "dimensionName";
-	private static final String STR_DIM_START       = "start";
-	private static final String STR_DIM_END         = "end";
-	private static final String STR_CHUNK_SIZE      = "chunkSize";
-	private static final String STR_TYPE            = "type";
-	private static final String STR_LENGTH          = "length";
+	
+	public static final String STR_ARRAY_NAME      = "arrayName";
+	public static final String STR_ATTRIBUTE_NAME  = "attributeName";
+	public static final String STR_DIMENSION_NAME  = "dimensionName";
+	public static final String STR_DIM_START       = "start";
+	public static final String STR_DIM_END         = "end";
+	public static final String STR_CHUNK_SIZE      = "chunkSize";
+	public static final String STR_TYPE            = "type";
+	public static final String STR_LENGTH          = "length";
 
 	/**
 	 * Creates a new catalog manager for the database system.
@@ -142,5 +146,50 @@ public class ArrayMgr {
 		dimensionCatFile.close();
 
 		return new ArrayInfo(arrayName, sch);
+	}
+
+	// Issue #05
+	public boolean removeArray(String arrayName, Transaction tx){
+		int numberofchunksperdimension[];
+		int numberofdimensions = 0;
+		int numberofchunks = 1;
+		//  1. delete array files
+		// 1.1 retrive information to get file names that corresponds to the array that is going to be deleted
+		ArrayInfo arrayinfo = getArrayInfo(arrayName, tx);
+		Schema schema = arrayinfo.schema();
+		Collection<String> attributes = arrayinfo.schema().attributes();
+		Collection<String> dimensions = arrayinfo.schema().dimensions();
+		numberofdimensions = dimensions.size();
+		numberofchunksperdimension = new int[numberofdimensions];
+		int index = 0;
+		for(String dimname: dimensions){
+			// total number of chunks is multiplication of chunks of each dimension
+			numberofchunksperdimension[index] = (int)Math.ceil(((float)(schema.end(dimname) - schema.start(dimname)+1))/schema.chunkSize(dimname));
+			index++;
+		}
+		for(int i = 0 ; i < numberofdimensions ; i++){
+			numberofchunks *= numberofchunksperdimension[i];
+		}
+		// 1.2 delete the files
+		for(String attribute: attributes){
+			for(int i = 0 ; i< numberofchunks ; i++){
+				String filename = arrayName + "_" + attribute + "_" + i;
+				SuaDB.fileMgr().deleteFile(filename);
+			}
+		}
+
+
+		// 2. delete array metadata
+		RecordFile arrayCatFile = new RecordFile(arrayCatInfo, tx);
+		while (arrayCatFile.next()) {
+			if (arrayCatFile.getString(STR_ARRAY_NAME).equals(arrayName)) {
+				arrayCatFile.delete();
+				SuaDB.bufferMgr().flushAll();
+				arrayCatFile.close();
+				return true;
+			}
+		}
+		arrayCatFile.close();
+		return false;
 	}
 }

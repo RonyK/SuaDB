@@ -14,7 +14,6 @@ import java.util.List;
 public class ScanScan implements UpdateScan
 {
 	private Scan s;
-	private Schema sch;
 
 	public ScanScan(Scan s)
 	{
@@ -53,6 +52,12 @@ public class ScanScan implements UpdateScan
 	
 	public String getString(String fldname) {
 		return s.getString(fldname);
+	}
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		return s.isNull(attrName);
 	}
 	
 	public boolean hasField(String fldname) {

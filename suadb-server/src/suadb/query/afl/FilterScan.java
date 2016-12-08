@@ -16,13 +16,11 @@ import java.util.List;
 public class FilterScan implements Scan
 {
 	private Scan s;
-	private Schema schema;
 	private PredicateExecutor predicate;
 	
 	public FilterScan(Scan s, Schema schema, PredicateExecutor predicate)
 	{
 		this.s = s;
-		this.schema = schema;
 		this.predicate = predicate;
 	}
 	
@@ -59,6 +57,12 @@ public class FilterScan implements Scan
 	
 	public String getString(String fldname) {
 		return s.getString(fldname);
+	}
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		return s.isNull(attrName);
 	}
 	
 	@Override

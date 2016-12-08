@@ -1,6 +1,7 @@
 package suadb.planner;
 
 import suadb.query.afl.ArrayPlan;
+import suadb.query.afl.ArrayScan;
 import suadb.query.afl.SelectPlan;
 import suadb.query.sql.TablePlan;
 import suadb.record.ArrayInfo;
@@ -66,8 +67,18 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 	public int executeInputArray(InputArrayData data, Transaction tx)
 	{
 		Plan p = new ArrayPlan(data.arrayName(), tx);
-		UpdateScan us = (UpdateScan) p.open();
+		ArrayScan us = (ArrayScan) p.open();
+		
+		us.insert(data.fileName());
+		us.close();
+		
 		return 0;
+	}
+
+	// Issue #5
+	public int executeRemoveArray(RemoveArrayData data, Transaction tx)
+	{
+		return SuaDB.mdMgr().removeArray(data.arrayName(),tx) ? 1 : 0;
 	}
 
 	public int executeCreateArray(CreateArrayData data, Transaction tx)
@@ -84,4 +95,4 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 		SuaDB.mdMgr().createIndex(data.indexName(), data.tableName(), data.fieldName(), tx);
 		return 0;
 	}
-}
+	}

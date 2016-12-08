@@ -1,6 +1,7 @@
 package suadb.remote;
 
 import java.sql.*;
+import java.util.List;
 
 /**
  * An adapter class that wraps RemoteResultSet.
@@ -13,6 +14,15 @@ public class SimpleResultSet extends ResultSetAdapter {
 
 	public SimpleResultSet(RemoteResultSet s) {
 		rrs = s;
+	}
+
+	public List<Integer> getCurrentDimension() throws SQLException{
+		try {
+			return rrs.getCurrentDimension();
+		}catch(Exception e){
+			throw new SQLException(e);
+		}
+
 	}
 
 	public boolean next() throws SQLException {

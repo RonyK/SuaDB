@@ -20,14 +20,19 @@ public class SuaDBTestBase
 	protected static File dbDirectory;
 	
 	@BeforeClass
-	final public static void SuaDBTestBaseSetup()
+	public final static void SuaDBTestBase_Init()
 	{
 		homeDir = System.getProperty("user.home");
 		dbDirectory = new File(homeDir, dbName);
+		
+		if(dbDirectory.exists())
+		{
+			eraseAllTestFile(dbDirectory);
+		}
 	}
 	
 	@AfterClass
-	final public static void SuaDBTestBaseTearDown()
+	public final static void SuaDBTestBase_TearDown()
 	{
 		if(dbDirectory.exists())
 		{
@@ -35,13 +40,19 @@ public class SuaDBTestBase
 		}
 	}
 	
-	static protected void eraseAllTestFile(File file)
+	protected static void eraseFile(String fileName)
+	{
+		File file = new File(fileName);
+		assertTrue(file.exists() == file.delete());
+	}
+	
+	protected static void eraseAllTestFile(File file)
 	{
 		assertTrue(file.exists() == deleteDirectory(file));
 		assertFalse(file.exists());
 	}
 	
-	static protected boolean deleteDirectory(File path)
+	protected static boolean deleteDirectory(File path)
 	{
 		if(!path.exists())
 		{
@@ -56,12 +67,6 @@ public class SuaDBTestBase
 				deleteDirectory(file);
 			} else
 			{
-				boolean b1 = file.exists();
-				boolean b2 = file.delete();
-				
-				System.out.println(b1);
-				System.out.println(b2);
-				
 				assertTrue(
 						"Delete " + file.getPath(),
 						file.exists() == file.delete());

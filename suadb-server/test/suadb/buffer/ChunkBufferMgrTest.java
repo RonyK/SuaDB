@@ -87,37 +87,4 @@ public class ChunkBufferMgrTest extends SuaDBTestBase
 			e.printStackTrace();
 		}
 	}
-	
-	//	static int BUFFER_SIZE = 10;
-	//	static BufferMgr bufferMgr = new BufferMgr(BUFFER_SIZE);
-	//	static FileMgr fileMgr = new FileMgr(dbName);
-	//
-	//	@Mock
-	//	static LogMgr mLogMgr;
-	//
-	//	@Mock
-	//	static MetadataMgr mMetadataMgr;
-	
-	//	@Before
-	//	public void before()
-	//	{
-	//		MockitoAnnotations.initMocks(this);
-	//
-	//		PowerMockito.mockStatic(SuaDB.class);
-	//		BDDMockito.given(SuaDB.bufferMgr()).willReturn(bufferMgr);
-	//		BDDMockito.given(SuaDB.fileMgr()).willReturn(fileMgr);
-	//
-	////		Mockito.when(SuaDB.bufferMgr()).thenReturn(bufferMgr);
-	////		Mockito.when(SuaDB.fileMgr()).thenReturn(fileMgr);
-	//		Mockito.when(SuaDB.logMgr()).thenReturn(mLogMgr);
-	//		Mockito.when(SuaDB.mdMgr()).thenReturn(mMetadataMgr);
-	//
-	//		SuaDB.init(dbName);
-	//	}
-	
-	//	@After
-	//	public void after()
-	//	{
-	//		eraseAllTestFile(dbDirectory);
-	//	}
 }

@@ -129,7 +129,19 @@ public class MergeJoinScan implements Scan {
 		else
 			return s2.getString(fldname);
 	}
-
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		if(s1.hasField(attrName))
+		{
+			return s1.isNull(attrName);
+		}else
+		{
+			return s2.isNull(attrName);
+		}
+	}
+	
 	/**
 	 * Returns true if the specified field is in
 	 * either of the underlying scans.
@@ -163,9 +175,10 @@ public class MergeJoinScan implements Scan {
 		}
 	}
 	
-	//TODO : Binary operator scan has two current coordinates
 	public List<Integer> getCurrentDimension() { return  s1.getCurrentDimension(); }
+	
 	public void moveToCid(CID cid) { s1.moveToCid(cid); }
+	
 	public boolean hasDimension(String dimname) {return s1.hasDimension(dimname); }
 
 

@@ -120,7 +120,19 @@ public class SortScan implements Scan {
 	public String getString(String fldname) {
 		return currentscan.getString(fldname);
 	}
-
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		if(s1.hasField(attrName))
+		{
+			return s1.isNull(attrName);
+		}else
+		{
+			return s2.isNull(attrName);
+		}
+	}
+	
 	public List<Integer> getCurrentDimension() { return  currentscan.getCurrentDimension(); }
 
 	/**

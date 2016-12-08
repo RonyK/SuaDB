@@ -1,8 +1,11 @@
 package suadb.record;
 
 import suadb.file.Chunk;
+import suadb.file.FileMgr;
+import suadb.server.SuaDB;
 import suadb.tx.Transaction;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,8 +61,9 @@ public class CellFile {
     /**
      * Closes the suadb.record suadb.file.
      */
-    public void close() {
+    public void close() throws IOException{
         cp.close();
+        SuaDB.fileMgr().flushFile(filename);
     }
 
     /**
@@ -158,10 +162,19 @@ public class CellFile {
     }
 
     public void moveTo(int c) {
-        if( currentchunknum == c)
-           return;
-        if (cp != null)
+        if( currentchunknum == c) {
+	        cp.setCurrentId(-1);//Initialize slot
+	        return;
+        }
+
+        if (cp != null) {
             cp.close();
+            try {
+                SuaDB.fileMgr().flushFile(filename);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         currentchunknum = c;
         // Update filename  - ILHYUN
         this.filename = assignName(this.ai,this.attributename,currentchunknum);

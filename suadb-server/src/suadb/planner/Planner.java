@@ -19,18 +19,26 @@ public class Planner {
 
 	/**
 	 * Creates a plan for an AQL filter statement, using the supplied suadb.planner.
-	 * @param qry the AQL suadb.query string
+	 * @param query the AQL suadb.query string
 	 * @param tx the transaction
 	 * @return the scan corresponding to the suadb.query plan
 	 */
 
 
-	public Plan createQueryPlan(String qry, Transaction tx) {
-		Parser parser = new Parser(qry);
-		QueryData data = parser.query();
-		return qplanner.createPlan(data,tx);
+	public Plan createQueryPlan(String query, Transaction tx)
+	{
+		System.out.println(String.format("Execute Query : %s", query));
+		
+		try
+		{
+			Parser parser = new Parser(query);
+			QueryData data = parser.query();
+			return qplanner.createPlan(data,tx);
+		}catch (BadSyntaxException e)
+		{
+			throw new BadSyntaxException(query, e);
+		}
 	}
-
 
 	/**
 	 * Executes an SQL insert, delete, modify, or
@@ -38,28 +46,35 @@ public class Planner {
 	 * The method dispatches to the appropriate method of the
 	 * supplied update suadb.planner,
 	 * depending on what the parser returns.
-	 * @param cmd the SQL update string
+	 * @param query the SQL update string
 	 * @param tx the transaction
 	 * @return an integer denoting the number of affected records
 	 */
-	public int executeUpdate(String cmd, Transaction tx) {
-		Parser parser = new Parser(cmd);
-		Object obj = parser.updateCmd();
-		if (obj instanceof InsertData)
-			return uplanner.executeInsert((InsertData)obj, tx);
-		else if (obj instanceof DeleteData)
-			return uplanner.executeDelete((DeleteData)obj, tx);
-		else if (obj instanceof ModifyData)
-			return uplanner.executeModify((ModifyData)obj, tx);
-		else if (obj instanceof InputArrayData)
-			return uplanner.executeInputArray((InputArrayData)obj, tx);
-		else if (obj instanceof CreateArrayData)
-			return uplanner.executeCreateArray((CreateArrayData)obj, tx);
-		else if (obj instanceof CreateViewData)
-			return uplanner.executeCreateView((CreateViewData)obj, tx);
-		else if (obj instanceof CreateIndexData)
-			return uplanner.executeCreateIndex((CreateIndexData)obj, tx);
-		else
-			return 0;
+	public int executeUpdate(String query, Transaction tx)
+	{
+		System.out.println(String.format("Execute Update Query : %s", query));
+		
+		try
+		{
+			Parser parser = new Parser(query);
+			Object obj = parser.updateCmd();
+			if (obj instanceof InsertData) return uplanner.executeInsert((InsertData) obj, tx);
+			else if (obj instanceof DeleteData) return uplanner.executeDelete((DeleteData) obj, tx);
+			else if (obj instanceof ModifyData) return uplanner.executeModify((ModifyData) obj, tx);
+			else if (obj instanceof InputArrayData)
+				return uplanner.executeInputArray((InputArrayData) obj, tx);
+			else if (obj instanceof CreateArrayData)
+				return uplanner.executeCreateArray((CreateArrayData) obj, tx);
+			else if (obj instanceof CreateViewData)
+				return uplanner.executeCreateView((CreateViewData) obj, tx);
+			else if (obj instanceof CreateIndexData)
+				return uplanner.executeCreateIndex((CreateIndexData) obj, tx);
+			else if (obj instanceof RemoveArrayData)
+				return uplanner.executeRemoveArray((RemoveArrayData) obj, tx);
+			else return 0;
+		}catch (BadSyntaxException e)
+		{
+			throw new BadSyntaxException(query, e);
+		}
 	}
 }

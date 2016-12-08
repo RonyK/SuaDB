@@ -2,6 +2,8 @@ package suadb.query;
 
 import suadb.parse.Constant;
 import static suadb.parse.Term.*;
+
+import suadb.parse.NullableConstant;
 import suadb.record.Schema;
 
 /**
@@ -226,6 +228,9 @@ public class TermExecutor
 	public boolean isSatisfied(Scan s) {
 		Constant lhsval = lhs.evaluate(s);
 		Constant rhsval = rhs.evaluate(s);
+		
+		if(lhsval instanceof NullableConstant || rhsval instanceof NullableConstant)
+			return false;
 		
 		switch (matchCode)
 		{

@@ -1,5 +1,8 @@
 package suadb.record;
 
+import suadb.parse.BadSyntaxException;
+
+import java.sql.Types;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -18,7 +21,7 @@ import static java.sql.Types.VARCHAR;
  */
 public class Schema {
 	//key : attribute name, value : attribute type & length(if String type) - CDS
-	private Map<String, attributeInfo> attributeInfo = new HashMap<String, attributeInfo>();
+	private Map<String, attributeInfo> attributeInfo = new LinkedHashMap<String, attributeInfo>();
 	//key : dimensionName, value : DimensionInfo(start,end,chunkSize) - CDS
 	private Map<String, DimensionInfo> dimensionInfo = new LinkedHashMap<String, DimensionInfo>();
 
@@ -39,6 +42,8 @@ public class Schema {
 	 * @param length the conceptual length of a string attribute.
 	 */
 	public void addField(String attributeName, int type, int length) {
+		if(attributeInfo.containsKey(attributeName))
+			throw new BadSyntaxException();
 		attributeInfo.put(attributeName, new attributeInfo(type, length));
 	}
 	
@@ -52,6 +57,8 @@ public class Schema {
 	 * @param length the conceptual length of a string attribute.
 	 */
 	public void addAttribute(String attributeName, int type, int length) {
+		if(attributeInfo.containsKey(attributeName))
+			throw new BadSyntaxException();
 		attributeInfo.put(attributeName, new attributeInfo(type, length));
 	}
 	
@@ -64,6 +71,8 @@ public class Schema {
 	 * @param chunkSize the size of chunk
 	 */
 	public void addDimension(String dimensionName, int start, int end, int chunkSize) {
+		if(dimensionInfo.containsKey(dimensionName))
+			throw new BadSyntaxException();
 		dimensionInfo.put(dimensionName, new DimensionInfo(start,end,chunkSize));
 	}
 
@@ -72,6 +81,8 @@ public class Schema {
 	 * @param fldname the name of the field
 	 */
 	public void addIntField(String fldname) {
+		if(attributeInfo.containsKey(fldname))
+			throw new BadSyntaxException();
 		addAttribute(fldname, INTEGER, 0);
 	}
 
@@ -84,6 +95,8 @@ public class Schema {
 	 * @param length the number of chars in the varchar definition
 	 */
 	public void addStringField(String fldname, int length) {
+		if(attributeInfo.containsKey(fldname))
+			throw new BadSyntaxException();
 		addAttribute(fldname, VARCHAR, length);
 	}
 	
@@ -161,25 +174,36 @@ public class Schema {
 	 return dimensions().contains(dimName);
 	 }
 
+	/**
+	 * Return true if the specified attribute
+	 * is in the schema
+	 *
+	 * @param attributeName	the name of the dimension
+	 * @return			 true if the dimension in the schema
+	 */
+	 public boolean hasAttribute(String attributeName){
+		 return attributes().contains(attributeName);
+	 }
+
 	 /**
 	 * Returns the type of the specified field, using the
 	 * constants in {@link java.sql.Types}.
-	 * @param fldname the name of the field
+	 * @param attributeName the name of the field
 	 * @return the integer type of the field
 	 */
-	public int type(String fldname) {
-		return attributeInfo.get(fldname).type;
+	public int type(String attributeName) {
+		return attributeInfo.get(attributeName).type;
 	}
 	
 	/**
 	 * Returns the conceptual length of the specified field.
 	 * If the field is not a string field, then
 	 * the return value is undefined.
-	 * @param fldname the name of the field
+	 * @param attributeName the name of the field
 	 * @return the conceptual length of the field
 	 */
-	public int length(String fldname) {
-		return attributeInfo.get(fldname).length;
+	public int length(String attributeName) {
+		return attributeInfo.get(attributeName).length;
 	}
 
 	/**
@@ -198,6 +222,11 @@ public class Schema {
 	 */
 	public int end(String dimensionName) {
 		return dimensionInfo.get(dimensionName).end;
+	}
+
+	public int dimensionLength(String dimensionName){
+		DimensionInfo info = dimensionInfo.get(dimensionName);
+		return info.end-info.start+1;
 	}
 
 	/**
@@ -224,6 +253,37 @@ public class Schema {
 			this.type = type;
 			this.length = length;
 		}
+		
+		@Override
+		public String toString()
+		{
+			String str;
+			
+			switch (this.type)
+			{
+				case Types.INTEGER:
+				{
+					str = "INTEGER";
+					break;
+				}
+				case Types.DOUBLE:
+				{
+					str =  "DOUBLE";
+					break;
+				}
+				case Types.VARCHAR:
+				{
+					str = "VARCHAR";
+					break;
+				}
+				default:
+				{
+					str = "UNKNOWN";
+				}
+			}
+			
+			return str + "(" + Integer.toString(this.length) + ")";
+		}
 	}
 
 	class DimensionInfo
@@ -239,6 +299,14 @@ public class Schema {
 			this.end = end;
 			this.chunkSize = chunkSize;
 			this.numOfChunk = (int) Math.ceil((double)(end-start+1)/chunkSize);
+		}
+		
+		@Override
+		public String toString()
+		{
+			return Integer.toString(start) + ":" +
+					Integer.toString(end) + "," +
+					Integer.toString(chunkSize);
 		}
 	}
 }

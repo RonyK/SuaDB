@@ -1,6 +1,7 @@
 package suadb.remote;
 
 import java.rmi.*;
+import java.util.List;
 
 /**
  * The RMI suadb.remote interface corresponding to ResultSet.
@@ -9,6 +10,7 @@ import java.rmi.*;
  * @author Edward Sciore
  */
 public interface RemoteResultSet extends Remote {
+	public List<Integer> getCurrentDimension()     throws RemoteException;
 	public boolean next()						 throws RemoteException;
 	public int getInt(String fldname)		 throws RemoteException;
 	public String getString(String fldname) throws RemoteException;

@@ -127,24 +127,6 @@ public class CellPage {
     }
 
     /**
-     * Inserts a new, blank suadb.record somewhere in the page.
-     * Return false if there were no available slots.
-     * @return false if the insertion was not possible
-     */
-    // TODO :: this is for appending records in SimpleDB, Have to find another way
-    /*
-    public boolean insert() {
-        currentslot = -1;
-        boolean found = searchFor(EMPTY);
-        if (found) {
-            int position = currentpos();
-            tx.setInt(chunk, position, INUSE);
-        }
-        return found;
-    }
-*/
-
-    /**
      * Sets the current suadb.record to be the suadb.record having the
      * specified ID.
      * @param id the ID of the suadb.record within the page.
@@ -160,7 +142,9 @@ public class CellPage {
     public int currentId() {
         return currentslot;
     }
-
+    public void setCurrentId(int currentslot){
+        this.currentslot = currentslot;
+    }
     private int currentpos() {
         int numberofcellsinablock = (int)Math.floor((double)BLOCK_SIZE / slotsize);
         int blockseq = currentslot / numberofcellsinablock;

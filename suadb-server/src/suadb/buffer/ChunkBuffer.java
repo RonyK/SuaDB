@@ -223,10 +223,16 @@ public class ChunkBuffer
 		this.buffers = buffers;
 
 		//Read all blocks in the chunk (from 0 to c.numOfBlocks)
-		int i=0;
-		for (Buffer buff : buffers){
-			Block block = new Block(c.fileName(),i++);
-			buff.assignToBlock(block);//Assign the buffer to the block.
+
+		if(c.TreatAsBlock()){
+			Block block = new Block(c.fileName(),c.getChunkNum());
+			buffers.get(0).assignToBlock(block);//Assign the buffer to the block.
+		}else {
+			int i=0;
+			for (Buffer buff : buffers) {
+				Block block = new Block(c.fileName(), i++);
+				buff.assignToBlock(block);//Assign the buffer to the block.
+			}
 		}
 
 		pins = 0;
