@@ -178,7 +178,7 @@ public class CellFile {
         currentchunknum = c;
         // Update filename  - ILHYUN
         this.filename = assignName(this.ai,this.attributename,currentchunknum);
-        if (tx.size(filename) == 0)
+        if (tx.size(filename,numberofblocks) == 0)
             createChunk(c);
         Chunk blk = new Chunk(filename, currentchunknum,numberofblocks);
         cp = new CellPage(blk, ai, tx, ai.recordLength(attributename));

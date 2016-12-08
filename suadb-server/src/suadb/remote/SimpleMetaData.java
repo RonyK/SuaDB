@@ -1,5 +1,6 @@
 package suadb.remote;
 
+import java.rmi.RemoteException;
 import java.sql.*;
 
 /**

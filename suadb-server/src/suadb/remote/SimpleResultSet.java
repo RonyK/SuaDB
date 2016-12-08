@@ -1,9 +1,11 @@
 package suadb.remote;
 
+import java.rmi.RemoteException;
 import java.sql.*;
 import java.util.List;
 
 /**
+ * front-end
  * An adapter class that wraps RemoteResultSet.
  * Its methods do nothing except transform RemoteExceptions
  * into SQLExceptions.

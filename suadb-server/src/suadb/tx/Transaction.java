@@ -211,9 +211,14 @@ public class Transaction {
 	 * @param filename the name of the suadb.file
 	 * @return the number of blocks in the suadb.file
 	 */
-	public int size(String filename) {
-		Chunk dummyblk = new Chunk(filename, END_OF_FILE,1);
-		concurMgr.sLock(dummyblk);
+	public int size(String filename,int numOfBlocks) { // For chunk
+		Chunk dummyChunk = new Chunk(filename, END_OF_FILE,numOfBlocks);
+		concurMgr.sLock(dummyChunk);
+		return SuaDB.fileMgr().size(filename);
+	}
+	public int size(String filename) { //For existing block I/O
+		Chunk dummyChunk = new Chunk(filename, END_OF_FILE,1);
+		concurMgr.sLock(dummyChunk);
 		return SuaDB.fileMgr().size(filename);
 	}
 

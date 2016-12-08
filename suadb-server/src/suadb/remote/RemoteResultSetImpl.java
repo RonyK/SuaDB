@@ -2,9 +2,14 @@ package suadb.remote;
 
 import suadb.record.Schema;
 import suadb.query.*;
+import suadb.server.SuaDB;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+
+import static java.sql.Types.INTEGER;
+import static java.sql.Types.VARCHAR;
 
 /**
  * The RMI server-side implementation of RemoteResultSet.
@@ -59,7 +64,6 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 	 */
 	public int getInt(String fldname) throws RemoteException {
 		try {
-			fldname = fldname.toLowerCase(); // to ensure case-insensitivity
 			return s.getInt(fldname);
 		}
 		catch(RuntimeException e) {
@@ -75,7 +79,6 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 	 */
 	public String getString(String fldname) throws RemoteException {
 		try {
-			fldname = fldname.toLowerCase(); // to ensure case-insensitivity
 			return s.getString(fldname);
 		}
 		catch(RuntimeException e) {
