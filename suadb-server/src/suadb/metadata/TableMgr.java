@@ -3,7 +3,6 @@ package suadb.metadata;
 import java.util.HashMap;
 import java.util.Map;
 
-import suadb.record.ArrayInfo;
 import suadb.record.RecordFile;
 import suadb.record.Schema;
 import suadb.record.TableInfo;
@@ -27,13 +26,13 @@ public class TableMgr {
 
 	
 	public static final String TABLE_TABLE_CATALOG = "tblcat";
-	public static final String TABLE_FILED_CATALOG = "fldcat";
-	private static final String STR_TABLE_NAME      = "tblname";
-	private static final String STR_RECORD_LENGTH   = "reclength";
-	private static final String STR_FILED_NAME      = "fldname";
-	private static final String STR_TYPE            = "type";
-	private static final String STR_LENGTH          = "length";
-	private static final String STR_OFFSET          = "offset";
+	public static final String TABLE_FIELD_CATALOG = "fldcat";
+	public static final String STR_TABLE_NAME      = "tblname";
+	public static final String STR_RECORD_LENGTH   = "reclength";
+	public static final String STR_FIELD_NAME = "fldname";
+	public static final String STR_TYPE            = "type";
+	public static final String STR_LENGTH          = "length";
+	public static final String STR_OFFSET          = "offset";
 
 	private TableInfo tblCatInfo, fldCatInfo, arrCatInfo, dimCatInfo;
 
@@ -53,16 +52,16 @@ public class TableMgr {
 
 		Schema fcatSchema = new Schema();
 		fcatSchema.addStringField(STR_TABLE_NAME, MAX_NAME);
-		fcatSchema.addStringField(STR_FILED_NAME, MAX_NAME);
+		fcatSchema.addStringField(STR_FIELD_NAME, MAX_NAME);
 		fcatSchema.addIntField(STR_TYPE);
 		fcatSchema.addIntField(STR_LENGTH);
 		fcatSchema.addIntField(STR_OFFSET);
-		fldCatInfo = new TableInfo(TABLE_FILED_CATALOG, fcatSchema);
+		fldCatInfo = new TableInfo(TABLE_FIELD_CATALOG, fcatSchema);
 
 		if (isNew)
 		{
 			createTable(TABLE_TABLE_CATALOG, tcatSchema, tx);
-			createTable(TABLE_FILED_CATALOG, fcatSchema, tx);
+			createTable(TABLE_FIELD_CATALOG, fcatSchema, tx);
 		}
 	}
 
@@ -88,7 +87,7 @@ public class TableMgr {
 		{
 			fcatfile.insert();
 			fcatfile.setString(STR_TABLE_NAME, tblname);
-			fcatfile.setString(STR_FILED_NAME, fldname);
+			fcatfile.setString(STR_FIELD_NAME, fldname);
 			fcatfile.setInt	(STR_TYPE,	sch.type(fldname));
 			fcatfile.setInt	(STR_LENGTH, sch.length(fldname));
 			fcatfile.setInt	(STR_OFFSET, ti.offset(fldname));
@@ -110,7 +109,8 @@ public class TableMgr {
 		int reclen = -1;
 		while (tcatfile.next())
 		{
-			if(tcatfile.getString(STR_TABLE_NAME).equals(tblname))
+			String temp = tcatfile.getString(STR_TABLE_NAME);
+			if(temp.equals(tblname))
 			{
 				reclen = tcatfile.getInt(STR_RECORD_LENGTH);
 				break;
@@ -118,30 +118,46 @@ public class TableMgr {
 		}
 		tcatfile.close();
 
+		RecordFile fcatfile = new RecordFile(fldCatInfo, tx);
 		Schema sch = new Schema();
-		getFiledSchema(tblname, tx, sch);
-		
-		Map<String, Integer> offsets = getOffsets(tblname, tx);
-		
+		Map<String,Integer> offsets = new HashMap<String,Integer>();
+		while (fcatfile.next()) {
+			String temp = fcatfile.getString(STR_TABLE_NAME);
+			if (temp.equals(tblname)) {
+				String fldname = fcatfile.getString(STR_FIELD_NAME);
+				int fldtype = fcatfile.getInt(STR_TYPE);
+				int fldlen = fcatfile.getInt(STR_LENGTH);
+				int offset = fcatfile.getInt(STR_OFFSET);
+				offsets.put(fldname, offset);
+				sch.addField(fldname, fldtype, fldlen);
+			}
+		}
+		fcatfile.close();
+//		Schema sch = new Schema();
+//		getFieldSchema(tblname, tx, sch);
+//
+//		Map<String, Integer> offsets = getOffsets(tblname, tx);
+//
 		return new TableInfo(tblname, sch, offsets, reclen);
 	}
 
 
-	public void getFiledSchema(String name, Transaction tx, Schema schema)
+	public void getFieldSchema(String name, Transaction tx, Schema schema)
 	{
-		RecordFile filedCatFile = new RecordFile(fldCatInfo, tx);
-		while (filedCatFile.next())
+		RecordFile fieldCatFile = new RecordFile(fldCatInfo, tx);
+		while (fieldCatFile.next())
 		{
-			if (filedCatFile.getString(STR_TABLE_NAME).equals(name))
+			String temp = fieldCatFile.getString(STR_TABLE_NAME);
+			if (temp.equals(name))
 			{
-				String filedName = filedCatFile.getString(STR_FILED_NAME);
-				int fldtype	 = filedCatFile.getInt(STR_TYPE);
-				int fldlen	  = filedCatFile.getInt(STR_LENGTH);
-				int offset	  = filedCatFile.getInt(STR_OFFSET);
-				schema.addField(filedName, fldtype, fldlen);
+				String fieldName = fieldCatFile.getString(STR_FIELD_NAME);
+				int fldtype	 = fieldCatFile.getInt(STR_TYPE);
+				int fldlen	  = fieldCatFile.getInt(STR_LENGTH);
+				int offset	  = fieldCatFile.getInt(STR_OFFSET);
+				schema.addField(fieldName, fldtype, fldlen);
 			}
 		}
-		filedCatFile.close();
+		fieldCatFile.close();
 	}
 
 	public Map<String, Integer> getOffsets(String name, Transaction tx)
@@ -153,7 +169,7 @@ public class TableMgr {
 		{
 			if (filedCatFile.getString(STR_TABLE_NAME).equals(name))
 			{
-				String filedName = filedCatFile.getString(STR_FILED_NAME);
+				String filedName = filedCatFile.getString(STR_FIELD_NAME);
 				int offset	  = filedCatFile.getInt(STR_OFFSET);
 				offsets.put(filedName, offset);
 			}

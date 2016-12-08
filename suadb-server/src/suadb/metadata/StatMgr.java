@@ -50,10 +50,10 @@ class StatMgr {
 	private synchronized void refreshStatistics(Transaction tx) {
 		tablestats = new HashMap<String,StatInfo>();
 		numcalls = 0;
-		TableInfo tcatmd = tblMgr.getTableInfo("tblcat", tx);
+		TableInfo tcatmd = tblMgr.getTableInfo(tblMgr.TABLE_TABLE_CATALOG, tx);
 		RecordFile tcatfile = new RecordFile(tcatmd, tx);
 		while(tcatfile.next()) {
-			String tblname = tcatfile.getString("tblname");
+			String tblname = tcatfile.getString(tblMgr.STR_TABLE_NAME);
 			TableInfo md = tblMgr.getTableInfo(tblname, tx);
 			StatInfo si = calcTableStats(md, tx);
 			tablestats.put(tblname, si);

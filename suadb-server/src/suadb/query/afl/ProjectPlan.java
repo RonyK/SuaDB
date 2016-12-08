@@ -24,6 +24,7 @@ public class ProjectPlan implements Plan
 		this.p = p;
 		for (String fldname : fieldlist)
 			schema.add(fldname, p.schema());
+		schema.addDimension(p.schema());
 	}
 
 	/**

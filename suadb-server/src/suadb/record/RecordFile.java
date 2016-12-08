@@ -155,7 +155,8 @@ public class RecordFile {
 	}
 
 	private boolean atLastBlock() {
-		return currentblknum == tx.size(filename) - 1;
+		int test = tx.size(filename) - 1;
+		return currentblknum == test;
 	}
 
 	private void appendBlock() {

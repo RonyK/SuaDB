@@ -212,7 +212,7 @@ public class Transaction {
 	 * @return the number of blocks in the suadb.file
 	 */
 	public int size(String filename) {
-		Chunk dummyblk = new Chunk(filename, END_OF_FILE);
+		Chunk dummyblk = new Chunk(filename, END_OF_FILE,1);
 		concurMgr.sLock(dummyblk);
 		return SuaDB.fileMgr().size(filename);
 	}
@@ -233,7 +233,7 @@ public class Transaction {
 	 * @return a reference to the newly-created disk block
 	 */
 	public Chunk append(String filename, PageFormatter fmtr) {
-		Chunk dummyChunk = new Chunk(filename, END_OF_FILE);
+		Chunk dummyChunk = new Chunk(filename, END_OF_FILE, 1);
 		concurMgr.xLock(dummyChunk);
 		Chunk chunk = myChunks.pinNew(filename, fmtr, 1);//Appends a new block(one-block-sized chunk)
 		unpin(chunk);

@@ -13,10 +13,10 @@ public class MetadataMgr {
 
 	public MetadataMgr(boolean isnew, Transaction tx) {
 		tblmgr  = new TableMgr(isnew, tx);
+		arrayMgr = new ArrayMgr(isnew,tx,tblmgr);
 		viewmgr = new ViewMgr(isnew, tblmgr, tx);
 		statmgr = new StatMgr(tblmgr, tx);
 		idxmgr  = new IndexMgr(isnew, tblmgr, tx);
-		arrayMgr = new ArrayMgr(isnew,tx,tblmgr);
 	}
 
 	public void createTable(String tblname, Schema sch, Transaction tx) {

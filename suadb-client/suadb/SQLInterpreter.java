@@ -63,13 +63,15 @@ public class SQLInterpreter {
 		    int totalwidth = 0;
 
 		    // print header
-			System.out.print("{");
-			for(int i=1; i<=numOfDimensions; i++){
-				System.out.print(md.getDimensionName(i));
-				if(i != numOfDimensions)
-					System.out.print(",");
-				else
-					System.out.print("} ");
+			if(numOfDimensions > 0) {
+				System.out.print("{");
+				for (int i = 1; i <= numOfDimensions; i++) {
+					System.out.print(md.getDimensionName(i));
+					if (i != numOfDimensions)
+						System.out.print(",");
+					else
+						System.out.print("} ");
+				}
 			}
 			for(int i=1; i<= numOfAttributes; i++){
 				System.out.print(md.getAttributeName(i));
@@ -82,13 +84,15 @@ public class SQLInterpreter {
 		    // print cells
 		    while(rs.next()) {
 			    List<Integer> currentDimension = rs.getCurrentDimension();
-			    System.out.print("{");
-			    for(int i=0;i<numOfDimensions;i++){
-				    System.out.print(currentDimension.get(i));
-				    if(i != numOfDimensions-1)
-					    System.out.print(",");
-				    else
-					    System.out.print("} ");
+			    if(currentDimension.size() > 0) {
+				    System.out.print("{");
+				    for (int i = 0; i < numOfDimensions; i++) {
+					    System.out.print(currentDimension.get(i));
+					    if (i != numOfDimensions - 1)
+						    System.out.print(",");
+					    else
+						    System.out.print("} ");
+				    }
 			    }
 			    for(int i=1;i<=numOfAttributes;i++){
 				    int type = md.getAttributeType(i);
@@ -100,16 +104,7 @@ public class SQLInterpreter {
 				    if(i!= numOfAttributes)
 					    System.out.print(",");
 			    }
-//
-//				for (int i=1; i<=numOfAttributes; i++) {
-//					String fldname = md.getColumnName(i);
-//					int fldtype = md.getColumnType(i);
-//					String fmt = "%" + md.getColumnDisplaySize(i);
-//					if (fldtype == Types.INTEGER)
-//						System.out.format(fmt + "d", rs.getInt(fldname));
-//					else
-//						System.out.format(fmt + "s", rs.getString(fldname));
-//				}
+
 				System.out.println();
 			}
 			rs.close();

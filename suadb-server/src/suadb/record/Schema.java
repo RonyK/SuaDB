@@ -112,6 +112,17 @@ public class Schema {
 		int length = sch.length(fldname);
 		addAttribute(fldname, type, length);
 	}
+	public void addDimension(String dimensionName, Schema sch) {
+		int start = sch.start(dimensionName);
+		int end = sch.end(dimensionName);
+		int chunkSize = sch.chunkSize(dimensionName);
+		addDimension(dimensionName,start,end,chunkSize);
+	}
+	public void addDimension(Schema sch){
+		dimensionInfo.putAll(sch.dimensionInfo);
+	}
+
+
 	
 	/**
 	 * Adds all of the fields in the specified schema
