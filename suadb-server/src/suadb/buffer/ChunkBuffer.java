@@ -225,7 +225,7 @@ public class ChunkBuffer
 		//Read all blocks in the chunk (from 0 to c.numOfBlocks)
 		int i=0;
 		for (Buffer buff : buffers){
-			Block block = new Block(c.fileName(),i++);
+			Block block = new Block(c.fileName(),c.getChunkNum());
 			buff.assignToBlock(block);//Assign the buffer to the block.
 		}
 

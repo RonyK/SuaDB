@@ -75,6 +75,10 @@ public class Chunk
 		this.fileName = fileName;
 	}
 
+	public int getChunkNum() {
+		return chunkNum;
+	}
+
 	public void setChunkNum(int chunkNum) {
 		this.chunkNum = chunkNum;
 	}
