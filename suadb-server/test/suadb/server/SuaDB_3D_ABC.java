@@ -377,6 +377,72 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 	}
 	
 	@Test
+	public void test_70_multilevel_query()
+	{
+		List<T3A<Integer, Integer, Integer>> targets = new ArrayList<>();
+		targets.add(new T3A<>(0, 0, 0));
+		targets.add(new T3A<>(0, 0, 1));
+		targets.add(new T3A<>(0, 2, 0));
+		targets.add(new T3A<>(0, 2, 1));
+		
+		Transaction tx = new Transaction();
+		List<String> attributes = Arrays.asList("b");
+		String projectCondition = String.join(", ", attributes);
+		int attr_01_condition = 10;
+		int attr_02_condition = 50;
+		String filterCondition = String.join(
+				" and ", Arrays.asList(
+						String.format("a < %d", attr_01_condition),
+						String.format(" b > %d", attr_02_condition)));
+		
+		String query = String.format(
+				"PROJECT(FILTER(%s, %s), %s)", ARRAY_NAME, filterCondition, projectCondition);
+		Plan p = SuaDB.planner().createQueryPlan(query, tx);
+		Scan s = p.open();
+		
+		int num = 0;
+		while (s.next())
+		{
+			assertFalse(s.hasField(ATTR_01));
+			assertTrue(s.hasField(ATTR_02));
+			assertFalse(s.hasField(ATTR_03));
+			
+			int attr_02 = s.getInt(ATTR_02);
+			
+			int dim_01 = s.getDimension(DIM_01);
+			int dim_02 = s.getDimension(DIM_02);
+			int dim_03 = s.getDimension(DIM_03);
+			
+			try
+			{
+				System.out.print("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") ");
+				System.out.print("b : " + attr_02);
+				
+				if(s.isNull(ATTR_02))
+					assertTrue("Check ATTR " + ATTR_02, false);
+				else
+				{
+					assertEquals("Check ATTR " + ATTR_02, (int)dummy[dim_01][dim_02][dim_03].b, s.getInt(ATTR_02));
+					assertTrue("Check Filter Condition ", s.getInt(ATTR_02) > attr_02_condition);
+				}
+				
+				System.out.println("\tTrue");
+			} catch (Exception e)
+			{
+				System.out.println("\tFalse");
+				e.printStackTrace();
+			}
+			
+			assertTrue(targets.contains(new T3A<>(dim_01, dim_02, dim_03)));
+			targets.remove(new T3A<>(dim_01, dim_02, dim_03));
+		}
+		
+		assertTrue(targets.size() == 0);
+		
+		tx.commit();
+	}
+	
+	@Test
 	public void test_80_remove_3D_array()
 	{
 		Transaction tx = new Transaction();
