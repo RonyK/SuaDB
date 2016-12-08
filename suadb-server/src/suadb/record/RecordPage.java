@@ -30,7 +30,7 @@ public class RecordPage {
 		this.ti = ti;
 		this.tx = tx;
 		slotsize = ti.recordLength() + INT_SIZE;
-		chunk = new Chunk(blk);
+		chunk = new Chunk(blk,true);
 		tx.pin(chunk);
 	}
 
