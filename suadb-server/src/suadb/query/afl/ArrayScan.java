@@ -2,14 +2,18 @@ package suadb.query.afl;
 
 import suadb.parse.Constant;
 import suadb.parse.IntConstant;
+import suadb.parse.IntNullConstant;
 import suadb.parse.StringConstant;
+import suadb.parse.StringNullConstant;
 import suadb.query.UpdateScan;
 import suadb.record.*;
 import suadb.tx.Transaction;
 
 import java.util.List;
+import java.util.UnknownFormatConversionException;
 
 import static java.sql.Types.INTEGER;
+import static java.sql.Types.VARCHAR;
 
 /**
  * Created by rony on 16. 11. 18.
@@ -45,11 +49,25 @@ public class ArrayScan implements UpdateScan
 	 * otherwise, the getString method is called.
 	 * @see suadb.query.Scan#getVal(java.lang.String)
 	 */
-	public Constant getVal(String fldname) {
-		if (sch.type(fldname) == INTEGER)
-			return new IntConstant(rf.getInt(fldname));
-		else
-			return new StringConstant(rf.getString(fldname));
+	public Constant getVal(String fldname)
+	{
+		if(isNull(fldname))
+		{
+			if (sch.type(fldname) == INTEGER)
+				return new IntNullConstant();
+			else if (sch.type(fldname) == VARCHAR)
+				return new StringNullConstant();
+			else
+				throw new UnknownFormatConversionException(String.format("Type : %d", sch.type(fldname)));
+		}else
+		{
+			if (sch.type(fldname) == INTEGER)
+				return new IntConstant(rf.getInt(fldname));
+			else if (sch.type(fldname) == VARCHAR)
+				return new StringConstant(rf.getString(fldname));
+			else
+				throw new UnknownFormatConversionException(String.format("Type : %d", sch.type(fldname)));
+		}
 	}
 	
 	public int getInt(String fldname) {
@@ -58,6 +76,12 @@ public class ArrayScan implements UpdateScan
 	
 	public String getString(String fldname) {
 		return rf.getString(fldname);
+	}
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		return rf.isNull(attrName);
 	}
 	
 	public boolean hasField(String fldname) {

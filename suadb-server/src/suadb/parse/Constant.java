@@ -10,5 +10,5 @@ public interface Constant extends Comparable<Constant> {
 	 * Returns the Java object corresponding to this constant.
 	 * @return the Java value of the constant
 	 */
-	public Object  asJavaVal();
+	Object  asJavaVal();
 }

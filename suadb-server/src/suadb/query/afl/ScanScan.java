@@ -54,6 +54,12 @@ public class ScanScan implements UpdateScan
 		return s.getString(fldname);
 	}
 	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		return s.isNull(attrName);
+	}
+	
 	public boolean hasField(String fldname) {
 		return s.hasField(fldname);
 	}

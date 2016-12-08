@@ -57,7 +57,13 @@ public class ListScan implements Scan
 	
 	@Override
 	public String getString(String fldname) { return s.getString(fldname); }
-
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		return s.isNull(attrName);
+	}
+	
 	@Override
 	public List<Integer> getCurrentDimension() { return s.getCurrentDimension(); }
 

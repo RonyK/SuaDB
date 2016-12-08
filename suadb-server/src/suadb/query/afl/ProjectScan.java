@@ -61,7 +61,13 @@ public class ProjectScan implements Scan
 		else
 			throw new RuntimeException("field " + fldname + " not found.");
 	}
-
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		return s.isNull(attrName);
+	}
+	
 	public List<Integer> getCurrentDimension() { return  s.getCurrentDimension(); }
 
 	/**

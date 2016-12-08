@@ -118,7 +118,13 @@ public class GroupByScan implements Scan {
 	public String getString(String fldname) {
 		return (String)getVal(fldname).asJavaVal();
 	}
-
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		return s.isNull(attrName);
+	}
+	
 	public List<Integer> getCurrentDimension() { return s.getCurrentDimension(); }
 	/* Returns true if the specified field is either a
 	 * grouping field or created by an aggregation function.

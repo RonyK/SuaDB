@@ -16,18 +16,18 @@ public interface Scan {
 	/**
 	 * Positions the scan before its first suadb.record.
 	 */
-	public void	  beforeFirst();
+	void	  beforeFirst();
 
 	/**
 	 * Moves the scan to the next suadb.record.
 	 * @return false if there is no next suadb.record
 	 */
-	public boolean  next();
+	boolean  next();
 
 	/**
 	 * Closes the scan and its subscans, if any.
 	 */
-	public void	  close();
+	void	  close();
 
 	/**
 	 * Returns the value of the specified field in the current suadb.record.
@@ -35,7 +35,7 @@ public interface Scan {
 	 * @param fldname the name of the field
 	 * @return the value of that field, expressed as a Constant.
 	 */
-	public Constant getVal(String fldname);
+	Constant getVal(String fldname);
 
 	/**
 	 * Returns the value of the specified integer field
@@ -43,7 +43,7 @@ public interface Scan {
 	 * @param fldname the name of the field
 	 * @return the field's integer value in the current suadb.record
 	 */
-	public int		getInt(String fldname);
+	int		getInt(String fldname);
 
 
 	/**
@@ -52,40 +52,41 @@ public interface Scan {
 	 * @param fldname the name of the field
 	 * @return the field's string value in the current suadb.record
 	 */
-	public String	getString(String fldname);
+	String	getString(String fldname);
+	
+	boolean isNull(String attrName);
 
 	/**
 	 * Returns true if the scan has the specified field.
 	 * @param fldname the name of the field
 	 * @return true if the scan has that field
 	 */
-	public boolean  hasField(String fldname);
+	boolean  hasField(String fldname);
 
 	/**
 	 * Returns true if the scan has the specified dimension.
 	 * @param dimname the name of the field
 	 * @return true if the scan has that field
 	 */
-
-	public boolean hasDimension(String dimname);
+	boolean hasDimension(String dimname);
 	
 	/**
 	 * Returns the value of the dimensions
 	 * in the current suadb.record.
 	 * @return the dimensions' value in the current suadb.record
 	 */
-	public Constant getDimensionVal(String dimName);
+	Constant getDimensionVal(String dimName);
 
-	public int      getDimension(String dimName);
+	int      getDimension(String dimName);
 	
-	public List<Integer> getCurrentDimension();
+	List<Integer> getCurrentDimension();
 
 	/**
 	 * Positions the scan so that the current suadb.record has
 	 * the specified CID.
 	 * @param cid the CID of the desired suadb.record
 	 */
-	public void moveToCid(CID cid);
+	void moveToCid(CID cid);
 
 
 

@@ -114,6 +114,12 @@ public class IndexJoinScan implements Scan {
 	}
 	
 	@Override
+	public boolean isNull(String attrName)
+	{
+		return s.isNull(attrName);
+	}
+	
+	@Override
 	public Constant getDimensionVal(String dimName)
 	{
 		return ts.getDimensionVal(dimName);

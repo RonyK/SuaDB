@@ -92,7 +92,13 @@ public class IndexSelectScan implements Scan {
 	public String getString(String fldname) {
 		return ts.getString(fldname);
 	}
-
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		return ts.isNull(attrName);
+	}
+	
 	public List<Integer> getCurrentDimension() { return ts.getCurrentDimension(); }
 
 	/**

@@ -71,7 +71,13 @@ public class TableScan implements UpdateScan
 	public String getString(String fldname) {
 		return rf.getString(fldname);
 	}
-
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		throw new UnsupportedOperationException();
+	}
+	
 	public boolean hasField(String fldname) {
 		return sch.hasField(fldname);
 	}

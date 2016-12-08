@@ -67,7 +67,13 @@ public class SelectScan implements UpdateScan
 	public String getString(String fldname) {
 		return s.getString(fldname);
 	}
-
+	
+	@Override
+	public boolean isNull(String attrName)
+	{
+		return s.isNull(attrName);
+	}
+	
 	public boolean hasField(String fldname) {
 		return s.hasField(fldname);
 	}

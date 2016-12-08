@@ -60,6 +60,12 @@ public class FilterScan implements Scan
 	}
 	
 	@Override
+	public boolean isNull(String attrName)
+	{
+		return s.isNull(attrName);
+	}
+	
+	@Override
 	public Constant getDimensionVal(String dimName)
 	{
 		return s.getDimensionVal(dimName);

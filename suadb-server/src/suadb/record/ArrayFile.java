@@ -178,21 +178,21 @@ public class ArrayFile
 
 	/**
      * Is this attribute 'Null' in the current dimension value?
-     * @param whichAttribute
+     * @param attIndex
      * @return
      */
-    boolean isNullAttribute(int whichAttribute){
-        return !rearestAttribute[whichAttribute];
+    private boolean isNull(int attIndex){
+        return !rearestAttribute[attIndex];
     }
-    boolean isNullAttribute(String attribute){
-        return !rearestAttribute[attributes.indexOf(attribute)];
+    
+    public boolean isNull(String attrName){
+        return !rearestAttribute[attributes.indexOf(attrName)];
     }
 
     /**
      * Moves to the next suadb.cell.
      * @return false if there is no next suadb.cell.
      */
-
     public boolean next(){
         return next(attributes);
     }
@@ -509,7 +509,7 @@ public class ArrayFile
         String result = getCurrentDimensionValues()+" ";
         Schema schema = ai.schema();
         for(int i=0;i<numberofattributes;i++){
-            if(!isNullAttribute(i)) {
+            if(!isNull(i)) {
                 if(schema.type(attributes.get(i)) == INTEGER)
                     result += getInt(attributes.get(i));
                 else if(schema.type(attributes.get(i)) == VARCHAR)
