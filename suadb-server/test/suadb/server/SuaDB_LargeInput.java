@@ -119,6 +119,7 @@ public class SuaDB_LargeInput extends SuaDBExeTestBase {
 
             System.out.println("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") " + "[" + attr_01 + "," + attr_02+"]");
         }
+        tx.commit();
 
     }
 
