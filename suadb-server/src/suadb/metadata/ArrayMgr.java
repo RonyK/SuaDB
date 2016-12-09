@@ -190,13 +190,28 @@ public class ArrayMgr {
 		while (arrayCatFile.next()) {
 			if (arrayCatFile.getString(STR_ARRAY_NAME).equals(arrayName)) {
 				arrayCatFile.delete();
-				SuaDB.bufferMgr().flushAll();
-				arrayCatFile.close();
-				return true;
+
 			}
 		}
 		arrayCatFile.close();
-		return false;
+
+
+		RecordFile attributeCatFile = new RecordFile(attributeCatInfo, tx);
+		Schema sch = new Schema();
+		while (attributeCatFile.next())
+			if (attributeCatFile.getString(STR_ARRAY_NAME).equals(arrayName)) {
+				attributeCatFile.delete();
+			}
+		attributeCatFile.close();
+
+		RecordFile dimensionCatFile = new RecordFile(dimensionCatInfo, tx);
+		while (dimensionCatFile.next())
+			if (dimensionCatFile.getString(STR_ARRAY_NAME).equals(arrayName)) {
+				dimensionCatFile.delete();
+			}
+		dimensionCatFile.close();
+		SuaDB.bufferMgr().flushAll();
+		return true;
 	}
 
 	/**
