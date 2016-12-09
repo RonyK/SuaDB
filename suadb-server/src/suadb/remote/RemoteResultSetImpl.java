@@ -1,5 +1,6 @@
 package suadb.remote;
 
+import suadb.record.CID;
 import suadb.record.Schema;
 import suadb.query.*;
 import java.rmi.RemoteException;
@@ -29,7 +30,7 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 		this.rconn = rconn;
 	}
 
-	public List<Integer> getCurrentDimension() throws RemoteException{
+	public CID getCurrentDimension() throws RemoteException{
 		try{
 			return s.getCurrentDimension();
 		}catch(RuntimeException e){

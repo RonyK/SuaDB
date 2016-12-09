@@ -61,7 +61,7 @@ public class ArrayFileTest  extends SuaDBTestBase {
         dimensionvalue.add(0);
         dimensionvalue.add(0);
         dimensionvalue.add(0);
-        CID cid = new CID(dimensionvalue , arrayinfo);
+        CID cid = new CID(dimensionvalue);
 
         arrayfile.beforeFirst();
         int index = 0;
@@ -99,7 +99,7 @@ public class ArrayFileTest  extends SuaDBTestBase {
                     assertTrue( (arrayfile.getInt("attA"))== index) ;
                     assertTrue( (arrayfile.getString("attB")).equals(Integer.toString(index))) ;
 
-                    CID dimensionTest = arrayfile.getCurrentDimensionValues();
+                    CID dimensionTest = arrayfile.getCurrentDimension();
                     assertTrue(dimensionTest.dimensionValues().get(0) == i);
                     assertTrue(dimensionTest.dimensionValues().get(1) == j);
                     assertTrue(dimensionTest.dimensionValues().get(2) == k);

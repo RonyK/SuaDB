@@ -99,7 +99,7 @@ public class IndexSelectScan implements Scan {
 		return ts.isNull(attrName);
 	}
 	
-	public List<Integer> getCurrentDimension() { return ts.getCurrentDimension(); }
+	public CID getCurrentDimension() { return ts.getCurrentDimension(); }
 
 	/**
 	 * Returns whether the data suadb.record has the specified field.
@@ -121,7 +121,7 @@ public class IndexSelectScan implements Scan {
 		return ts.getDimension(dimName);
 	}
 	
-	public boolean hasDimension(String dimname) { return ts.hasDimension(dimname); }
+	public boolean hasDimension(String dimName) { return ts.hasDimension(dimName); }
 
 	public void moveToCid(CID cid) { ts.moveToCid(cid); }
 }

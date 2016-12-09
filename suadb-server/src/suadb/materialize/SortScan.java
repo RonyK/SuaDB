@@ -133,7 +133,7 @@ public class SortScan implements Scan {
 		}
 	}
 	
-	public List<Integer> getCurrentDimension() { return  currentscan.getCurrentDimension(); }
+	public CID getCurrentDimension() { return  currentscan.getCurrentDimension(); }
 
 	/**
 	 * Returns true if the specified field is in the current scan.
@@ -167,8 +167,8 @@ public class SortScan implements Scan {
 		}
 	}
 
-	public boolean hasDimension(String dimname) {
-		return currentscan.hasDimension(dimname);
+	public boolean hasDimension(String dimName) {
+		return currentscan.hasDimension(dimName);
 	}
 
 	public void moveToCid(CID cid) { currentscan.moveToCid(cid); }

@@ -58,7 +58,6 @@ public class ArrayFile
         currentDimensionValues = new ArrayList<Integer>(this.numberofdimensions);//Keep current coordinates of array.
         rearestAttribute = new boolean[this.numberofattributes];//Manage rearest attributes.
 
-
         numberofchunksperdimension = new int[numberofdimensions];
         int index = 0;
         for(String dimname: dimensions){
@@ -79,8 +78,6 @@ public class ArrayFile
             rearestAttribute[j] = true;//Initialize rearestAttribute.
             j++;
         }
-
-
     }
 
     /*
@@ -203,8 +200,6 @@ public class ArrayFile
         boolean initial = true;
         List<Integer> rearCandidate = new ArrayList<Integer>(numberofattributes);
 
-
-
         for(String attribute : attributesName){
             int index = attributes.indexOf(attribute);
             if(index < 0)//Invalid attribute name
@@ -258,8 +253,6 @@ public class ArrayFile
             return new boolean[]{false, false};
         }
 
-
-
         for(int i=0;i<numberofdimensions;i++)
             if(dimensionValue.get(i) > currentDimensionValues.get(i))
                 return new boolean[]{false,false};
@@ -273,8 +266,8 @@ public class ArrayFile
      * Current dimension of this array for ARAM.
      * @return CID
      */
-    public CID getCurrentDimensionValues(){
-        return new CID(currentDimensionValues,ai);
+    public CID getCurrentDimension(){
+        return new CID(currentDimensionValues);
     }
 
     public boolean next(String attributename) {
@@ -295,6 +288,7 @@ public class ArrayFile
             return -1;
         return currentCFiles[index].getInt();
     }
+    
     public int getInt(int attributeIndex) {
         if( attributeIndex < 0)
             return -1;
@@ -312,6 +306,7 @@ public class ArrayFile
             return null;
         return currentCFiles[index].getString();
     }
+    
     public String getString(int attributeIndex) {
         if (attributeIndex < 0)
             return null;
@@ -329,6 +324,7 @@ public class ArrayFile
             return ;
         currentCFiles[index].setInt(val);
     }
+    
     public void setInt(int attributeIndex,int val) {
         if (attributeIndex < 0)
             return ;
@@ -346,9 +342,11 @@ public class ArrayFile
             return ;
         currentCFiles[index].setString(val);
     }
+    
     public void setString(int attributeIndex,String val) {
         currentCFiles[attributeIndex].setString(val);
     }
+    
     /**
      * Deletes the current suadb.record.
      * The client must call next() to move to
@@ -413,7 +411,7 @@ public class ArrayFile
     
     public int getDimension(String dimName)
     {
-	    CID cid = getCurrentDimensionValues();
+	    CID cid = getCurrentDimension();
 	    int dIndex = dimensions.indexOf(dimName);
 	    
 	    return cid.dimensionValues().get(dIndex);
@@ -421,7 +419,7 @@ public class ArrayFile
     
     public Constant getDimensionVal(String dimName)
     {
-	    CID cid = getCurrentDimensionValues();
+	    CID cid = getCurrentDimension();
 	    int dIndex = dimensions.indexOf(dimName);
 	    
 	    return new IntConstant(cid.dimensionValues().get(dIndex));
@@ -430,7 +428,6 @@ public class ArrayFile
 	// TODO :: Insert()                     - RonyK
 	// insert data sequentially.
 	// TODO :: Insert(Dimension[] dim)      - RonyK
-
 
     /**
      * Load data from the file.
@@ -447,7 +444,7 @@ public class ArrayFile
             dimensionValue.add(schema.start(dimensions.get(i)));
             dimensionLengths[i] = schema.dimensionLength(dimensions.get(i));
         }
-        CID cid = new CID(dimensionValue , ai);
+        CID cid = new CID(dimensionValue);
 
         //Identify the types of attributes.
         int[] attributeTypes = new int[numberofattributes];
@@ -506,7 +503,7 @@ public class ArrayFile
      * @return
      */
     private String printCell(){
-        String result = getCurrentDimensionValues()+" ";
+        String result = getCurrentDimension() + " ";
         Schema schema = ai.schema();
         for(int i=0;i<numberofattributes;i++){
             if(!isNull(i)) {
@@ -535,7 +532,6 @@ public class ArrayFile
         int count=0;
         beforeFirst();
 
-
         //Print dimension and attribute information at first line.
         String firstLine="{";
         for(int i=0;i<numberofdimensions;i++){
@@ -559,7 +555,4 @@ public class ArrayFile
         }
         return count;
     }
-
-
-
 }

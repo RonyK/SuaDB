@@ -88,7 +88,7 @@ public class ArrayScan implements UpdateScan
 		return sch.hasField(fldname);
 	}
 
-	public boolean hasDimension(String dimname) { return sch.hasDimension(dimname); }
+	public boolean hasDimension(String dimName) { return sch.hasDimension(dimName); }
 	
 	// UpdateScan methods
 	/**
@@ -139,9 +139,9 @@ public class ArrayScan implements UpdateScan
 	}
 	
 	@Override
-	public List<Integer> getCurrentDimension()
+	public CID getCurrentDimension()
 	{
-		return rf.getCurrentDimensionValues().dimensionValues();
+		return rf.getCurrentDimension();
 	}
 	
 	public void moveToCid(CID cid) { rf.moveToCid(cid);}

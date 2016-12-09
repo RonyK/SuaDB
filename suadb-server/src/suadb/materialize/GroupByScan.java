@@ -125,7 +125,7 @@ public class GroupByScan implements Scan {
 		return s.isNull(attrName);
 	}
 	
-	public List<Integer> getCurrentDimension() { return s.getCurrentDimension(); }
+	public CID getCurrentDimension() { return s.getCurrentDimension(); }
 	/* Returns true if the specified field is either a
 	 * grouping field or created by an aggregation function.
 	 * @see suadb.suadb.query.Scan#hasField(java.lang.String)
@@ -151,7 +151,7 @@ public class GroupByScan implements Scan {
 		return s.getDimension(dimName);
 	}
 	
-	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
+	public boolean hasDimension(String dimName) { return s.hasDimension(dimName); }
 
 	public void moveToCid(CID cid) { s.moveToCid(cid); }
 }

@@ -2,6 +2,7 @@ package suadb.parse;
 
 import java.util.*;
 
+import suadb.query.Region;
 import suadb.record.Schema;
 
 import static java.sql.Types.DOUBLE;
@@ -98,6 +99,9 @@ public class Parser
 		}else if(lex.matchKeyword("list"))
 		{
 			return list();
+		}else if(lex.matchKeyword("between"))
+		{
+			return between();
 		}else
 		{
 			throw new UnsupportedOperationException();
@@ -110,6 +114,18 @@ public class Parser
 			return new ArrayData(lex.eatId());
 		else
 			return query();
+	}
+	
+	public Region region()
+	{
+		List<Integer> coordinates = new ArrayList<>();
+		do
+		{
+			lex.eatDelim(',');
+			coordinates.add(lex.eatIntConstant());
+		}while (lex.matchDelim(','));
+		
+		return new Region(coordinates);
 	}
 
 	public ProjectData project()
@@ -155,12 +171,23 @@ public class Parser
 		lex.eatDelim('(');
 		if(!lex.matchDelim(')'))
 		{
-			target = lex.eatId();
+			target = lex.eatId().toLowerCase();
 		}
 		
 		lex.eatDelim(')');
 		
 		return new ListData(target);
+	}
+	
+	public BetweenData between()
+	{
+		lex.eatKeyword("between");
+		lex.eatDelim('(');
+		QueryData array = array();
+		Region region = region();
+		lex.eatDelim(')');
+		
+		return new BetweenData(array, region);
 	}
 
 // Methods for parsing the various update commands

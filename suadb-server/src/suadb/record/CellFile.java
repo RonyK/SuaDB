@@ -203,7 +203,7 @@ public class CellFile {
      * @return CID
      */
     public CID getCurrentCID(){
-        return new CID(getCurrentDimensionValues(),ai);
+        return new CID(getCurrentDimensionValues());
     }
 
 	/**

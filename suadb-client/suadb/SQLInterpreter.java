@@ -81,7 +81,7 @@ public class SQLInterpreter {
 
 		    // print cells
 		    while(rs.next()) {
-			    List<Integer> currentDimension = rs.getCurrentDimension();
+			    List<Integer> currentDimension = rs.getCurrentDimension().dimensionValues();
 			    System.out.print("{");
 			    for(int i=0;i<numOfDimensions;i++){
 				    System.out.print(currentDimension.get(i));
