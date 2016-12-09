@@ -36,6 +36,15 @@ public class SimpleResultSet extends ResultSetAdapter {
 		}
 	}
 
+	public NullInfo whichIsNull() throws SQLException{
+		try{
+			return rrs.whichIsNull();
+		}catch(Exception e){
+			throw new SQLException(e);
+		}
+
+	}
+
 	public int getInt(String fldname) throws SQLException {
 		try {
 			return rrs.getInt(fldname);

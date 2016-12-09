@@ -6,6 +6,7 @@ import suadb.server.SuaDB;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.sql.Types.INTEGER;
@@ -20,7 +21,8 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 	private Scan s;
 	private Schema sch;
 	private RemoteConnectionImpl rconn;
-
+	private List<String> attributes;
+	private int numberOfAttributes;
 	/**
 	 * Creates a RemoteResultSet object.
 	 * The specified plan is opened, and the scan is saved.
@@ -31,6 +33,9 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 	public RemoteResultSetImpl(Plan plan, RemoteConnectionImpl rconn) throws RemoteException {
 		s = plan.open();
 		sch = plan.schema();
+		attributes = new ArrayList<String>(sch.attributes());
+		numberOfAttributes = attributes.size();
+
 		this.rconn = rconn;
 	}
 
@@ -56,6 +61,21 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 			throw e;
 		}
 	}
+
+	/**
+	 * which attribute is null?
+	 * @return boolean[]
+	 * @throws RemoteException
+	 */
+	public NullInfo whichIsNull() throws RemoteException{
+		NullInfo result = new NullInfo(numberOfAttributes);
+		for(int i=0;i<numberOfAttributes;i++)
+			if(result.whichIsNull[i] = s.isNull(attributes.get(i)))
+				result.nullValues++;
+
+		return result;
+	}
+
 
 	/**
 	 * Returns the integer value of the specified field,

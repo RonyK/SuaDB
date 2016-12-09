@@ -1,5 +1,6 @@
 import java.sql.*;
 
+import suadb.remote.NullInfo;
 import suadb.remote.SimpleDriver;
 import suadb.remote.SimpleMetaData;
 import suadb.remote.SimpleResultSet;
@@ -38,14 +39,15 @@ public class SQLInterpreter {
 				}
 			}
 		} catch (Exception e) {
-//		    System.out.println("Invalid AFL");
-			e.printStackTrace();
+		    System.out.println("Invalid AFL");
+//			e.printStackTrace();
 		} finally {
 			try {
 				if (conn != null)
 					conn.close();
 			} catch (Exception e) {
-				e.printStackTrace();
+//				e.printStackTrace();
+				System.out.println("Exception occurred");
 			}
 		}
 	}
@@ -60,107 +62,111 @@ public class SQLInterpreter {
 
 			//scan,project,filter
 			if (!cmd.startsWith("list")){
-				String result = "";
 				// print header
 				if (numOfDimensions > 0) {
-					result += "{";
+					System.out.print("{");
 					for (int i = 1; i <= numOfDimensions; i++) {
-						result += md.getDimensionName(i);
+						System.out.print(md.getDimensionName(i));
 						if (i != numOfDimensions)
-							result += ",";
+							System.out.print(",");
 						else
-							result += "} ";
+							System.out.print("} ");
 					}
 				}
 				for (int i = 1; i <= numOfAttributes; i++) {
-					result += md.getAttributeName(i);
+					System.out.print(md.getAttributeName(i));
 					if (i != numOfAttributes)
-						result += ",";
+						System.out.print(",");
 				}
 
-				result += "\n";
+				System.out.print("\n");
 
 				// print cells
 				while (rs.next()) {
+					NullInfo nullInfo = rs.whichIsNull();
+					if(nullInfo.getNullValues() == numOfAttributes)//If all attributes are null
+						continue;
+
 					List<Integer> currentDimension = rs.getCurrentDimension();
-					if (currentDimension.size() > 0) {
-						result += "{";
+					if (currentDimension.size() > 0 ) {
+						System.out.print("{");
 						for (int i = 0; i < numOfDimensions; i++) {
-							result += currentDimension.get(i);
+							System.out.print(currentDimension.get(i));
 							if (i != numOfDimensions - 1)
-								result += ",";
+								System.out.print(",");
 							else
-								result += "} ";
+								System.out.print("} ");
 						}
 					}
 					for (int i = 1; i <= numOfAttributes; i++) {
-						int type = md.getAttributeType(i);
-						if (type == Types.INTEGER)
-							result += rs.getInt(md.getAttributeName(i));
-						else if (type == Types.VARCHAR)
-							result += rs.getString(md.getAttributeName(i));
+						if(!nullInfo.isNull(i-1)) {//Not null
+							int type = md.getAttributeType(i);
+							if (type == Types.INTEGER)
+								System.out.print(rs.getInt(md.getAttributeName(i)));
+							else if (type == Types.VARCHAR)
+								System.out.print(rs.getString(md.getAttributeName(i)));
+						}
+						else // null
+							System.out.print("null");
 
 						if (i != numOfAttributes)
-							result += ",";
+							System.out.print(",");
+
 					}
 
-					result += "\n";
+					System.out.print("\n");
 				}
-				System.out.print(result);
 			}
 			else{//list
 				int index = 0;
-				String result = "";
 				if(cmd.contains("fields")) {//targetName.equals("fields")
-					result = "{No} array, attribute, type\n";
+					System.out.println("{No} array, attribute, type");
 					String array = md.getAttributeName(1);
 					String attribute = md.getAttributeName(2);
 					String type = md.getAttributeName(3);
 					String length = md.getAttributeName(4);
 					while(rs.next()){
-						result += "{" + index + "} ";
+						System.out.print("{" + index + "} ");
 						index++;
-						result += "'" + rs.getString(array) + "',"
-								+ "'" + rs.getString(attribute) + "',";
+						System.out.print("'" + rs.getString(array) + "',"
+								+ "'" + rs.getString(attribute) + "',");
 						if(rs.getInt(type) == Types.INTEGER)
-							result += "int";
+							System.out.print("int");
 						else if(rs.getInt(type) == Types.VARCHAR) {
-							result += "string("+rs.getInt(length)+")";
+							System.out.print("string("+rs.getInt(length)+")");
 						}
-						result += "\n";
+						System.out.println();
 					}
 				}
 				else{//targetName == null || targetName.length() == 0 || targetName.equals("arrays")
-					result = "{No} name,schema\n";
+					System.out.println("{No} name,schema");
 					String name = md.getAttributeName(1);
 					String definition = md.getAttributeName(2);
 					while (rs.next()) {
-						result += "{" + index + "} ";
+						System.out.print("{" + index + "} ");
 						index++;
 						//2 attributes : arrayName,definition
-						result += "'" + rs.getString(name) + "',"
-								+ "'" + rs.getString(definition) + "'\n";
+						System.out.println("'" + rs.getString(name) + "',"
+								+ "'" + rs.getString(definition) + "'");
 					}
 				}
-				System.out.print(result);
 			}
 			rs.close();
 
 		} catch (SQLException e) {
 			System.out.println("SQL Exception: " + e.getMessage());
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 
 	private static void doUpdate(String cmd) {
 		try {
 			Statement stmt = conn.createStatement();
-			int howmany = stmt.executeUpdate(cmd);
-//		    System.out.println(howmany + " records processed");
+			stmt.executeUpdate(cmd);
 			System.out.println("Query was executed successfully");
 		} catch (SQLException e) {
 			System.out.println("SQL Exception: " + e.getMessage());
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 	}
 }

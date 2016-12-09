@@ -12,6 +12,7 @@ import java.util.List;
 public interface RemoteResultSet extends Remote {
 	public List<Integer> getCurrentDimension()     throws RemoteException;
 	public boolean next()						 throws RemoteException;
+	public NullInfo whichIsNull() throws RemoteException;
 	public int getInt(String fldname)		 throws RemoteException;
 	public String getString(String fldname) throws RemoteException;
 	public RemoteMetaData getMetaData()	  throws RemoteException;
