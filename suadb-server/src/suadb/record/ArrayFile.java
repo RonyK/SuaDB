@@ -395,19 +395,6 @@ public class ArrayFile
             rearestAttribute[j] = true;//Assume all attributes are the rearest.
         //So, if next() is called followed by this method, all attributes can call next();
     }
-
-    /**
-     * Returns the RID of the current suadb.record.
-     * @return a suadb.record identifier
-     */
-
-    // TODO :: this method should be implemented - IHSUh
-    /*
-    public CID currentCid() {
-        int id = cp.currentId();
-        return new CID(currentchunknum, id);
-    }
-    */
     
     public int getDimension(String dimName)
     {

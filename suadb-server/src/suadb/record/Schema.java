@@ -305,7 +305,7 @@ public class Schema {
 			this.chunkSize = chunkSize;
 			this.numOfChunk = (int) Math.ceil((double)(end-start+1)/chunkSize);
 		}
-		
+
 		@Override
 		public String toString()
 		{
@@ -313,22 +313,22 @@ public class Schema {
 					Integer.toString(end) + "," +
 					Integer.toString(chunkSize);
 		}
-		
+
 		public int start()
 		{
 			return start;
 		}
-		
+
 		public int end()
 		{
 			return end;
 		}
-		
+
 		public int chunkSize()
 		{
 			return chunkSize;
 		}
-		
+
 		public int numOfChunk()
 		{
 			return numOfChunk;

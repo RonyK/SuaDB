@@ -19,13 +19,28 @@ public class BetweenScan implements Scan
 	private Scan s;
 	private Region region;
 	private boolean moveToCid = false;
+	private Schema schema;
+	private List<DimensionInfo> dInfos;
+
+	private Region currentChunkRegion;
+	private int dimSize;
 
 	public BetweenScan(Scan s, Region region, Schema schema)
 	{
 		this.s = s;
 		this.region = region;
+		this.schema = schema;
+		this.dimSize = schema.dimensions().size();
+		this.dInfos = new ArrayList<>();
 
-		moveToCid(new CID(region.low()));
+		for (DimensionInfo dInfo : schema.dimensionInfo().values())
+		{
+			dInfos.add(dInfo);
+		}
+
+		CID startCID = new CID(region.low());
+		moveToCid(startCID);
+		currentChunkRegion = calcTargetChunk(startCID);
 	}
 	
 	@Override
@@ -49,13 +64,34 @@ public class BetweenScan implements Scan
 
 		while (s.next())
 		{
-			int compare = region.compareTo(getCurrentDimension());
+			CID currentCID = getCurrentDimension();
+			int compare = region.compareTo(currentCID);
 			if(compare == 0)
 			{
 				return true;
 			}
 
-			
+			if(currentChunkRegion.compareTo(currentCID) != 0)
+			{
+				currentChunkRegion = calcTargetChunk(currentCID);
+			}
+
+			List<Integer> newCID = new ArrayList<>();
+			List<Integer> curCID = currentCID.dimensionValues();
+
+			for(int i = 0; i < dimSize; i++)
+			{
+				if(curCID.get(i) > region.high().get(i))
+				{
+					newCID.add(currentChunkRegion.high().get(i));
+				}else if(curCID.get(i) <= region.low().get(i))
+				{
+					newCID.add(region.low().get(i));
+				}else
+				{
+					newCID.add(curCID.get(i));
+				}
+			}
 		}
 		
 		return false;
@@ -128,21 +164,24 @@ public class BetweenScan implements Scan
 		moveToCid = true;
 	}
 	
-//	private Region calcTargetChunk(CID cid)
-//	{
-//		List<Integer> coor = cid.dimensionValues();
-//		List<Integer> low = new ArrayList<>();
-//		List<Integer> high = new ArrayList<>();
-//		int size = coor.size();
-//
-//		for(int i = 0 ; i < size; i++)
-//		{
-//			DimensionInfo dInfo = dInfos.get(i);
-//			int start = dInfo.start() + ((low.get(i) - dInfo.start()) / dInfo.chunkSize()) * dInfo.chunkSize() + dInfo.chunkSize();
-//			low.add(start);
-//			high.add(start + dInfo.chunkSize() - 1);
-//		}
-//
-//		return new Region(low, high);
-//	}
+	private Region calcTargetChunk(CID cid)
+	{
+		List<Integer> coor = cid.dimensionValues();
+		List<Integer> low = new ArrayList<>();
+		List<Integer> high = new ArrayList<>();
+
+		int chunkIndex[] = new int[dimSize];
+
+		for(int i = 0; i < dimSize; i++)
+		{
+			DimensionInfo dInfo = dInfos.get(i);
+			chunkIndex[i] = (coor.get(i) - dInfo.start()) / dInfo.chunkSize();
+
+			int start = chunkIndex[i] * dInfo.chunkSize() + dInfo.start();
+			low.add(start);
+			high.add(start + dInfo.chunkSize() - 1);
+		}
+
+		return new Region(low, high);
+	}
 }
