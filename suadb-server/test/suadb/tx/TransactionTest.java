@@ -10,17 +10,14 @@ import org.junit.runners.MethodSorters;
 
 import suadb.file.Chunk;
 import suadb.server.SuaDB;
+import suadb.test.SuaDBExeTestBase;
 import suadb.test.SuaDBTestBase;
 /**
  * Created by CDS on 2016-11-22.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class TransactionTest extends SuaDBTestBase{
-	@BeforeClass
-	public static void beforeClass(){
-		SuaDB.init(dbName);
-	}
-
+public class TransactionTest extends SuaDBExeTestBase
+{
 	@Test
 	public void test0_basic_pin_setInt_getInt(){
 		Transaction tx = new Transaction();
