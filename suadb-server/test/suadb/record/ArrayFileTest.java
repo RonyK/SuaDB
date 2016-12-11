@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import suadb.file.Chunk;
 import suadb.server.SuaDB;
+import suadb.test.SuaDBExeTestBase;
 import suadb.test.SuaDBTestBase;
 import suadb.tx.Transaction;
 import suadb.tx.TransactionTest;
@@ -21,16 +22,12 @@ import java.util.List;
  * Created by ILHYUN on 2016-11-23.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ArrayFileTest  extends SuaDBTestBase {
-
+public class ArrayFileTest  extends SuaDBExeTestBase
+{
     private Schema schema;
     private ArrayInfo arrayinfo;
     private ArrayFile arrayfile;
-    @BeforeClass
-    public static void beforeClass(){
-        SuaDB.init(dbName);
 
-    }
     //IHSUh
     @Test
     public void test_00_array_creation_write_read(){
@@ -61,7 +58,7 @@ public class ArrayFileTest  extends SuaDBTestBase {
         dimensionvalue.add(0);
         dimensionvalue.add(0);
         dimensionvalue.add(0);
-        CID cid = new CID(dimensionvalue , arrayinfo);
+        CID cid = new CID(dimensionvalue);
 
         arrayfile.beforeFirst();
         int index = 0;
@@ -99,7 +96,7 @@ public class ArrayFileTest  extends SuaDBTestBase {
                     assertTrue( (arrayfile.getInt("attA"))== index) ;
                     assertTrue( (arrayfile.getString("attB")).equals(Integer.toString(index))) ;
 
-                    CID dimensionTest = arrayfile.getCurrentDimensionValues();
+                    CID dimensionTest = arrayfile.getCurrentDimension();
                     assertTrue(dimensionTest.dimensionValues().get(0) == i);
                     assertTrue(dimensionTest.dimensionValues().get(1) == j);
                     assertTrue(dimensionTest.dimensionValues().get(2) == k);

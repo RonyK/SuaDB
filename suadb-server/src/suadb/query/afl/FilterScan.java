@@ -77,14 +77,14 @@ public class FilterScan implements Scan
 		return s.getDimension(dimName);
 	}
 
-	public List<Integer> getCurrentDimension() { return  s.getCurrentDimension(); }
+	public CID getCurrentDimension() { return  s.getCurrentDimension(); }
 	
 	public boolean hasField(String fldname) {
 		return s.hasField(fldname);
 	}
 
-	public boolean hasDimension(String dimname) {
-		return s.hasDimension(dimname);
+	public boolean hasDimension(String dimName) {
+		return s.hasDimension(dimName);
 	}
 	
 	// UpdateScan methods

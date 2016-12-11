@@ -86,7 +86,6 @@ public class SuaDB_LargeInput extends SuaDBExeTestBase {
 
         try
         {
-
             String query = "INPUT(" + ARRAY_NAME + ", \'" + FILE_PATH + "\')";
             SuaDB.planner().executeUpdate(query, tx);
         }catch (Exception e)

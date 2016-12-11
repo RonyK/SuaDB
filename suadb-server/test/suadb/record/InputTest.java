@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import suadb.server.SuaDB;
 import suadb.test.DummyData;
+import suadb.test.SuaDBExeTestBase;
 import suadb.test.SuaDBTestBase;
 import suadb.tx.Transaction;
 
@@ -26,7 +27,7 @@ import static java.sql.Types.VARCHAR;
  * homeDir/test.txt
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class InputTest extends SuaDBTestBase
+public class InputTest extends SuaDBExeTestBase
 {
 	private static String FILE_PATH;
 	
@@ -42,8 +43,6 @@ public class InputTest extends SuaDBTestBase
 		FileWriter fw = new FileWriter(FILE_PATH);
 		fw.write(DummyData.getInputDummy_3A_3D());
 		fw.close();
-		
-		SuaDB.init(dbName);
 	}
 
 	@Test
@@ -85,8 +84,6 @@ public class InputTest extends SuaDBTestBase
 	@AfterClass
 	public static void tearDown()
 	{
-		SuaDB.shutDown();
-		
 		eraseFile(FILE_PATH);
 	}
 }

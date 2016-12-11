@@ -91,7 +91,7 @@ public class ProductScan implements Scan
 			return s2.getInt(fldname);
 	}
 
-	public List<Integer> getCurrentDimension() { return  s1.getCurrentDimension(); }
+	public CID getCurrentDimension() { return  s1.getCurrentDimension(); }
 
 	/**
 	 * Returns the string value of the specified field.

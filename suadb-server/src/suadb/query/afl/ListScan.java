@@ -65,7 +65,7 @@ public class ListScan implements Scan
 	}
 	
 	@Override
-	public List<Integer> getCurrentDimension() { return s.getCurrentDimension(); }
+	public CID getCurrentDimension() { return s.getCurrentDimension(); }
 
 	@Override
 	public boolean hasField(String fldname)
@@ -86,9 +86,9 @@ public class ListScan implements Scan
 	}
 
 	@Override
-	public boolean hasDimension(String dimname)
+	public boolean hasDimension(String dimName)
 	{
-		return s.hasDimension(dimname);
+		return s.hasDimension(dimName);
 	}
 
 	@Override

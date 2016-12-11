@@ -277,8 +277,8 @@ public class ArrayFile {
 	 *
 	 * @return CID
 	 */
-	public CID getCurrentDimensionValues() {
-		return new CID(currentDimensionValues, ai);
+	public CID getCurrentDimension() {
+		return new CID(currentDimensionValues);
 	}
 
 	public boolean next(String attributename) {
@@ -426,14 +426,14 @@ public class ArrayFile {
     }
     */
 	public int getDimension(String dimName) {
-		CID cid = getCurrentDimensionValues();
+		CID cid = getCurrentDimension();
 		int dIndex = dimensions.indexOf(dimName);
 
 		return cid.dimensionValues().get(dIndex);
 	}
 
 	public Constant getDimensionVal(String dimName) {
-		CID cid = getCurrentDimensionValues();
+		CID cid = getCurrentDimension();
 		int dIndex = dimensions.indexOf(dimName);
 
 		return new IntConstant(cid.dimensionValues().get(dIndex));
@@ -442,7 +442,6 @@ public class ArrayFile {
 	// TODO :: Insert()                     - RonyK
 	// insert data sequentially.
 	// TODO :: Insert(Dimension[] dim)      - RonyK
-
 
 	/**
 	 * Load data from the file.
@@ -462,7 +461,7 @@ public class ArrayFile {
 			dimensionValue.add(schema.start(dimensions.get(i)));
 			dimensionLengths[i] = schema.dimensionLength(dimensions.get(i));
 		}
-		CID cid = new CID(dimensionValue, ai);
+		CID cid = new CID(dimensionValue);
 
 		//Identify the types of attributes.
 		int[] attributeTypes = new int[numberofattributes];
@@ -542,7 +541,6 @@ public class ArrayFile {
 		dimensionValue.set(d, 0);
 		if (d > 0)
 			dimensionValue.set(d - 1, dimensionValue.get(d - 1) + 1);
-
 	}
 
 	/**
@@ -551,7 +549,7 @@ public class ArrayFile {
 	 * @return
 	 */
 	private String printCell() {
-		String result = getCurrentDimensionValues() + " ";
+		String result = getCurrentDimension() + " ";
 		Schema schema = ai.schema();
 		for (int i = 0; i < numberofattributes; i++) {
 			if (!isNull(i)) {
@@ -579,7 +577,6 @@ public class ArrayFile {
 		int count = 0;
 		beforeFirst();
 
-
 		//Print dimension and attribute information at first line.
 		String firstLine = "{";
 		for (int i = 0; i < numberofdimensions; i++) {
@@ -603,6 +600,4 @@ public class ArrayFile {
 		}
 		return count;
 	}
-
-
 }

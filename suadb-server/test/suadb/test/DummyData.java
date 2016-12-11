@@ -1,5 +1,10 @@
 package suadb.test;
 
+import java.util.List;
+import java.util.Random;
+
+import suadb.record.Schema;
+
 /**
  * Created by Rony on 2016-12-06.
  */
@@ -64,4 +69,28 @@ public class DummyData
 			"[" +
 				"(0,100,1),(1,99),(2,,3),(,97,4),(4,,),(,95,),(6),(),(8,92),(9,91),(,,11),(11,89),(12,88,13),(,13,14),(14,86,15),(15,85,16)" +
 			"]";
+
+	public DummyData()
+	{
+	}
+
+	public int[][][] generate3DDummy(List<Schema.DimensionInfo> dInfos)
+	{
+		Random random = new Random();
+
+		int dummy[][][] = new int[dInfos.get(0).end() + 1][dInfos.get(1).end() + 1][dInfos.get(2).end() + 1];
+
+		for(int x = dInfos.get(0).start(); x <= dInfos.get(0).end(); x++)
+		{
+			for(int y = dInfos.get(1).start(); y <= dInfos.get(1).end(); y++)
+			{
+				for(int z = dInfos.get(2).start(); z <= dInfos.get(2).end(); z++)
+				{
+					dummy[x][y][z] = random.nextInt();
+				}
+			}
+		}
+
+		return dummy;
+	}
 }

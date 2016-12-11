@@ -23,6 +23,7 @@ import suadb.file.FileMgr;
 import suadb.log.LogMgr;
 import suadb.metadata.MetadataMgr;
 import suadb.server.SuaDB;
+import suadb.test.SuaDBExeTestBase;
 import suadb.test.SuaDBTestBase;
 import suadb.tx.Transaction;
 
@@ -35,7 +36,7 @@ import static suadb.server.SuaDB.BUFFER_SIZE;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SuaDB.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ChunkBufferMgrTest extends SuaDBTestBase
+public class ChunkBufferMgrTest extends SuaDBExeTestBase
 {
 	@BeforeClass
 	public static void beforeClass()

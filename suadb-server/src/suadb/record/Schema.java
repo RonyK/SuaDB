@@ -184,7 +184,12 @@ public class Schema {
 	 {
 	 return dimensions().contains(dimName);
 	 }
-
+	
+	public Map<String, DimensionInfo> dimensionInfo()
+	{
+		return dimensionInfo;
+	}
+	
 	/**
 	 * Return true if the specified attribute
 	 * is in the schema
@@ -297,12 +302,12 @@ public class Schema {
 		}
 	}
 
-	class DimensionInfo
+	public class DimensionInfo
 	{
-		int start, end, chunkSize;
+		private int start, end, chunkSize;
 		//chunkSize : The number of cells in one chunk along one dimension - CDS
 //		int overlap;
-		int numOfChunk; // The number of chunks in the dimension
+		private int numOfChunk; // The number of chunks in the dimension
 
 		public DimensionInfo(int start, int end, int chunkSize)
 		{
@@ -311,13 +316,33 @@ public class Schema {
 			this.chunkSize = chunkSize;
 			this.numOfChunk = (int) Math.ceil((double)(end-start+1)/chunkSize);
 		}
-		
+
 		@Override
 		public String toString()
 		{
 			return Integer.toString(start) + ":" +
 					Integer.toString(end) + "," +
 					Integer.toString(chunkSize);
+		}
+
+		public int start()
+		{
+			return start;
+		}
+
+		public int end()
+		{
+			return end;
+		}
+
+		public int chunkSize()
+		{
+			return chunkSize;
+		}
+
+		public int numOfChunk()
+		{
+			return numOfChunk;
 		}
 	}
 }

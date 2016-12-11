@@ -18,6 +18,7 @@ import suadb.parse.InputArrayData;
 import suadb.planner.BasicUpdatePlanner;
 import suadb.planner.Planner;
 import suadb.query.Plan;
+import suadb.query.Region;
 import suadb.query.Scan;
 import suadb.record.ArrayInfo;
 import suadb.server.SuaDB;
@@ -373,6 +374,31 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		}
 		
 		assertEquals(num, dummyCellNum);
+		tx.commit();
+	}
+
+	@Test
+	public void test_50_between()
+	{
+		Transaction tx = new Transaction();
+		Region region = new Region(Arrays.asList(0, 1, 1), Arrays.asList(0, 2, 2));
+		String query = String.format("BETWEEN(%s, %s)", ARRAY_NAME, region.toString());
+
+		Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
+		Scan s = scanPlan.open();
+
+		int num = 0;
+		while (s.next())
+		{
+			testValue(s);
+
+			assertEquals(region.compareTo(s.getCurrentDimension()), 0);
+
+			num++;
+		}
+
+		assertEquals(num, 4);
+
 		tx.commit();
 	}
 	

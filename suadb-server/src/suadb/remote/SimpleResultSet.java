@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.sql.*;
 import java.util.List;
 
+import suadb.record.CID;
+
 /**
  * front-end
  * An adapter class that wraps RemoteResultSet.
@@ -18,7 +20,7 @@ public class SimpleResultSet extends ResultSetAdapter {
 		rrs = s;
 	}
 
-	public List<Integer> getCurrentDimension() throws SQLException{
+	public CID getCurrentDimension() throws SQLException{
 		try {
 			return rrs.getCurrentDimension();
 		}catch(Exception e){

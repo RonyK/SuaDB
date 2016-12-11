@@ -11,12 +11,12 @@ import suadb.tx.Transaction;
 /**
  * Created by Rony on 2016-12-06.
  */
-public class SuaDBExeTestBase extends SuaDBTestBase
+public abstract class SuaDBExeTestBase extends SuaDBTestBase
 {
 	@BeforeClass
 	public final static void SuaDBExeTestBase_Init()
 	{
-		System.out.print("INIT");
+		System.out.println("INIT");
 		SuaDB.init(dbName);
 	}
 	
