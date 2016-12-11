@@ -1,5 +1,6 @@
 package suadb.record;
 
+import exception.ArrayInputException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -49,8 +50,9 @@ public class InputTest extends SuaDBTestBase
 	public void test_00_input()
 	{
 		int start[] = {0, 0,0};
-		int end[] = {1, 3,1};
+		int end[] = {1, 3,3};
 		int chunksize[] = {2, 4,2};
+
 		
 		schema = new Schema();
 
@@ -68,7 +70,11 @@ public class InputTest extends SuaDBTestBase
 		Transaction tx = new Transaction();
 		arrayfile = new ArrayFile(arrayinfo, tx);
 
-		arrayfile.input(homeDir+"/test.txt");
+		try {
+			arrayfile.input(homeDir+"/test.txt");
+		} catch (ArrayInputException e) {
+			e.printStackTrace();
+		}
 
 		arrayfile.printArray();
 

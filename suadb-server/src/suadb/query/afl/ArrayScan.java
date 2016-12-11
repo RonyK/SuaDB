@@ -1,5 +1,6 @@
 package suadb.query.afl;
 
+import exception.ArrayInputException;
 import suadb.parse.Constant;
 import suadb.parse.IntConstant;
 import suadb.parse.IntNullConstant;
@@ -121,7 +122,7 @@ public class ArrayScan implements UpdateScan
 		// TODO :: EMPTY insert - RonyK
 	}
 	
-	public void insert(String fileName)
+	public void insert(String fileName) throws ArrayInputException
 	{
 		rf.input(fileName);
 	}

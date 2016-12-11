@@ -1,5 +1,6 @@
 package suadb.planner;
 
+import exception.ArrayInputException;
 import suadb.tx.Transaction;
 import suadb.parse.*;
 
@@ -46,7 +47,7 @@ public interface UpdatePlanner {
 	 */
 	public int executeCreateTable(CreateArrayData data, Transaction tx);
 
-	public int executeInputArray(InputArrayData data, Transaction tx);
+	public int executeInputArray(InputArrayData data, Transaction tx) throws ArrayInputException;
 	
 	public int executeCreateArray(CreateArrayData data, Transaction tx);
 
