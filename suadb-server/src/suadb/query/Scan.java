@@ -87,7 +87,4 @@ public interface Scan {
 	 * @param cid the CID of the desired suadb.record
 	 */
 	void moveToCid(CID cid);
-
-
-
 }

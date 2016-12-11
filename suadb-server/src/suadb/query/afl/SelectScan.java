@@ -48,7 +48,7 @@ public class SelectScan implements UpdateScan
 	public boolean next() {
 		while (s.next())
 			if (pred.isSatisfied(s))
-			return true;
+				return true;
 		return false;
 	}
 

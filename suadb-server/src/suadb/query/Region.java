@@ -1,5 +1,6 @@
 package suadb.query;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,9 @@ public class Region
 	public Region(List<Integer> coordinates)
 	{
 		int size = coordinates.size();
-		
+
+		low = new ArrayList<>();
+		high = new ArrayList<>();
 		low.addAll(coordinates.subList(0, size / 2));
 		high.addAll(coordinates.subList(size / 2, size));
 	}
@@ -41,7 +44,7 @@ public class Region
 	public String toString()
 	{
 		String lows = String.join(",", low.stream().map(dim -> Integer.toString(dim)).collect(Collectors.toList()));
-		String highs = String.join(",", low.stream().map(dim -> Integer.toString(dim)).collect(Collectors.toList()));
+		String highs = String.join(",", high.stream().map(dim -> Integer.toString(dim)).collect(Collectors.toList()));
 		return lows + "," + highs;
 	}
 	
