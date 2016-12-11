@@ -50,7 +50,7 @@ public class Region
 	
 	public int compareTo(CID cid)
 	{
-		List<Integer> coordinate = cid.dimensionValues();
+		List<Integer> coordinate = cid.toList();
 		
 		for (int i = 0; i < coordinate.size(); i++)
 		{

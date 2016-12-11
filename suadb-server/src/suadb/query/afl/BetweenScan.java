@@ -2,7 +2,6 @@ package suadb.query.afl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import suadb.parse.Constant;
 import suadb.query.Region;
@@ -76,7 +75,7 @@ public class BetweenScan implements Scan
 			}
 
 			List<Integer> newCID = new ArrayList<>();
-			List<Integer> curCID = currentCID.dimensionValues();
+			List<Integer> curCID = currentCID.toList();
 
 			for(int i = 0; i < dimSize; i++)
 			{
@@ -175,7 +174,7 @@ public class BetweenScan implements Scan
 	
 	private Region calcTargetChunk(CID cid)
 	{
-		List<Integer> coor = cid.dimensionValues();
+		List<Integer> coor = cid.toList();
 		List<Integer> low = new ArrayList<>();
 		List<Integer> high = new ArrayList<>();
 

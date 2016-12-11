@@ -21,7 +21,7 @@ public class CID {
         this.dimensionValues = dimensionValues;
     }
     
-    public List<Integer> dimensionValues() {
+    public List<Integer> toList() {
         return dimensionValues;
     }
 
@@ -41,7 +41,7 @@ public class CID {
     public int compareTo(CID cid) throws CannotComparableException
     {
 	    int size = dimensionValues.size();
-	    List<Integer> target = cid.dimensionValues();
+	    List<Integer> target = cid.toList();
 	    
 	    if(size != target.size())
 	    	throw new CannotComparableException();

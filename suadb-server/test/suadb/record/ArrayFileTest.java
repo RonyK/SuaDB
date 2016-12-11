@@ -4,16 +4,13 @@ import static java.sql.Types.*;
 import static org.junit.Assert.*;
 
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import suadb.file.Chunk;
+
 import suadb.server.SuaDB;
 import suadb.test.SuaDBExeTestBase;
-import suadb.test.SuaDBTestBase;
 import suadb.tx.Transaction;
-import suadb.tx.TransactionTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,10 +93,10 @@ public class ArrayFileTest  extends SuaDBExeTestBase
                     assertTrue( (arrayfile.getInt("attA"))== index) ;
                     assertTrue( (arrayfile.getString("attB")).equals(Integer.toString(index))) ;
 
-                    CID dimensionTest = arrayfile.getCurrentDimension();
-                    assertTrue(dimensionTest.dimensionValues().get(0) == i);
-                    assertTrue(dimensionTest.dimensionValues().get(1) == j);
-                    assertTrue(dimensionTest.dimensionValues().get(2) == k);
+                    CID dimensionTest = arrayfile.getCID();
+                    assertTrue(dimensionTest.toList().get(0) == i);
+                    assertTrue(dimensionTest.toList().get(1) == j);
+                    assertTrue(dimensionTest.toList().get(2) == k);
 
                     index++;
                 }

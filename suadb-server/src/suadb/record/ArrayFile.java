@@ -21,24 +21,20 @@ import static java.sql.Types.*;
  */
 public class ArrayFile {
 	private ArrayInfo ai;
-	private Transaction tx;
-	private String filename;
 	private CellFile currentCFiles[];
 
-	// total number of chunks of the array - IHSUH
-	private int numberofchunks = 1;
+	private int numberOfChunks = 1;             // total number of chunks of the array - IHSUH
+	private int currentChunkNum = -1;           //Just for the next() function.
 
 	private List<String> dimensions;
-	// total number of dimensions of the array -IHSUH
-	private int numberofdimensions;
-	// number of chunks per dimension - IHSUh
-	private int numberofchunksperdimension[];
+	private int numberOfDimensions;             // total number of dimensions of the array -IHSUH
+	private int numberOfChunksPerDimension[];   // number of chunks per dimension - IHSUh
 
 	private List<String> attributes;
-	private int numberofattributes;
+	private int numberOfAttributes;
 
 	private List<Integer> currentDimensionValues;//Keep current coordinates of the array.
-	private boolean[] rearestAttribute;//Manage rearest attributes. true == rearest
+	private boolean[] rearestAttribute;         //Manage rearest attributes. true == rearest
 
 	/**
 	 * sdf
@@ -50,39 +46,35 @@ public class ArrayFile {
 	 */
 	public ArrayFile(ArrayInfo ai, Transaction tx) {
 		this.ai = ai;
-		this.tx = tx;
 
 		// set up array information from schema
 		dimensions = new ArrayList<String>(ai.schema().dimensions());
 		attributes = new ArrayList<String>(ai.schema().attributes());
-		this.numberofdimensions = dimensions.size();
-		this.numberofattributes = attributes.size();
-		currentDimensionValues = new ArrayList<Integer>(this.numberofdimensions);//Keep current coordinates of array.
-		rearestAttribute = new boolean[this.numberofattributes];//Manage rearest attributes.
+		this.numberOfDimensions = dimensions.size();
+		this.numberOfAttributes = attributes.size();
+		currentDimensionValues = new ArrayList<Integer>(this.numberOfDimensions);//Keep current coordinates of array.
+		rearestAttribute = new boolean[this.numberOfAttributes];//Manage rearest attributes.
 
-
-		numberofchunksperdimension = new int[numberofdimensions];
+		numberOfChunksPerDimension = new int[numberOfDimensions];
 		int index = 0;
 		for (String dimname : dimensions) {
 			// total number of chunks is multiplication of chunks of each dimension
-			numberofchunksperdimension[index] = (int) Math.ceil(((float) (ai.schema().end(dimname) - ai.schema().start(dimname) + 1)) / ai.schema().chunkSize(dimname));
+			numberOfChunksPerDimension[index] = (int) Math.ceil(((float) (ai.schema().end(dimname) - ai.schema().start(dimname) + 1)) / ai.schema().chunkSize(dimname));
 			index++;
 		}
-		for (int i = 0; i < numberofdimensions; i++) {
-			numberofchunks *= numberofchunksperdimension[i];
+		for (int i = 0; i < numberOfDimensions; i++) {
+			numberOfChunks *= numberOfChunksPerDimension[i];
 			currentDimensionValues.add(0);//Initialize the current coordinate of an array.(0,0,0,...)
 		}
 
 		// set up CellFiles that corresponds to the array ( for each attribute )
-		currentCFiles = new CellFile[numberofattributes];
+		currentCFiles = new CellFile[numberOfAttributes];
 		int j = 0;
 		for (String attributename : attributes) {
-			currentCFiles[j] = new CellFile(ai, tx, 0, attributename, getNumberOfBlocksPerChunk(attributename), numberofchunks);
+			currentCFiles[j] = new CellFile(ai, tx, 0, attributename, getNumberOfBlocksPerChunk(attributename), numberOfChunks);
 			rearestAttribute[j] = true;//Initialize rearestAttribute.
 			j++;
 		}
-
-
 	}
 
 	/*
@@ -103,15 +95,15 @@ public class ArrayFile {
 	}
 
 	private int getChunknumber(CID cid) {
-		int chunkindex[] = new int[numberofdimensions];
+		int chunkindex[] = new int[numberOfDimensions];
 		int chunkOffset = 0;
-		for (int i = 0; i < numberofdimensions; i++) {
-			chunkindex[i] = ((cid.dimensionValues().get(i) - ai.schema().start(dimensions.get(i))) / ai.schema().chunkSize(dimensions.get(i)));
+		for (int i = 0; i < numberOfDimensions; i++) {
+			chunkindex[i] = ((cid.toList().get(i) - ai.schema().start(dimensions.get(i))) / ai.schema().chunkSize(dimensions.get(i)));
 		}
-		for (int i = 0; i < numberofdimensions; i++) {
+		for (int i = 0; i < numberOfDimensions; i++) {
 			int numberchunksinfollowingdimension = 1;
-			for (int j = i + 1; j < numberofdimensions; j++) {
-				numberchunksinfollowingdimension *= numberofchunksperdimension[j];
+			for (int j = i + 1; j < numberOfDimensions; j++) {
+				numberchunksinfollowingdimension *= numberOfChunksPerDimension[j];
 			}
 			chunkOffset += numberchunksinfollowingdimension * (chunkindex[i]);
 		}
@@ -124,16 +116,16 @@ public class ArrayFile {
 	// TODO ::needs test!! - IHSUh
 	private int calculateCellOffsetInChunk(CID cid) {
 
-		int dimensionvalueinchunk[] = new int[numberofdimensions];
+		int dimensionvalueinchunk[] = new int[numberOfDimensions];
 		int offset = 0;
-		for (int i = 0; i < numberofdimensions; i++) {
-			dimensionvalueinchunk[i] = cid.dimensionValues().get(i) - ai.schema().start(dimensions.get(i));
+		for (int i = 0; i < numberOfDimensions; i++) {
+			dimensionvalueinchunk[i] = cid.toList().get(i) - ai.schema().start(dimensions.get(i));
 			dimensionvalueinchunk[i] %= ai.schema().chunkSize(dimensions.get(i));
 		}
 
-		for (int i = 0; i < numberofdimensions; i++) {
+		for (int i = 0; i < numberOfDimensions; i++) {
 			int numbercellsinfollowingdimension = 1;
-			for (int j = i + 1; j < numberofdimensions; j++) {
+			for (int j = i + 1; j < numberOfDimensions; j++) {
 				numbercellsinfollowingdimension *= ai.schema().chunkSize(dimensions.get(j));
 			}
 			offset += numbercellsinfollowingdimension * (dimensionvalueinchunk[i]);
@@ -145,7 +137,7 @@ public class ArrayFile {
 	 * Closes the suadb.record suadb.file.
 	 */
 	public void close() {
-		for (int j = 0; j < numberofattributes; j++) {
+		for (int j = 0; j < numberOfAttributes; j++) {
 			try {
 				currentCFiles[j].close();
 			} catch (IOException e) {
@@ -159,7 +151,7 @@ public class ArrayFile {
 	 * will wind up at the first suadb.record.
 	 */
 	public void beforeFirst() {
-		for (int j = 0; j < numberofattributes; j++) {
+		for (int j = 0; j < numberOfAttributes; j++) {
 			currentCFiles[j].beforeFirst();
 			//         currentCFiles[j].moveTo(0);
 			//        currentCFiles[j].moveToId(0);
@@ -201,12 +193,10 @@ public class ArrayFile {
 		return next(attributes);
 	}
 
-	int currentChunkNum = -1; //Just for the next() function.
-
 	public boolean next(List<String> attributesName) {
 		boolean result = false;
 		boolean initial = true;
-		List<Integer> rearCandidate = new ArrayList<Integer>(numberofattributes);
+		List<Integer> rearCandidate = new ArrayList<Integer>(numberOfAttributes);
 
 
 		for (String attribute : attributesName) {
@@ -217,13 +207,13 @@ public class ArrayFile {
 				result |= currentCFiles[index].next();//Call next() if the attribute is rearest.
 			}
 
-			List<Integer> dimension = currentCFiles[index].getCurrentCID().dimensionValues();
+			List<Integer> dimension = currentCFiles[index].getCurrentCID().toList();
 			if (initial)
 				currentChunkNum = currentCFiles[index].getCurrentchunknum();
 
 			boolean[] rearestTestResult = rearestTest(dimension, currentCFiles[index].getCurrentchunknum());
 			if (initial || rearestTestResult[0]) {//Update the current dimension value.
-				for (int i = 0; i < numberofdimensions; i++)
+				for (int i = 0; i < numberOfDimensions; i++)
 					currentDimensionValues.set(i, dimension.get(i));
 				if (rearestTestResult[1])//If all equal to current dimension value
 					rearCandidate.add(index);
@@ -236,7 +226,7 @@ public class ArrayFile {
 		}
 
 		//Update rearestAttribute
-		for (int i = 0; i < numberofattributes; i++)
+		for (int i = 0; i < numberOfAttributes; i++)
 			rearestAttribute[i] = false;
 		for (int i = 0; i < rearCandidate.size(); i++)
 			rearestAttribute[rearCandidate.get(i)] = true;
@@ -262,8 +252,7 @@ public class ArrayFile {
 			return new boolean[]{false, false};
 		}
 
-
-		for (int i = 0; i < numberofdimensions; i++)
+		for (int i = 0; i < numberOfDimensions; i++)
 			if (dimensionValue.get(i) > currentDimensionValues.get(i))
 				return new boolean[]{false, false};
 			else if (dimensionValue.get(i) < currentDimensionValues.get(i))
@@ -277,7 +266,7 @@ public class ArrayFile {
 	 *
 	 * @return CID
 	 */
-	public CID getCurrentDimension() {
+	public CID getCID() {
 		return new CID(currentDimensionValues);
 	}
 
@@ -370,7 +359,7 @@ public class ArrayFile {
 	 * have unspecified behavior.
 	 */
 	public void delete() {
-		for (int j = 0; j < numberofattributes; j++) {
+		for (int j = 0; j < numberOfAttributes; j++) {
 			currentCFiles[j].delete();
 		}
 	}
@@ -383,7 +372,7 @@ public class ArrayFile {
 	 */
 	public void moveToCid(CID cid) {
 
-		for (int j = 0; j < numberofattributes; j++) {
+		for (int j = 0; j < numberOfAttributes; j++) {
 			currentCFiles[j].moveTo(getChunknumber(cid));
 			currentCFiles[j].moveToId(calculateCellOffsetInChunk(cid));
 
@@ -391,8 +380,8 @@ public class ArrayFile {
 		}
 
 		//Update current dimension value.
-		for (int i = 0; i < numberofdimensions; i++)
-			currentDimensionValues.set(i, cid.dimensionValues().get(i));
+		for (int i = 0; i < numberOfDimensions; i++)
+			currentDimensionValues.set(i, cid.toList().get(i));
 	}
 
 	public void moveToCid(String attributename, CID cid) {
@@ -403,45 +392,28 @@ public class ArrayFile {
 		currentCFiles[index].moveToId(calculateCellOffsetInChunk(cid));
 
 		//Update current dimension value.
-		for (int i = 0; i < numberofdimensions; i++)
-			currentDimensionValues.set(i, cid.dimensionValues().get(i));
+		for (int i = 0; i < numberOfDimensions; i++)
+			currentDimensionValues.set(i, cid.toList().get(i));
 
 		//Update rearestAttribute
-		for (int j = 0; j < numberofattributes; j++)//If moveToCid(String,CID) is called,
+		for (int j = 0; j < numberOfAttributes; j++)//If moveToCid(String,CID) is called,
 			rearestAttribute[j] = true;//Assume all attributes are the rearest.
 		//So, if next() is called followed by this method, all attributes can call next();
 	}
 
-	/**
-	 * Returns the RID of the current suadb.record.
-	 *
-	 * @return a suadb.record identifier
-	 */
-
-	// TODO :: this method should be implemented - IHSUh
-	/*
-	public CID currentCid() {
-        int id = cp.currentId();
-        return new CID(currentchunknum, id);
-    }
-    */
 	public int getDimension(String dimName) {
-		CID cid = getCurrentDimension();
+		CID cid = getCID();
 		int dIndex = dimensions.indexOf(dimName);
 
-		return cid.dimensionValues().get(dIndex);
+		return cid.toList().get(dIndex);
 	}
 
 	public Constant getDimensionVal(String dimName) {
-		CID cid = getCurrentDimension();
+		CID cid = getCID();
 		int dIndex = dimensions.indexOf(dimName);
 
-		return new IntConstant(cid.dimensionValues().get(dIndex));
+		return new IntConstant(cid.toList().get(dIndex));
 	}
-
-	// TODO :: Insert()                     - RonyK
-	// insert data sequentially.
-	// TODO :: Insert(Dimension[] dim)      - RonyK
 
 	/**
 	 * Load data from the file.
@@ -456,16 +428,16 @@ public class ArrayFile {
 		boolean ing = false;
 
 		List<Integer> dimensionValue = new ArrayList<Integer>();
-		int[] dimensionLengths = new int[numberofdimensions];
-		for (int i = 0; i < numberofdimensions; i++) {
+		int[] dimensionLengths = new int[numberOfDimensions];
+		for (int i = 0; i < numberOfDimensions; i++) {
 			dimensionValue.add(schema.start(dimensions.get(i)));
 			dimensionLengths[i] = schema.dimensionLength(dimensions.get(i));
 		}
 		CID cid = new CID(dimensionValue);
 
 		//Identify the types of attributes.
-		int[] attributeTypes = new int[numberofattributes];
-		for (int i = 0; i < numberofattributes; i++)
+		int[] attributeTypes = new int[numberOfAttributes];
+		for (int i = 0; i < numberOfAttributes; i++)
 			attributeTypes[i] = schema.type(attributes.get(i));
 
 		//Open the file.
@@ -496,7 +468,7 @@ public class ArrayFile {
 					//Is the dimension Valid? (It filters odd inputs)
 					if(!ing) {
 						boolean overflowFlag = false;
-						for (int d = numberofdimensions - 1; d >= 0; d--)
+						for (int d = numberOfDimensions - 1; d >= 0; d--)
 							if (dimensionValue.get(d) == dimensionLengths[d])
 								overflowFlag = true;
 						if (overflowFlag) {
@@ -504,7 +476,6 @@ public class ArrayFile {
 							throw new ArrayInputException("The input file doesn't match with the array definition.");
 						}
 					}
-
 
 					if (!token.contains("("))
 						continue;
@@ -523,7 +494,7 @@ public class ArrayFile {
 						}
 					}
 
-					dimensionValue.set(numberofdimensions - 1, dimensionValue.get(numberofdimensions - 1) + 1);
+					dimensionValue.set(numberOfDimensions - 1, dimensionValue.get(numberOfDimensions - 1) + 1);
 				}
 			}
 			in.close();
@@ -549,9 +520,9 @@ public class ArrayFile {
 	 * @return
 	 */
 	private String printCell() {
-		String result = getCurrentDimension() + " ";
+		String result = getCID() + " ";
 		Schema schema = ai.schema();
-		for (int i = 0; i < numberofattributes; i++) {
+		for (int i = 0; i < numberOfAttributes; i++) {
 			if (!isNull(i)) {
 				if (schema.type(attributes.get(i)) == INTEGER)
 					result += getInt(attributes.get(i));
@@ -563,7 +534,7 @@ public class ArrayFile {
 			} else
 				result += "null";
 
-			if (i != numberofattributes - 1)
+			if (i != numberOfAttributes - 1)
 				result += ",";
 		}
 
@@ -579,17 +550,17 @@ public class ArrayFile {
 
 		//Print dimension and attribute information at first line.
 		String firstLine = "{";
-		for (int i = 0; i < numberofdimensions; i++) {
+		for (int i = 0; i < numberOfDimensions; i++) {
 			firstLine += dimensions.get(i);
-			if (i != numberofdimensions - 1)
+			if (i != numberOfDimensions - 1)
 				firstLine += ",";
 			else
 				firstLine += "} ";
 		}
 
-		for (int i = 0; i < numberofattributes; i++) {
+		for (int i = 0; i < numberOfAttributes; i++) {
 			firstLine += attributes.get(i);
-			if (i != numberofattributes - 1)
+			if (i != numberOfAttributes - 1)
 				firstLine += ",";
 		}
 		System.out.println(firstLine);
@@ -598,6 +569,7 @@ public class ArrayFile {
 			System.out.println(printCell());
 			count++;
 		}
+
 		return count;
 	}
 }

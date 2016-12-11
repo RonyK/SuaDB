@@ -141,7 +141,7 @@ public class ArrayScan implements UpdateScan
 	@Override
 	public CID getCurrentDimension()
 	{
-		return rf.getCurrentDimension();
+		return rf.getCID();
 	}
 	
 	public void moveToCid(CID cid) { rf.moveToCid(cid);}

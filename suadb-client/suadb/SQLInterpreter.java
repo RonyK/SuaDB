@@ -87,7 +87,7 @@ public class SQLInterpreter {
 					if(nullInfo.getNullValues() == numOfAttributes)//If all attributes are null
 						continue;
 
-					List<Integer> currentDimension = rs.getCurrentDimension().dimensionValues();
+					List<Integer> currentDimension = rs.getCurrentDimension().toList();
 					if (currentDimension.size() > 0 ) {
 						System.out.print("{");
 						for (int i = 0; i < numOfDimensions; i++) {
