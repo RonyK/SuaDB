@@ -378,28 +378,69 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 	}
 
 	@Test
-	public void test_50_between()
+	public void test_55_between()
 	{
 		Transaction tx = new Transaction();
-		Region region = new Region(Arrays.asList(0, 1, 1), Arrays.asList(0, 2, 2));
-		String query = String.format("BETWEEN(%s, %s)", ARRAY_NAME, region.toString());
 
-		Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
-		Scan s = scanPlan.open();
-
-		int num = 0;
-		while (s.next())
+		try
 		{
-			testValue(s);
+			Region region = new Region(Arrays.asList(0, 1, 1), Arrays.asList(0, 2, 2));
+			String query = String.format("BETWEEN(%s, %s)", ARRAY_NAME, region.toString());
 
-			assertEquals(region.compareTo(s.getCurrentDimension()), 0);
+			Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
+			Scan s = scanPlan.open();
 
-			num++;
+			int num = 0;
+			while (s.next())
+			{
+				testValue(s);
+
+				assertEquals(region.compareTo(s.getCurrentDimension()), 0);
+
+				num++;
+			}
+
+			assertEquals(num, 4);
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			tx.commit();
 		}
+	}
 
-		assertEquals(num, 4);
+	@Test
+	public void test_56_between_naive()
+	{
+		Transaction tx = new Transaction();
 
-		tx.commit();
+		try
+		{
+			Region region = new Region(Arrays.asList(0, 1, 1), Arrays.asList(0, 2, 2));
+			String query = String.format("BETWEENNAIVE(%s, %s)", ARRAY_NAME, region.toString());
+
+			Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
+			Scan s = scanPlan.open();
+
+			int num = 0;
+			while (s.next())
+			{
+				testValue(s);
+
+				assertEquals(region.compareTo(s.getCurrentDimension()), 0);
+
+				num++;
+			}
+
+			assertEquals(num, 4);
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			tx.commit();
+		}
 	}
 	
 	@Test

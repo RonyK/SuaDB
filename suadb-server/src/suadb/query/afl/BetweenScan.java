@@ -54,19 +54,9 @@ public class BetweenScan implements Scan
 	@Override
 	public boolean next()
 	{
-		if(moveToCid)
+		while (moveToCid || s.next())
 		{
-			count++;
 			moveToCid = false;
-			int compare = region.compareTo(getCurrentDimension());
-			if(compare == 0)
-			{
-				return true;
-			}
-		}
-
-		while (s.next())
-		{
 			count++;
 			CID currentCID = getCurrentDimension();
 			int compare = region.compareTo(currentCID);
@@ -102,10 +92,13 @@ public class BetweenScan implements Scan
 				}
 			}
 
-//			System.out.print(String.format("CUR CID : %d, %d %d", curCID.get(0), curCID.get(1), curCID.get(2)));
-//			System.out.println(String.format("\t-> : %d, %d %d", newCID.get(0), newCID.get(1), newCID.get(2)));
+			if(!newCID.equals(curCID))
+			{
+//				System.out.print(String.format("CUR CID : %d, %d, %d", curCID.get(0), curCID.get(1), curCID.get(2)));
+//				System.out.println(String.format("\t-> : %d, %d, %d", newCID.get(0), newCID.get(1), newCID.get(2)));
 
-			moveToCid(new CID(newCID));
+				moveToCid(new CID(newCID));
+			}
 		}
 
 		System.out.println(String.format("BETWEEN SEARCH COUNT : %d", count));

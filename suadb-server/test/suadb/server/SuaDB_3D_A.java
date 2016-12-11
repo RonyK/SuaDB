@@ -71,8 +71,8 @@ public class SuaDB_3D_A extends SuaDBExeTestBase
 
 	static String inputData;
 
-	static int betweenCount;
-	static int betweenNaiveCount;
+	static int betweenCount = 0;
+	static int betweenNaiveCount = 0;
 
 	@BeforeClass
 	public static void init()
@@ -122,41 +122,49 @@ public class SuaDB_3D_A extends SuaDBExeTestBase
 	public void test_10_create_array()
 	{
 		Transaction tx = new Transaction();
-		String query = String.format(
-				"CREATE ARRAY %s" +
-				"<" +
-				"   %s : int" +
-				">" +
-				"[%s = %d:%d,%d, %s = %d:%d,%d, %s = %d:%d,%d]",
-				ARRAY_NAME, ATTR,
-				DIM_01, DIM_01_START, DIM_01_END, DIM_01_SIZE,
-				DIM_02, DIM_02_START, DIM_02_END, DIM_02_SIZE,
-				DIM_03, DIM_03_START, DIM_03_END, DIM_03_SIZE);
 
-		SuaDB.planner().executeUpdate(query, tx);
+		try
+		{
+			String query = String.format(
+					"CREATE ARRAY %s" +
+							"<" +
+							"   %s : int" +
+							">" +
+							"[%s = %d:%d,%d, %s = %d:%d,%d, %s = %d:%d,%d]",
+					ARRAY_NAME, ATTR,
+					DIM_01, DIM_01_START, DIM_01_END, DIM_01_SIZE,
+					DIM_02, DIM_02_START, DIM_02_END, DIM_02_SIZE,
+					DIM_03, DIM_03_START, DIM_03_END, DIM_03_SIZE);
 
-		ArrayInfo ai = SuaDB.mdMgr().getArrayInfo(ARRAY_NAME, tx);
+			SuaDB.planner().executeUpdate(query, tx);
 
-		assertEquals(ai.arrayName(), ARRAY_NAME);
+			ArrayInfo ai = SuaDB.mdMgr().getArrayInfo(ARRAY_NAME, tx);
 
-		assertEquals(ai.schema().attributes().size(), 1);
-		assertTrue(ai.schema().hasAttribute(ATTR));
-		assertFalse(ai.schema().hasAttribute("d"));
+			assertEquals(ai.arrayName(), ARRAY_NAME);
 
-		assertEquals(ai.schema().dimensions().size(), 3);
-		assertTrue(ai.schema().hasDimension(DIM_01));
-		assertTrue(ai.schema().hasDimension(DIM_02));
-		assertTrue(ai.schema().hasDimension(DIM_03));
-		assertFalse(ai.schema().hasDimension("t"));
+			assertEquals(ai.schema().attributes().size(), 1);
+			assertTrue(ai.schema().hasAttribute(ATTR));
+			assertFalse(ai.schema().hasAttribute("d"));
 
-		tx.commit();
+			assertEquals(ai.schema().dimensions().size(), 3);
+			assertTrue(ai.schema().hasDimension(DIM_01));
+			assertTrue(ai.schema().hasDimension(DIM_02));
+			assertTrue(ai.schema().hasDimension(DIM_03));
+			assertFalse(ai.schema().hasDimension("t"));
+		} catch (Exception e)
+		{
+			System.out.println(e.getMessage());
+			throw e;
+		} finally
+		{
+			tx.commit();
+		}
 	}
 
 	@Test
 	public void test_20_array_input() throws IOException
 	{
 		Transaction tx = new Transaction();
-
 		try
 		{
 			FileWriter fw = new FileWriter(FILE_PATH);
@@ -168,11 +176,11 @@ public class SuaDB_3D_A extends SuaDBExeTestBase
 			SuaDB.planner().executeUpdate(query, tx);
 
 			eraseFile(FILE_PATH);
-		}catch (Exception e)
+		} catch (Exception e)
 		{
 			System.out.println(e.getMessage());
 			throw e;
-		}finally
+		} finally
 		{
 			tx.commit();
 		}
@@ -182,79 +190,100 @@ public class SuaDB_3D_A extends SuaDBExeTestBase
 	public void test_30_scan_array()
 	{
 		Transaction tx = new Transaction();
-		String query = "SCAN(" + ARRAY_NAME + ")";
-
-		Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
-		Scan s = scanPlan.open();
-
-		int num = 0;
-		while (s.next())
+		try
 		{
-			testValue(s);
+			String query = "SCAN(" + ARRAY_NAME + ")";
 
-			num++;
+			Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
+			Scan s = scanPlan.open();
+
+			int num = 0;
+			while (s.next())
+			{
+				testValue(s);
+
+				num++;
+			}
+
+			assertTrue(num > 0);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			tx.commit();
 		}
-
-		assertTrue(num > 0);
-
-		tx.commit();
 	}
 
 	@Test
 	public void test_50_between()
 	{
 		Transaction tx = new Transaction();
-		Region region = new Region(Arrays.asList(5, 10, 1), Arrays.asList(15, 12, 5));
-		String query = String.format("BETWEEN(%s, %s)", ARRAY_NAME, region.toString());
-
-		Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
-		Scan s = scanPlan.open();
-
-		int num = 0;
-		while (s.next())
+		try
 		{
-			testValue(s);
+			Region region = new Region(Arrays.asList(5, 10, 1), Arrays.asList(15, 12, 5));
+			String query = String.format("BETWEEN(%s, %s)", ARRAY_NAME, region.toString());
 
-			assertEquals(region.compareTo(s.getCurrentDimension()), 0);
+			Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
+			Scan s = scanPlan.open();
 
-			num++;
+			int num = 0;
+			while (s.next())
+			{
+				testValue(s);
+
+				assertEquals(region.compareTo(s.getCurrentDimension()), 0);
+
+				num++;
+			}
+
+			assertTrue(num > 0);
+			betweenCount = num;
+
+			System.out.println(String.format("OUTPUT : %d", num));
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			tx.commit();
 		}
-
-		assertTrue(num > 0);
-		betweenCount = num;
-
-		System.out.println(String.format("OUTPUT : %d", num));
-
-		tx.commit();
 	}
 
 	@Test
 	public void test_51_between_naive()
 	{
 		Transaction tx = new Transaction();
-		Region region = new Region(Arrays.asList(5, 10, 1), Arrays.asList(15, 12, 5));
-		String query = String.format("BETWEENNAIVE(%s, %s)", ARRAY_NAME, region.toString());
-
-		Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
-		Scan s = scanPlan.open();
-
-		int num = 0;
-		while (s.next())
+		try
 		{
-			testValue(s);
+			Region region = new Region(Arrays.asList(5, 10, 1), Arrays.asList(15, 12, 5));
+			String query = String.format("BETWEENNAIVE(%s, %s)", ARRAY_NAME, region.toString());
 
-			assertEquals(region.compareTo(s.getCurrentDimension()), 0);
+			Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
+			Scan s = scanPlan.open();
 
-			num++;
+			int num = 0;
+			while (s.next())
+			{
+				testValue(s);
+
+				assertEquals(region.compareTo(s.getCurrentDimension()), 0);
+
+				num++;
+			}
+
+			assertTrue(num > 0);
+			betweenNaiveCount = num;
+			assertEquals(betweenCount, betweenNaiveCount);
+
+			System.out.println(String.format("OUTPUT : %d", num));
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			tx.commit();
 		}
-
-		assertTrue(num > 0);
-		betweenNaiveCount = num;
-		assertEquals(betweenCount, betweenNaiveCount);
-
-		System.out.println(String.format("OUTPUT : %d", num));
-
-		tx.commit();
 	}
 
 	public void testValue(Scan s)
