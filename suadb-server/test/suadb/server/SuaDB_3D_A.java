@@ -45,19 +45,34 @@ public class SuaDB_3D_A extends SuaDBExeTestBase
 	static final String DIM_02 = "y";
 	static final String DIM_03 = "z";
 
-	static final int DIM_01_START = 3;
-	static final int DIM_01_END = 22;
+//	static final int DIM_01_START = 3;
+//	static final int DIM_01_END = 22;
+//	static final int DIM_01_SIZE = 5;
+//
+//	static final int DIM_02_START = 7;
+//	static final int DIM_02_END = 32;
+//	static final int DIM_02_SIZE = 4;
+//
+//	static final int DIM_03_START = 1;
+//	static final int DIM_03_END = 20;
+//	static final int DIM_03_SIZE = 20;
+
+	static final int DIM_01_START = 0;
+	static final int DIM_01_END = 20;
 	static final int DIM_01_SIZE = 5;
 
-	static final int DIM_02_START = 7;
-	static final int DIM_02_END = 32;
+	static final int DIM_02_START = 0;
+	static final int DIM_02_END = 30;
 	static final int DIM_02_SIZE = 4;
 
-	static final int DIM_03_START = 1;
+	static final int DIM_03_START = 0;
 	static final int DIM_03_END = 20;
 	static final int DIM_03_SIZE = 20;
 
 	static String inputData;
+
+	static int betweenCount;
+	static int betweenNaiveCount;
 
 	@BeforeClass
 	public static void init()
@@ -206,6 +221,38 @@ public class SuaDB_3D_A extends SuaDBExeTestBase
 		}
 
 		assertTrue(num > 0);
+		betweenCount = num;
+
+		System.out.println(String.format("OUTPUT : %d", num));
+
+		tx.commit();
+	}
+
+	@Test
+	public void test_51_between_naive()
+	{
+		Transaction tx = new Transaction();
+		Region region = new Region(Arrays.asList(5, 10, 1), Arrays.asList(15, 12, 5));
+		String query = String.format("BETWEENNAIVE(%s, %s)", ARRAY_NAME, region.toString());
+
+		Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
+		Scan s = scanPlan.open();
+
+		int num = 0;
+		while (s.next())
+		{
+			testValue(s);
+
+			assertEquals(region.compareTo(s.getCurrentDimension()), 0);
+
+			num++;
+		}
+
+		assertTrue(num > 0);
+		betweenNaiveCount = num;
+		assertEquals(betweenCount, betweenNaiveCount);
+
+		System.out.println(String.format("OUTPUT : %d", num));
 
 		tx.commit();
 	}
@@ -220,19 +267,15 @@ public class SuaDB_3D_A extends SuaDBExeTestBase
 
 		try
 		{
-			System.out.print("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") ");
-			System.out.print("a : " + attr_01);
-			System.out.print(String.format("\tExpect %d", dummy[dim_01][dim_02][dim_03]));
-
 			if(s.isNull(ATTR))
 				assertEquals("Check ATTR " + ATTR, dummy[dim_01][dim_02][dim_03], null);
 			else
 				assertEquals("Check ATTR " + ATTR, dummy[dim_01][dim_02][dim_03], s.getInt(ATTR));
-
-			System.out.println("\tTrue");
 		} catch (Exception e)
 		{
-			System.out.println(String.format("\tFalse : %s", e.getMessage()));
+			System.out.print("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") ");
+			System.out.println("a : " + attr_01);
+			System.out.println(String.format("\tException : %s", e.getMessage()));
 		}
 	}
 }

@@ -2,12 +2,14 @@ package suadb.planner;
 
 import suadb.parse.ArrayData;
 import suadb.parse.BetweenData;
+import suadb.parse.BetweenNaiveData;
 import suadb.parse.FilterData;
 import suadb.parse.ListData;
 import suadb.parse.ProjectData;
 import suadb.parse.QueryData;
 import suadb.parse.ScanData;
 import suadb.query.afl.ArrayPlan;
+import suadb.query.afl.BetweenNaivePlan;
 import suadb.query.afl.BetweenPlan;
 import suadb.query.afl.FilterPlan;
 import suadb.query.afl.ListPlan;
@@ -34,9 +36,11 @@ public class BasicArrayQueryPlanner implements QueryPlanner
 	    	return createArrayPlan((ArrayData)data, tx);
 	    else if (data instanceof ListData)
 	    	return createListPlan((ListData)data, tx);
+	    else if (data instanceof BetweenNaiveData)
+		    return createBetweenOldPlan((BetweenNaiveData)data, tx);
 	    else if (data instanceof BetweenData)
 	    	return createBetweenPlan((BetweenData)data, tx);
-	    
+
 	    throw new UnsupportedOperationException();
     }
 	
@@ -67,6 +71,12 @@ public class BasicArrayQueryPlanner implements QueryPlanner
 	public Plan createListPlan(ListData data, Transaction tx)
 	{
 		Plan p = new ListPlan(data.target(), tx);
+		return p;
+	}
+
+	public Plan createBetweenOldPlan(BetweenNaiveData data, Transaction tx)
+	{
+		Plan p = new BetweenNaivePlan(createPlan(data.array(), tx), data.region());
 		return p;
 	}
 	

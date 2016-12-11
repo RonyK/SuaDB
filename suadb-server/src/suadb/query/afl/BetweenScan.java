@@ -25,6 +25,8 @@ public class BetweenScan implements Scan
 	private Region currentChunkRegion;
 	private int dimSize;
 
+	private static int count = 0;
+
 	public BetweenScan(Scan s, Region region, Schema schema)
 	{
 		this.s = s;
@@ -54,6 +56,7 @@ public class BetweenScan implements Scan
 	{
 		if(moveToCid)
 		{
+			count++;
 			moveToCid = false;
 			int compare = region.compareTo(getCurrentDimension());
 			if(compare == 0)
@@ -64,6 +67,7 @@ public class BetweenScan implements Scan
 
 		while (s.next())
 		{
+			count++;
 			CID currentCID = getCurrentDimension();
 			int compare = region.compareTo(currentCID);
 			if(compare == 0)
@@ -74,6 +78,11 @@ public class BetweenScan implements Scan
 			if(currentChunkRegion.compareTo(currentCID) != 0)
 			{
 				currentChunkRegion = calcTargetChunk(currentCID);
+//				System.out.println(
+//						String.format(
+//								"Next Chunk (%d %d %d) (%d %d %d)",
+//								currentChunkRegion.low().get(0), currentChunkRegion.low().get(1), currentChunkRegion.low().get(2),
+//								currentChunkRegion.high().get(0), currentChunkRegion.high().get(1), currentChunkRegion.high().get(2)));
 			}
 
 			List<Integer> newCID = new ArrayList<>();
@@ -92,8 +101,15 @@ public class BetweenScan implements Scan
 					newCID.add(curCID.get(i));
 				}
 			}
+
+//			System.out.print(String.format("CUR CID : %d, %d %d", curCID.get(0), curCID.get(1), curCID.get(2)));
+//			System.out.println(String.format("\t-> : %d, %d %d", newCID.get(0), newCID.get(1), newCID.get(2)));
+
+			moveToCid(new CID(newCID));
 		}
-		
+
+		System.out.println(String.format("BETWEEN SEARCH COUNT : %d", count));
+
 		return false;
 	}
 	

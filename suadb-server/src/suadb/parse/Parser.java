@@ -102,6 +102,9 @@ public class Parser
 		}else if(lex.matchKeyword("between"))
 		{
 			return between();
+		}else if(lex.matchKeyword("betweennaive"))
+		{
+			return betweenNaive();
 		}else
 		{
 			throw new UnsupportedOperationException();
@@ -188,6 +191,17 @@ public class Parser
 		lex.eatDelim(')');
 		
 		return new BetweenData(array, region);
+	}
+
+	public BetweenNaiveData betweenNaive()
+	{
+		lex.eatKeyword("betweennaive");
+		lex.eatDelim('(');
+		QueryData array = array();
+		Region region = region();
+		lex.eatDelim(')');
+
+		return new BetweenNaiveData(array, region);
 	}
 
 // Methods for parsing the various update commands
