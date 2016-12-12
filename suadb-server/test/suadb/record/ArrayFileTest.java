@@ -94,7 +94,7 @@ public class ArrayFileTest  extends SuaDBExeTestBase
                     assertTrue( (arrayfile.getInt("attA"))== index) ;
                     assertTrue( (arrayfile.getString("attB")).equals(Integer.toString(index))) ;
 
-                    CID dimensionTest = arrayfile.getCID();
+                    CID dimensionTest = arrayfile.getCIDFrom();
                     assertTrue(dimensionTest.toList().get(0) == i);
                     assertTrue(dimensionTest.toList().get(1) == j);
                     assertTrue(dimensionTest.toList().get(2) == k);

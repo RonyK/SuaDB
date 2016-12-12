@@ -257,22 +257,22 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 			System.out.print("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") ");
 			System.out.print("a : " + attr_01 + ",\tb : " + attr_02 + ",\tc : " + attr_03);
 			System.out.print(String.format("\tExpect %s", dummy[dim_01][dim_02][dim_03].toString()));
-			
+
 			if(s.isNull(ATTR_01))
 				assertEquals("Check ATTR " + ATTR_01, dummy[dim_01][dim_02][dim_03].a, null);
 			else
 				assertEquals("Check ATTR " + ATTR_01, (int)dummy[dim_01][dim_02][dim_03].a, s.getInt(ATTR_01));
-			
+
 			if(s.isNull(ATTR_02))
 				assertEquals("Check ATTR " + ATTR_02, dummy[dim_01][dim_02][dim_03].b, null);
 			else
 				assertEquals("Check ATTR " + ATTR_02, (int)dummy[dim_01][dim_02][dim_03].b, s.getInt(ATTR_02));
-			
+
 			if(s.isNull(ATTR_03))
 				assertEquals("Check ATTR " + ATTR_03, dummy[dim_01][dim_02][dim_03].c, null);
 			else
 				assertEquals("Check ATTR " + ATTR_03, (int)dummy[dim_01][dim_02][dim_03].c, s.getInt(ATTR_03));
-			
+
 			System.out.println("\tTrue");
 		} catch (Exception e)
 		{

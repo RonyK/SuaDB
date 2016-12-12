@@ -1,6 +1,7 @@
 package suadb.record;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,12 +20,26 @@ public class CID implements Serializable{
      */
     public CID(List<Integer> dimensionValues)
     {
-        this.dimensionValues = dimensionValues;
+        this.dimensionValues = new ArrayList<>(dimensionValues);
     }
+
+	public CID(int[] vales)
+	{
+		this.dimensionValues = new ArrayList<>();
+		for(int i : vales)
+		{
+			dimensionValues.add(i);
+		}
+	}
     
     public List<Integer> toList() {
         return dimensionValues;
     }
+
+	public int[] toArray()
+	{
+		return dimensionValues.stream().mapToInt(d -> d).toArray();
+	}
 
     public boolean equals(Object obj)
     {

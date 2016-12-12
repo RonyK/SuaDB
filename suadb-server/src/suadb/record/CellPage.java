@@ -110,6 +110,7 @@ public class CellPage {
     public void setInt(int val) {
         int position = currentpos();
         tx.setInt(chunk, position, INUSE);
+	    cellFlag[currentId] = INUSE;
         position += INT_SIZE;
         tx.setInt(chunk, position, val);
     }
@@ -122,6 +123,7 @@ public class CellPage {
     public void setString( String val) {
         int position = currentpos();
         tx.setInt(chunk, position, INUSE);
+	    cellFlag[currentId] = INUSE;
         position += INT_SIZE;
         tx.setString(chunk, position, val);
     }
