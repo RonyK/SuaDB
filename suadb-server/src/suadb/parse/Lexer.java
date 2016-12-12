@@ -172,6 +172,6 @@ public class Lexer {
 
 	private void initKeywords() {
 		keywords = Arrays.asList("create","input","scan","filter","between","betweennaive",
-				"list","remove","project","array","and","string","double","int");
+				"join","list","remove","project","array","and","string","double","int");
 	}
 }

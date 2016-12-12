@@ -122,7 +122,10 @@ public class Schema {
 		dimensionInfo.putAll(sch.dimensionInfo);
 	}
 
-
+	public void addFields(Schema schema)
+	{
+		attributeInfo.putAll(schema.attributeInfo);
+	}
 	
 	/**
 	 * Adds all of the fields in the specified schema

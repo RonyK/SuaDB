@@ -55,7 +55,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 	{
 		FILE_PATH = homeDir + "\\" + ARRAY_NAME + ".txt";
 		
-		System.out.println(DummyData.getInputDummy_3A_3D());
+		System.out.println(DummyData.getInputDummy_3A_3D(dummy));
 	}
 
 	@Test
@@ -173,7 +173,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 			upField.setAccessible(true);
 			
 			FileWriter fw = new FileWriter(FILE_PATH);
-			fw.write(DummyData.getInputDummy_3A_3D());
+			fw.write(DummyData.getInputDummy_3A_3D(dummy));
 			fw.close();
 			
 			Transaction tx = new Transaction();
@@ -202,7 +202,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		try
 		{
 			FileWriter fw = new FileWriter(FILE_PATH);
-			fw.write(DummyData.getInputDummy_3A_3D());
+			fw.write(DummyData.getInputDummy_3A_3D(dummy));
 			fw.close();
 			
 			String query = "INPUT(" + ARRAY_NAME + ", \'" + FILE_PATH + "\')";

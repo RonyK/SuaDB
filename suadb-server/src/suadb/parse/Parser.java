@@ -105,6 +105,9 @@ public class Parser
 		}else if(lex.matchKeyword("betweennaive"))
 		{
 			return betweenNaive();
+		}else if(lex.matchKeyword("join"))
+		{
+			return join();
 		}else
 		{
 			throw new UnsupportedOperationException();
@@ -254,6 +257,18 @@ public class Parser
 		}
 		
 		return L;
+	}
+	
+	public JoinData join()
+	{
+		lex.eatKeyword("join");
+		lex.eatDelim('(');
+		QueryData leftArray = array();
+		lex.eatDelim(',');
+		QueryData rightArray = array();
+		lex.eatDelim(')');
+		
+		return new JoinData(leftArray, rightArray);
 	}
 
 // Method for parsing create table commands

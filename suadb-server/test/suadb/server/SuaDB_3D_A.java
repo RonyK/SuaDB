@@ -114,8 +114,6 @@ public class SuaDB_3D_A extends SuaDBExeTestBase
 		inputData += "]";
 
 		FILE_PATH = homeDir + "\\" + ARRAY_NAME + ".txt";
-
-		System.out.println(DummyData.getInputDummy_3A_3D());
 	}
 
 	@Test
