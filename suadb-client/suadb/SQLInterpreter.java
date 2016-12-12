@@ -28,7 +28,8 @@ public class SQLInterpreter {
 				else if (cmd.startsWith("scan")
 						|| cmd.startsWith("project")
 						|| cmd.startsWith("filter")
-						|| cmd.startsWith("list"))
+						|| cmd.startsWith("list")
+						|| cmd.startsWith("between"))
 					doQuery(cmd);
 				else if (cmd.startsWith("create")
 						|| cmd.startsWith("input")
