@@ -70,12 +70,12 @@ public class SuaDB_3D_ABC_JOIN extends SuaDBExeTestBase
 		{
 			String query = String.format(
 					"CREATE ARRAY %s" +
-							"<" +
-							"   %s : int," +
-							"   %s : int," +
-							"   %s : int" +
-							">" +
-							"[%s = 0:1,2, %s = 0:3,2, %s = 0:3,2]",
+					"<" +
+					"   %s : int," +
+					"   %s : int," +
+					"   %s : int" +
+					">" +
+					"[%s = 0:1,2, %s = 0:3,2, %s = 0:3,2]",
 					ARRAY_NAME_LEFT, ATTR_LEFT_01, ATTR_LEFT_02, ATTR_LEFT_03,
 					DIM_LEFT_01, DIM_LEFT_02, DIM_LEFT_03);
 			
@@ -113,12 +113,12 @@ public class SuaDB_3D_ABC_JOIN extends SuaDBExeTestBase
 		{
 			String query = String.format(
 					"CREATE ARRAY %s" +
-							"<" +
-							"   %s : int," +
-							"   %s : int," +
-							"   %s : int" +
-							">" +
-							"[%s = 0:1,2, %s = 0:3,2, %s = 0:3,2]",
+					"<" +
+					"   %s : int," +
+					"   %s : int," +
+					"   %s : int" +
+					">" +
+					"[%s = 0:1,2, %s = 0:3,2, %s = 0:3,2]",
 					ARRAY_NAME_RIGHT, ATTR_RIGHT_01, ATTR_RIGHT_02, ATTR_RIGHT_03,
 					DIM_RIGHT_01, DIM_RIGHT_02, DIM_RIGHT_03);
 			

@@ -72,6 +72,13 @@ public class JoinScan implements Scan
 //							    leftChunkRegion.high().get(0), leftChunkRegion.high().get(1), leftChunkRegion.high().get(2)));
 				}
 				
+				// If rightScan passed leftCID, reset rightBetweenScan and search again from start of region.
+				if(leftCID.compareTo(rightBetweenScan.getCurrentDimension()) < 0)
+				{
+					stopRight = true;
+					rightBetweenScan = new BetweenScan(this.right, leftChunkRegion, schema);
+				}
+				
 				while(stopRight || (rightBetweenScan.next() && leftCID.compareTo(rightBetweenScan.getCurrentDimension()) >= 0))
 				{
 					this.rightCID = rightBetweenScan.getCurrentDimension();
