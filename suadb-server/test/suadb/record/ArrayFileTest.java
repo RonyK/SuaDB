@@ -13,6 +13,7 @@ import suadb.test.SuaDBExeTestBase;
 import suadb.tx.Transaction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -65,7 +66,7 @@ public class ArrayFileTest  extends SuaDBExeTestBase
                     dimensionvalue.set(0, i);
                     dimensionvalue.set(1, j);
                     dimensionvalue.set(2, k);
-                    arrayfile.moveToCid(cid,"w");
+                    arrayfile.moveToCidWriteMode(cid);
                     arrayfile.setInt("attA", index);
                     arrayfile.setString("attB", Integer.toString(index));
                     index++;
@@ -89,7 +90,7 @@ public class ArrayFileTest  extends SuaDBExeTestBase
                     dimensionvalue.set(0, i);
                     dimensionvalue.set(1, j);
                     dimensionvalue.set(2, k);
-                    arrayfile.moveToCid(cid,"r");
+                    arrayfile.moveToCid(cid);
                     assertTrue( (arrayfile.getInt("attA"))== index) ;
                     assertTrue( (arrayfile.getString("attB")).equals(Integer.toString(index))) ;
 
@@ -122,8 +123,7 @@ public class ArrayFileTest  extends SuaDBExeTestBase
             for(int j = start[1] ; j <= end[1] ; j++ )
             {
                 for (int k = start[2]; k <= end[2]; k++) {
-
-                    nextFlag = arrayfile.next("attA");
+                    nextFlag = arrayfile.next(new ArrayList<>(Arrays.asList("attA")));
                     assertEquals(nextFlag, true);
                     System.out.println("linear offset of the cell :" + arrayfile.getInt("attA"));
                     index++;
@@ -131,7 +131,7 @@ public class ArrayFileTest  extends SuaDBExeTestBase
             }
         }
         
-        nextFlag= arrayfile.next("attA");
+        nextFlag= arrayfile.next(new ArrayList<>(Arrays.asList("attA")));
         assertEquals(nextFlag, false);
         arrayfile.close();
         tx.commit();

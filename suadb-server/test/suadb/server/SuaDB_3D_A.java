@@ -294,10 +294,18 @@ public class SuaDB_3D_A extends SuaDBExeTestBase
 
 		try
 		{
+			System.out.print("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") ");
+			System.out.println("a : " + attr_01);
+			
 			if(s.isNull(ATTR))
+			{
+				System.out.println("NULL");
 				assertEquals("Check ATTR " + ATTR, dummy[dim_01][dim_02][dim_03], null);
+			}
 			else
+			{
 				assertEquals("Check ATTR " + ATTR, dummy[dim_01][dim_02][dim_03], s.getInt(ATTR));
+			}
 		} catch (Exception e)
 		{
 			System.out.print("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") ");

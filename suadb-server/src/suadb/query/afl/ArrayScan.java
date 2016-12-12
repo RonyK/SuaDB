@@ -144,14 +144,5 @@ public class ArrayScan implements UpdateScan
 		return rf.getCID();
 	}
 	
-	public void moveToCid(CID cid) { rf.moveToCid(cid,"r");}
-
-
-//	public RID getRid() {
-//		return rf.currentRid();
-//	}
-//
-//	public void moveToRid(RID rid) {
-//		rf.moveToRid(rid);
-//	}
+	public void moveToCid(CID cid) { rf.moveToCid(cid);}
 }

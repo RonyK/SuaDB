@@ -26,8 +26,32 @@ public class CID implements Serializable{
         return dimensionValues;
     }
 
-    public boolean equals(Object obj) {
-        return dimensionValues.equals(obj);
+    public boolean equals(Object obj)
+    {
+	    if(!(obj instanceof CID))
+	    {
+		    return false;
+	    }
+	    
+	    CID cid = (CID)obj;
+	    int size = dimensionValues.size();
+	    if(size != cid.dimensionValues.size())
+	    	return false;
+	    
+	    List<Integer> target = cid.toList();
+	
+	    for(int i = 0; i < size; i++)
+	    {
+		    int value = dimensionValues.get(i);
+		    int tValue = target.get(i);
+		
+		    if(value < tValue || value > tValue)
+		    {
+			    return false;
+		    }
+	    }
+	
+	    return true;
     }
 	
 	//SciDB style
@@ -39,13 +63,13 @@ public class CID implements Serializable{
 	    return retString;
     }
     
-    public int compareTo(CID cid) throws CannotComparableException
+    public int compareTo(CID cid)
     {
 	    int size = dimensionValues.size();
 	    List<Integer> target = cid.toList();
 	    
-	    if(size != target.size())
-	    	throw new CannotComparableException();
+//	    if(size != target.size())
+//	    	throw new CannotComparableException();
 	    
 	    for(int i = 0; i < size; i++)
 	    {

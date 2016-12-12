@@ -56,42 +56,36 @@ public class JoinScan implements Scan
 	@Override
 	public boolean next()
 	{
-		try
+		while(left.next())
 		{
-			while(left.next())
+			leftCID = left.getCurrentDimension();
+			if(leftChunkRegion.compareTo(leftCID) != 0)
 			{
-				leftCID = left.getCurrentDimension();
-				if(leftChunkRegion.compareTo(leftCID) != 0)
-				{
-					leftChunkRegion = calcTargetChunk(leftCID);
-					rightBetweenScan = new BetweenScan(this.right, leftChunkRegion, schema);
+				leftChunkRegion = calcTargetChunk(leftCID);
+				rightBetweenScan = new BetweenScan(this.right, leftChunkRegion, schema);
 //			        System.out.println(
 //				        String.format(
 //							"Next Chunk (%d %d %d) (%d %d %d)",
 //							    leftChunkRegion.low().get(0), leftChunkRegion.low().get(1), leftChunkRegion.low().get(2),
 //							    leftChunkRegion.high().get(0), leftChunkRegion.high().get(1), leftChunkRegion.high().get(2)));
-				}
-				
-				// If rightScan passed leftCID, reset rightBetweenScan and search again from start of region.
-				if(leftCID.compareTo(rightBetweenScan.getCurrentDimension()) < 0)
-				{
-					stopRight = true;
-					rightBetweenScan = new BetweenScan(this.right, leftChunkRegion, schema);
-				}
-				
-				while(stopRight || (rightBetweenScan.next() && leftCID.compareTo(rightBetweenScan.getCurrentDimension()) >= 0))
-				{
-					this.rightCID = rightBetweenScan.getCurrentDimension();
-					if(leftCID.compareTo(this.rightCID) == 0)
-					{
-						return true;
-					}
-					stopRight = false;
-				}
 			}
-		} catch (CannotComparableException e)
-		{
-			e.printStackTrace();
+			
+			// If rightScan passed leftCID, reset rightBetweenScan and search again from start of region.
+			if(leftCID.compareTo(rightBetweenScan.getCurrentDimension()) < 0)
+			{
+				stopRight = true;
+				rightBetweenScan = new BetweenScan(this.right, leftChunkRegion, schema);
+			}
+			
+			while(stopRight || (rightBetweenScan.next() && leftCID.compareTo(rightBetweenScan.getCurrentDimension()) >= 0))
+			{
+				this.rightCID = rightBetweenScan.getCurrentDimension();
+				if(leftCID.compareTo(this.rightCID) == 0)
+				{
+					return true;
+				}
+				stopRight = false;
+			}
 		}
 		
 		return false;

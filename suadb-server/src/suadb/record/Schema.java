@@ -242,12 +242,7 @@ public class Schema {
 	public int end(String dimensionName) {
 		return dimensionInfo.get(dimensionName).end;
 	}
-
-	public int dimensionLength(String dimensionName){
-		DimensionInfo info = dimensionInfo.get(dimensionName);
-		return info.end-info.start+1;
-	}
-
+	
 	/**
 	 * Returns the chunkSize of the specified dimension. - CDS
 	 * @param dimensionName the name of the field
@@ -255,6 +250,11 @@ public class Schema {
 	 */
 	public int chunkSize(String dimensionName) {
 		return dimensionInfo.get(dimensionName).chunkSize;
+	}
+	
+	public int dimensionLength(String dimensionName){
+		DimensionInfo info = dimensionInfo.get(dimensionName);
+		return info.end-info.start+1;
 	}
 
 	/**
