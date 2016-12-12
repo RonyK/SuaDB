@@ -41,7 +41,7 @@ public class InputTest extends SuaDBExeTestBase
 		FILE_PATH = homeDir+"/test.txt";
 
 		FileWriter fw = new FileWriter(FILE_PATH);
-		fw.write(DummyData.getInputDummy_3A_3D());
+		fw.write(DummyData.getInputDummy_3A_3D(DummyData.getArrayDummy_3A_3D()));
 		fw.close();
 	}
 
