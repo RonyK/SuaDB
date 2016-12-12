@@ -65,7 +65,7 @@ public class ArrayFileTest  extends SuaDBExeTestBase
                     dimensionvalue.set(0, i);
                     dimensionvalue.set(1, j);
                     dimensionvalue.set(2, k);
-                    arrayfile.moveToCid(cid);
+                    arrayfile.moveToCid(cid,"w");
                     arrayfile.setInt("attA", index);
                     arrayfile.setString("attB", Integer.toString(index));
                     index++;
@@ -89,7 +89,7 @@ public class ArrayFileTest  extends SuaDBExeTestBase
                     dimensionvalue.set(0, i);
                     dimensionvalue.set(1, j);
                     dimensionvalue.set(2, k);
-                    arrayfile.moveToCid(cid);
+                    arrayfile.moveToCid(cid,"r");
                     assertTrue( (arrayfile.getInt("attA"))== index) ;
                     assertTrue( (arrayfile.getString("attB")).equals(Integer.toString(index))) ;
 

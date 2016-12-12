@@ -369,24 +369,23 @@ public class ArrayFile {
 	/**
 	 * Positions the current suadb.record as indicated by the
 	 * specified CID.
-	 *
-	 * @param cid a suadb.record identifier
+	 * @param cid
+	 * @param mode "r" or "w"
 	 */
-	public void moveToCid(CID cid) {
-
+	public void moveToCid(CID cid,String mode){
 		for (int j = 0; j < numberOfAttributes; j++) {
 			currentCFiles[j].moveTo(getChunknumber(cid));
 			currentCFiles[j].moveToId(calculateCellOffsetInChunk(cid));
-
-			rearestAttribute[j] = true;//Initialize rearestAttributes to True.
 		}
 
 		//Update current dimension value.
 		for (int i = 0; i < numberOfDimensions; i++)
 			currentDimensionValues.set(i, cid.toList().get(i));
+
+		updateRearest(mode);
 	}
 
-	public void moveToCid(String attributename, CID cid) {
+	public void moveToCid(String attributename, CID cid,String mode) {
 		int index = attributes.indexOf(attributename);
 		if (index < 0)
 			return;
@@ -397,10 +396,7 @@ public class ArrayFile {
 		for (int i = 0; i < numberOfDimensions; i++)
 			currentDimensionValues.set(i, cid.toList().get(i));
 
-		//Update rearestAttribute
-		for (int j = 0; j < numberOfAttributes; j++)//If moveToCid(String,CID) is called,
-			rearestAttribute[j] = true;//Assume all attributes are the rearest.
-		//So, if next() is called followed by this method, all attributes can call next();
+		updateRearest(mode);//TODO
 	}
 
 	public int getDimension(String dimName) {
@@ -484,7 +480,7 @@ public class ArrayFile {
 					if (!token.contains("("))
 						continue;
 
-					moveToCid(cid);
+					moveToCid(cid,"w");
 					String[] realToken = token.split("\\(");
 					if (realToken.length > 1) {
 						String[] value = realToken[1].split(",");
@@ -575,4 +571,24 @@ public class ArrayFile {
 
 		return count;
 	}
+
+	public void updateRearest(String mode){
+		int nullCount=0;
+		for(int i=0;i<numberOfAttributes;i++) {
+			if(currentCFiles[i].isNull()) {
+				nullCount++;
+				rearestAttribute[i] = false;
+				if(mode.equals("r"))
+					next(attributes.get(i));
+			}
+			else
+				rearestAttribute[i] = true;
+		}
+
+		if(nullCount == numberOfAttributes)
+			next();
+	}
+
+
+
 }

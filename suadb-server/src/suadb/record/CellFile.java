@@ -274,5 +274,15 @@ public class CellFile {
 	public int getCurrentchunknum() {
 		return currentchunknum;
 	}
+
+	/**
+	 * If current position is null, return true.
+	 */
+	public boolean isNull(){
+		if (cp.isNull())
+			return true;
+		else
+			return false;
+	}
 }
 

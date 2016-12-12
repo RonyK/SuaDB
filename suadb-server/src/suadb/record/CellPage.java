@@ -172,6 +172,18 @@ public class CellPage {
     }
 
 	/**
+     * If current position is null, return true.
+     * @return
+     */
+    public boolean isNull(){
+        int position = currentpos();
+        if (tx.getInt(chunk, position) == EMPTY)
+            return true;
+        else
+            return false;
+    }
+
+	/**
 	 * Get the chunk for identifying dimensions.
      * @return Chunk
      */

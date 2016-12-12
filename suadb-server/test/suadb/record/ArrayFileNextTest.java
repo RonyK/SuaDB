@@ -74,7 +74,7 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 					dimensionvalue.set(0, i);
 					dimensionvalue.set(1, j);
 					dimensionvalue.set(2, k);
-					arrayfile.moveToCid(cid);
+					arrayfile.moveToCid(cid,"w");
 					arrayfile.setInt("attA", index);
 					if (k % 2 == 0)//If k is multiples of two,
 						arrayfile.setString("attB", Integer.toString(index));//Set attB values.
@@ -153,7 +153,7 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 		dimensionvalue.set(0,0);
 		dimensionvalue.set(1,2);
 		dimensionvalue.set(2,1);
-		arrayfile.moveToCid(cid);
+		arrayfile.moveToCid(cid,"r");
 
 		assertTrue(arrayfile.next());
 		List<Integer> dimension = arrayfile.getCID().toList();
