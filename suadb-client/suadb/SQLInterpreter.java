@@ -53,6 +53,7 @@ public class SQLInterpreter {
 	}
 
 	private static void doQuery(String cmd) {
+		long startTime = System.nanoTime();
 		try {
 			Statement stmt = conn.createStatement();
 			SimpleResultSet rs = (SimpleResultSet) stmt.executeQuery(cmd);
@@ -157,9 +158,11 @@ public class SQLInterpreter {
 			System.out.println("SQL Exception: " + e.getMessage());
 //			e.printStackTrace();
 		}
+		System.out.println("elapsed time : " + ((System.nanoTime()-startTime )/1000000) + "ms");
 	}
 
 	private static void doUpdate(String cmd) {
+		long startTime = System.nanoTime();
 		try {
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate(cmd);
@@ -168,5 +171,6 @@ public class SQLInterpreter {
 			System.out.println("SQL Exception: " + e.getMessage());
 //			e.printStackTrace();
 		}
+		System.out.println("elapsed time : " + ((System.nanoTime()-startTime )/1000000) + "ms");
 	}
 }

@@ -1,5 +1,6 @@
 package suadb.record;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,7 +9,7 @@ import suadb.exceptions.CannotComparableException;
 /**
  * Created by ILHYUN on 2016-11-20.
  */
-public class CID {
+public class CID implements Serializable{
     private List<Integer> dimensionValues;
 
     /**
