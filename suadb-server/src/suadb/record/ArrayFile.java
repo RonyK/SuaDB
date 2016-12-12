@@ -54,17 +54,19 @@ public class ArrayFile {
 		this.numberOfAttributes = attributes.size();
 		currentDimensionValues = new ArrayList<Integer>(this.numberOfDimensions);//Keep current coordinates of array.
 		rearestAttribute = new boolean[this.numberOfAttributes];//Manage rearest attributes.
+		int[] startDimension = new int[numberOfDimensions];
 
 		numberOfChunksPerDimension = new int[numberOfDimensions];
 		int index = 0;
 		for (String dimname : dimensions) {
+			startDimension[index] = ai.schema().start(dimname);
 			// total number of chunks is multiplication of chunks of each dimension
-			numberOfChunksPerDimension[index] = (int) Math.ceil(((float) (ai.schema().end(dimname) - ai.schema().start(dimname) + 1)) / ai.schema().chunkSize(dimname));
+			numberOfChunksPerDimension[index] = (int) Math.ceil(((float) (ai.schema().end(dimname) - startDimension[index] + 1)) / ai.schema().chunkSize(dimname));
 			index++;
 		}
 		for (int i = 0; i < numberOfDimensions; i++) {
 			numberOfChunks *= numberOfChunksPerDimension[i];
-			currentDimensionValues.add(0);//Initialize the current coordinate of an array.(0,0,0,...)
+			currentDimensionValues.add(startDimension[i]);//Initialize the current coordinate of an array.
 		}
 
 		// set up CellFiles that corresponds to the array ( for each attribute )
@@ -427,11 +429,13 @@ public class ArrayFile {
 		int numberOfOpens = 0;//The number of square brackets.
 		boolean ing = false;
 
+		int[] dimensionStart = new int[numberOfDimensions];
 		List<Integer> dimensionValue = new ArrayList<Integer>();
-		int[] dimensionLengths = new int[numberOfDimensions];
+		int[] dimensionEnd = new int[numberOfDimensions];
 		for (int i = 0; i < numberOfDimensions; i++) {
-			dimensionValue.add(schema.start(dimensions.get(i)));
-			dimensionLengths[i] = schema.dimensionLength(dimensions.get(i));
+			dimensionStart[i] = schema.start(dimensions.get(i));
+			dimensionValue.add(dimensionStart[i]);
+			dimensionEnd[i] = schema.end(dimensions.get(i));
 		}
 		CID cid = new CID(dimensionValue);
 
@@ -457,19 +461,19 @@ public class ArrayFile {
 							if (token.charAt(b) == '[') {
 								numberOfOpens++;
 								ing = false;
-							}
-							else if (token.charAt(b) == ']') {
-								raising(dimensionValue, --numberOfOpens);
+							} else if (token.charAt(b) == ']') {
+								numberOfOpens--;
+								raising(dimensionValue, numberOfOpens, dimensionStart[numberOfOpens]);
 								ing = true;
 							}
 						}
 					}
 
 					//Is the dimension Valid? (It filters odd inputs)
-					if(!ing) {
+					if (!ing) {
 						boolean overflowFlag = false;
 						for (int d = numberOfDimensions - 1; d >= 0; d--)
-							if (dimensionValue.get(d) == dimensionLengths[d])
+							if (dimensionValue.get(d) == dimensionEnd[d] + 1)
 								overflowFlag = true;
 						if (overflowFlag) {
 							in.close();
@@ -507,9 +511,8 @@ public class ArrayFile {
 		return true;
 	}
 
-	private void raising(List<Integer> dimensionValue, int d) {
-
-		dimensionValue.set(d, 0);
+	private void raising(List<Integer> dimensionValue, int d, int initial) {
+		dimensionValue.set(d, initial);
 		if (d > 0)
 			dimensionValue.set(d - 1, dimensionValue.get(d - 1) + 1);
 	}

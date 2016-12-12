@@ -207,7 +207,8 @@ public class CellFile {
     }
 
 	/**
-	 * Get current dimension values.
+	 * Get current dimension values
+	 * using 'currentchunknum' & 'currentSlotNum'(cp.currentId())
 	 * @return List<Integer> the dimension.
 	 */
     private List<Integer> getCurrentDimensionValues(){
@@ -215,18 +216,21 @@ public class CellFile {
 	    Schema schema = ai.schema();
 	    List<String> dimensions =  new ArrayList<String>(ai.schema().dimensions());
 	    int numOfDimensions = dimensions.size();
+	    int[] startDimension = new int[numOfDimensions];//Start dimension of the array.
 	    List<Integer> result = new ArrayList<Integer>();
 
 		//Convert logical chunk number to the left bottom cell's coordinate of the chunk.
 	    int chunkNum = currentchunknum;
 	    int temp = 1;
-	    for(int i=0;i<numOfDimensions;i++)
+	    for(int i=0;i<numOfDimensions;i++) {
 		    temp *= schema.getNumOfChunk(dimensions.get(i));
+			startDimension[i] = schema.start(dimensions.get(i));
+	    }
 
 	    for(int i=0;i<numOfDimensions;i++){
 			temp /= schema.getNumOfChunk(dimensions.get(i));
 
-		    result.add(
+		    result.add(startDimension[i] +
 				    (chunkNum/temp) * schema.chunkSize(dimensions.get(i)));
 		    chunkNum %= temp;
 	    }
