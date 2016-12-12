@@ -1,10 +1,10 @@
 package suadb.record;
 
-import java.util.Arrays;
-
-import static suadb.file.Page.*;
 import suadb.file.Chunk;
 import suadb.tx.Transaction;
+
+import static suadb.file.Page.BLOCK_SIZE;
+import static suadb.file.Page.INT_SIZE;
 
 /**
  * Manages the placement and access of cells in a chunk.
@@ -18,6 +18,7 @@ public class CellPage {
     private Transaction tx;
     private int slotSize;
     private int currentId = -1;
+	
     // IHSUH blockPadding for block
     private int blockPadding = 0;
 	private int cellFlag[];
@@ -198,7 +199,7 @@ public class CellPage {
 	 * Get the chunk for identifying dimensions.
      * @return Chunk
      */
-    public Chunk getChunk(){
+    public Chunk chunk(){
         return chunk;
     }
 }

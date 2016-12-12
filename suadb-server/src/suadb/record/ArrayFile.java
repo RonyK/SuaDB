@@ -3,6 +3,7 @@ package suadb.record;
 import exception.ArrayInputException;
 import suadb.parse.Constant;
 import suadb.parse.IntConstant;
+import suadb.query.Region;
 import suadb.tx.Transaction;
 
 import java.io.BufferedReader;
@@ -37,7 +38,9 @@ public class ArrayFile {
 
 	private List<Integer> currentDimensionValues;//Keep current coordinates of the array.
 	private boolean[] rearestAttribute;         //Manage rearest attributes. true == rearest
-
+	
+	private List<Schema.DimensionInfo> dInfos;
+	
 	/**
 	 * sdf
 	 * Constructs an object to manage a suadb.file of records.
@@ -225,7 +228,7 @@ public class ArrayFile {
 				if(isFirst)
 				{
 					currentDimensionValues = new ArrayList<>(currentCFiles[i].getCurrentCID().toList());
-					currentChunkNum = currentCFiles[i].getCurrentChunkNum();
+					currentChunkNum = currentCFiles[i].currentChunkNum();
 					isFirst = false;
 				}
 			}
@@ -590,5 +593,26 @@ public class ArrayFile {
 		{
 			next();
 		}
+	}
+	
+	private Region calcTargetChunk(CID cid)
+	{
+		List<Integer> coor = cid.toList();
+		List<Integer> low = new ArrayList<>();
+		List<Integer> high = new ArrayList<>();
+		
+		int chunkIndex[] = new int[numberOfDimensions];
+		
+		for(int i = 0; i < numberOfDimensions; i++)
+		{
+			Schema.DimensionInfo dInfo = dInfos.get(i);
+			chunkIndex[i] = (coor.get(i) - dInfo.start()) / dInfo.chunkSize();
+			
+			int start = chunkIndex[i] * dInfo.chunkSize() + dInfo.start();
+			low.add(start);
+			high.add(start + dInfo.chunkSize() - 1);
+		}
+		
+		return new Region(low, high);
 	}
 }

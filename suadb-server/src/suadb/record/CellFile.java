@@ -1,12 +1,12 @@
 package suadb.record;
 
-import suadb.file.Chunk;
-import suadb.server.SuaDB;
-import suadb.tx.Transaction;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import suadb.file.Chunk;
+import suadb.server.SuaDB;
+import suadb.tx.Transaction;
 
 
 /**
@@ -29,8 +29,6 @@ public class CellFile {
 	private int numCellsInChunk = 1; //The number of cells in a chunk.
 	private int numDimensions;
 	private List<Integer> currentChunk;
-	private int[] cid;
-//	int[] startDimension;
 
 	/**
 	 * Constructs an object to manage a suadb.file of records.
@@ -44,22 +42,17 @@ public class CellFile {
 	public CellFile(ArrayInfo ai, Transaction tx, int chunknum, String attributeName, int numBlocks, int numChunks) {
 		this.ai = ai;
 		this.tx = tx;
-		// this.currentChunkNum = chunknum;
 		this.attributeName = attributeName;
 		this.numBlocks = numBlocks;
 		this.numChunks = numChunks;
 		
 		List<String> dimensions = new ArrayList<String>(ai.schema().dimensions());
 		numDimensions = dimensions.size();
-		this.cid = new int[numDimensions];
 		this.currentChunk = new ArrayList<>(numDimensions);
 		
 		for(int i = 0; i< numDimensions; i++) {
 			totalChunkNum *= ai.schema().getNumOfChunk(dimensions.get(i));
 			numCellsInChunk *= ai.schema().chunkSize(dimensions.get(i));
-			
-			// TODO :: GET CHUNK REGION AND SET CID TO LOW()
-			cid[i] = (ai.schema().start(dimensions.get(i)));
 		}
 
 		// move to the specified chunk, updates itself
@@ -190,7 +183,7 @@ public class CellFile {
 		{
 			createChunk(chunkNum);
 		}
-			
+		
 		Chunk chunk = new Chunk(fileName, currentChunkNum, numBlocks);
 		cp = new CellPage(chunk, ai, tx, ai.recordLength(attributeName));
 	}
@@ -199,67 +192,23 @@ public class CellFile {
 		return currentChunkNum >= (numChunks - 1);
 	}
 
-	private void createChunk(int chunknum) {
+	private void createChunk(int chunkNum) {
 		CellFormatter fmtr = new CellFormatter(ai, attributeName);
-		String filename = assignName(this.ai, this.attributeName, chunknum);
+		String filename = assignName(this.ai, this.attributeName, chunkNum);
 		tx.createNewChunk(filename, fmtr, numBlocks);
 	}
-
-	/**
-	 * Get current CID for identifying dimensions.
-	 * @return CID
-	 */
-	public CID getCurrentCID(){
-		return new CID(getCurrentDimensionValues());
-	}
-
-	/**
-	 * Get current dimension values.
-	 * @return List<Integer> the dimension.
-	 */
-	int previousChunkNum = -1;
-	private List<Integer> getCurrentDimensionValues(){
-		//현재 몇번째 chunk == currentChunkNum
-		Schema schema = ai.schema();
-		List<String> dimensions =  new ArrayList<String>(ai.schema().dimensions());
-		List<Integer> result = new ArrayList<Integer>();
-		int temp;
-
-		//Convert logical chunk number to the left bottom cell's coordinate of the chunk.
-		if(previousChunkNum != currentChunkNum) {//If the chunk is changed,
-			previousChunkNum = currentChunkNum;
-			int chunkNum = currentChunkNum;
-			currentChunk.clear();
-			temp = totalChunkNum;
-			for (int i = 0; i < numDimensions; i++) {
-				temp /= schema.getNumOfChunk(dimensions.get(i));
-
-				currentChunk.add( startDimension[i] +
-						(chunkNum / temp) * schema.chunkSize(dimensions.get(i)));
-				chunkNum %= temp;
-			}
-		}
-
-		//Calculate the coordinate of the slot in the chunk.
-		temp = numCellsInChunk;
-		int currentSlotNum = cp.currentId();
-		for(int i = 0; i< numDimensions; i++){
-			temp /= schema.chunkSize(dimensions.get(i));
-
-			result.add(i,
-					currentChunk.get(i) + (currentSlotNum/temp));
-			currentSlotNum %= temp;
-		}
-
-		return result;
-	}
-
+	
 	/**
 	 * Get current chunk number.
 	 * @return
 	 */
-	public int getCurrentChunkNum() {
-		return currentChunkNum;
+	public int currentChunkNum() {
+		return cp.chunk().getChunkNum();
+	}
+	
+	public int currentId()
+	{
+		return cp.currentId();
 	}
 
 	/**
