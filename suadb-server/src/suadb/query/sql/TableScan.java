@@ -82,9 +82,13 @@ public class TableScan implements UpdateScan
 		return sch.hasField(fldname);
 	}
 
-	public boolean hasDimension(String dimname) {return sch.hasDimension(dimname); }
+	public boolean hasDimension(String dimName) {return sch.hasDimension(dimName); }
 
-	public List<Integer> getCurrentDimension() { List<Integer> list = new ArrayList<Integer>(rf.currentRid().id()); return list;}
+	public CID getCurrentDimension()
+	{
+		List<Integer> list = new ArrayList<Integer>(rf.currentRid().id());
+		return new CID(list);
+	}
 
 	public void moveToCid(CID cid) { }
 

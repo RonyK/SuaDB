@@ -175,11 +175,11 @@ public class MergeJoinScan implements Scan {
 		}
 	}
 	
-	public List<Integer> getCurrentDimension() { return  s1.getCurrentDimension(); }
+	public CID getCurrentDimension() { return  s1.getCurrentDimension(); }
 	
 	public void moveToCid(CID cid) { s1.moveToCid(cid); }
 	
-	public boolean hasDimension(String dimname) {return s1.hasDimension(dimname); }
+	public boolean hasDimension(String dimName) {return s1.hasDimension(dimName); }
 
 
 }

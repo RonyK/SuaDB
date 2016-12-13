@@ -1,5 +1,6 @@
 package suadb.planner;
 
+import exception.ArrayInputException;
 import suadb.tx.Transaction;
 import suadb.parse.*;
 import suadb.query.*;
@@ -50,8 +51,7 @@ public class Planner {
 	 * @param tx the transaction
 	 * @return an integer denoting the number of affected records
 	 */
-	public int executeUpdate(String query, Transaction tx)
-	{
+	public int executeUpdate(String query, Transaction tx) {
 		System.out.println(String.format("Execute Update Query : %s", query));
 		
 		try
@@ -75,6 +75,8 @@ public class Planner {
 		}catch (BadSyntaxException e)
 		{
 			throw new BadSyntaxException(query, e);
+		}catch (ArrayInputException e){
+			throw new ArrayInputException();
 		}
 	}
 }

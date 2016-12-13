@@ -1,9 +1,10 @@
 package suadb.record;
 
-import static suadb.file.Page.*;
 import suadb.file.Chunk;
-import suadb.file.Page;
 import suadb.tx.Transaction;
+
+import static suadb.file.Page.BLOCK_SIZE;
+import static suadb.file.Page.INT_SIZE;
 
 /**
  * Manages the placement and access of cells in a chunk.
@@ -15,27 +16,14 @@ public class CellPage {
     private Chunk chunk;
     private ArrayInfo ai;
     private Transaction tx;
-    private int slotsize;
-    private int currentslot = -1;
-    // IHSUH blank for block
-    private int blank = 0;
-
-
-    /** Creates the suadb.record manager for the specified chunk.
-     * The current suadb.record is set to be prior to the first one.
-     * @param chunk a reference to the disk chunk
-     * @param ti the table's suadb.metadata
-     * @param tx the transaction performing the operations
-     */
-    /*
-    public CellPage(Chunk chunk, ArrayInfo ai, Transaction tx) {
-        this.chunk = chunk;
-        this.ai = ai;
-        this.tx = tx;
-        slotsize = ai.recordLength() + INT_SIZE;
-        tx.pin(chunk);
-    }
-    */
+    private int slotSize;
+    private int currentId = -1;
+	
+    // IHSUH blockPadding for block
+    private int blockPadding = 0;
+	private int cellFlag[];
+	private int numCellsInBlock;
+	private int numCellsInChunk;
 
     /** Creates the suadb.record manager for the specified chunk.
      * The current suadb.record is set to be prior to the first one.
@@ -48,9 +36,32 @@ public class CellPage {
         this.chunk = chunk;
         this.ai = ai;
         this.tx = tx;
-        slotsize = recordlen + INT_SIZE;
-        blank = BLOCK_SIZE % slotsize;
+	
+	    slotSize = recordlen + INT_SIZE;
+	    blockPadding = BLOCK_SIZE % slotSize;
+	    this.numCellsInBlock = (int)Math.floor((double)BLOCK_SIZE / slotSize);
+	    this.numCellsInChunk = numCellsInBlock * chunk.getNumOfBlocks();
+	
         tx.pin(chunk);
+	
+	    getAllFlags();
+    }
+    
+    private void getAllFlags()
+    {
+	    cellFlag = new int[numCellsInChunk];
+	
+	    for(int i = 0; i < numCellsInChunk; i++)
+	    {
+		    int blockSeq = i / numCellsInBlock;
+		    int position = i * slotSize + blockSeq * blockPadding;
+		    cellFlag[i] = tx.getInt(chunk, position);
+	    }
+    }
+    
+    public int[] cellFlag()
+    {
+	    return cellFlag.clone();
     }
 
     /**
@@ -68,7 +79,17 @@ public class CellPage {
      * @return false if there is no next suadb.record.
      */
     public boolean next() {
-        return searchFor(INUSE);
+	    if(isValidSlot())
+	    {
+		    currentId++;
+		
+		    if(isValidSlot())
+		    {
+			    return true;
+		    }
+	    }
+	    
+	    return false;
     }
 
     /**
@@ -99,6 +120,7 @@ public class CellPage {
     public void setInt(int val) {
         int position = currentpos();
         tx.setInt(chunk, position, INUSE);
+	    cellFlag[currentId] = INUSE;
         position += INT_SIZE;
         tx.setInt(chunk, position, val);
     }
@@ -111,6 +133,7 @@ public class CellPage {
     public void setString( String val) {
         int position = currentpos();
         tx.setInt(chunk, position, INUSE);
+	    cellFlag[currentId] = INUSE;
         position += INT_SIZE;
         tx.setString(chunk, position, val);
     }
@@ -132,7 +155,7 @@ public class CellPage {
      * @param id the ID of the suadb.record within the page.
      */
     public void moveToId(int id) {
-        currentslot = id;
+        currentId = id;
     }
 
     /**
@@ -140,42 +163,42 @@ public class CellPage {
      * @return the ID of the current suadb.record
      */
     public int currentId() {
-        return currentslot;
+        return currentId;
     }
-    public void setCurrentId(int currentslot){
-        this.currentslot = currentslot;
+    
+    public void setCurrentId(int currentId){
+        this.currentId = currentId;
     }
+    
     private int currentpos() {
-        int numberofcellsinablock = (int)Math.floor((double)BLOCK_SIZE / slotsize);
-        int blockseq = currentslot / numberofcellsinablock;
-        return (currentslot * slotsize) + blockseq * blank;
-    }
-/*
-    private int fieldpos() {
-        int offset = INT_SIZE;
-        return currentpos() + offset;
-    }
-*/
-    private boolean isValidSlot() {
-        return currentpos() + slotsize <= BLOCK_SIZE*chunk.getNumOfBlocks();
+        int blockSeq = currentId / numCellsInBlock;
+        return (currentId * slotSize) + blockSeq * blockPadding;
     }
 
-    private boolean searchFor(int flag) {
-        currentslot++;
-        while (isValidSlot()) {
-            int position = currentpos();
-            if (tx.getInt(chunk, position) == flag)
-                return true;
-            currentslot++;
-        }
-        return false;
+    private boolean isValidSlot() {
+        return currentId < numCellsInChunk;
+    }
+
+	/**
+     * If current position is null, return true.
+     * @return
+     */
+    public boolean isNull()
+    {
+	    if(isValidSlot())
+		    if(cellFlag[currentId] == EMPTY)
+		    	return true;
+		    else
+		    	return false;
+	    else
+	    	return true;
     }
 
 	/**
 	 * Get the chunk for identifying dimensions.
      * @return Chunk
      */
-    public Chunk getChunk(){
+    public Chunk chunk(){
         return chunk;
     }
 }

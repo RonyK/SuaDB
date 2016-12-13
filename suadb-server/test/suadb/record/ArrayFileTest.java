@@ -4,33 +4,28 @@ import static java.sql.Types.*;
 import static org.junit.Assert.*;
 
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import suadb.file.Chunk;
+
 import suadb.server.SuaDB;
-import suadb.test.SuaDBTestBase;
+import suadb.test.SuaDBExeTestBase;
 import suadb.tx.Transaction;
-import suadb.tx.TransactionTest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Created by ILHYUN on 2016-11-23.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ArrayFileTest  extends SuaDBTestBase {
-
+public class ArrayFileTest  extends SuaDBExeTestBase
+{
     private Schema schema;
     private ArrayInfo arrayinfo;
     private ArrayFile arrayfile;
-    @BeforeClass
-    public static void beforeClass(){
-        SuaDB.init(dbName);
 
-    }
     //IHSUh
     @Test
     public void test_00_array_creation_write_read(){
@@ -61,7 +56,7 @@ public class ArrayFileTest  extends SuaDBTestBase {
         dimensionvalue.add(0);
         dimensionvalue.add(0);
         dimensionvalue.add(0);
-        CID cid = new CID(dimensionvalue , arrayinfo);
+        CID cid = new CID(dimensionvalue);
 
         arrayfile.beforeFirst();
         int index = 0;
@@ -71,7 +66,7 @@ public class ArrayFileTest  extends SuaDBTestBase {
                     dimensionvalue.set(0, i);
                     dimensionvalue.set(1, j);
                     dimensionvalue.set(2, k);
-                    arrayfile.moveToCid(cid);
+                    arrayfile.moveToCidWriteMode(cid);
                     arrayfile.setInt("attA", index);
                     arrayfile.setString("attB", Integer.toString(index));
                     index++;
@@ -99,10 +94,10 @@ public class ArrayFileTest  extends SuaDBTestBase {
                     assertTrue( (arrayfile.getInt("attA"))== index) ;
                     assertTrue( (arrayfile.getString("attB")).equals(Integer.toString(index))) ;
 
-                    CID dimensionTest = arrayfile.getCurrentDimensionValues();
-                    assertTrue(dimensionTest.dimensionValues().get(0) == i);
-                    assertTrue(dimensionTest.dimensionValues().get(1) == j);
-                    assertTrue(dimensionTest.dimensionValues().get(2) == k);
+                    CID dimensionTest = arrayfile.getCID();
+                    assertTrue(dimensionTest.toList().get(0) == i);
+                    assertTrue(dimensionTest.toList().get(1) == j);
+                    assertTrue(dimensionTest.toList().get(2) == k);
 
                     index++;
                 }
@@ -128,8 +123,7 @@ public class ArrayFileTest  extends SuaDBTestBase {
             for(int j = start[1] ; j <= end[1] ; j++ )
             {
                 for (int k = start[2]; k <= end[2]; k++) {
-
-                    nextFlag = arrayfile.next("attA");
+                    nextFlag = arrayfile.next(new ArrayList<>(Arrays.asList("attA")));
                     assertEquals(nextFlag, true);
                     System.out.println("linear offset of the cell :" + arrayfile.getInt("attA"));
                     index++;
@@ -137,7 +131,7 @@ public class ArrayFileTest  extends SuaDBTestBase {
             }
         }
         
-        nextFlag= arrayfile.next("attA");
+        nextFlag= arrayfile.next(new ArrayList<>(Arrays.asList("attA")));
         assertEquals(nextFlag, false);
         arrayfile.close();
         tx.commit();

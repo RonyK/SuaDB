@@ -8,9 +8,11 @@ import suadb.record.*;
 import suadb.server.SuaDB;
 import suadb.tx.Transaction;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.rmi.RemoteException;
+import java.util.*;
+
+import static java.sql.Types.INTEGER;
+import static java.sql.Types.VARCHAR;
 
 /**
  * Created by CDS on 2016-11-15.
@@ -21,6 +23,7 @@ public class ArrayMgr {
 	private TableInfo arrayCatInfo, attributeCatInfo, dimensionCatInfo;
 
 	public static final int MAX_DIM_STR = 20;
+	public static final int MAX_DEFINITION_STR = 100;
 
 	public static final String TABLE_ARRAY_CATALOG     = "arrayCat";
 	public static final String TABLE_ATTRIBUTE_CATALOG = "attributeCat";
@@ -29,6 +32,7 @@ public class ArrayMgr {
 	public static final String STR_ARRAY_NAME      = "arrayName";
 	public static final String STR_ATTRIBUTE_NAME  = "attributeName";
 	public static final String STR_DIMENSION_NAME  = "dimensionName";
+	public static final String STR_DEFINITION      = "definition";
 	public static final String STR_DIM_START       = "start";
 	public static final String STR_DIM_END         = "end";
 	public static final String STR_CHUNK_SIZE      = "chunkSize";
@@ -47,6 +51,7 @@ public class ArrayMgr {
 	public ArrayMgr(boolean isNew, Transaction tx, TableMgr tblmgr) {
 		Schema arrayCatSchema = new Schema();
 		arrayCatSchema.addStringField(STR_ARRAY_NAME, tblmgr.MAX_NAME);
+		arrayCatSchema.addStringField(STR_DEFINITION, MAX_DEFINITION_STR);
 		arrayCatInfo = new TableInfo(TABLE_ARRAY_CATALOG, arrayCatSchema);
 
 		Schema attributeCatSchema = new Schema();
@@ -84,6 +89,7 @@ public class ArrayMgr {
 		RecordFile arrayCatFile = new RecordFile(arrayCatInfo, tx);
 		arrayCatFile.insert();
 		arrayCatFile.setString(STR_ARRAY_NAME, arrayName);
+		arrayCatFile.setString(STR_DEFINITION, getDefinition(arrayName, sch));
 		arrayCatFile.close();
 
 		//insert attribute information into attributeCat - CDS
@@ -184,12 +190,78 @@ public class ArrayMgr {
 		while (arrayCatFile.next()) {
 			if (arrayCatFile.getString(STR_ARRAY_NAME).equals(arrayName)) {
 				arrayCatFile.delete();
-				SuaDB.bufferMgr().flushAll();
-				arrayCatFile.close();
-				return true;
+
 			}
 		}
 		arrayCatFile.close();
-		return false;
+
+
+		RecordFile attributeCatFile = new RecordFile(attributeCatInfo, tx);
+		Schema sch = new Schema();
+		while (attributeCatFile.next())
+			if (attributeCatFile.getString(STR_ARRAY_NAME).equals(arrayName)) {
+				attributeCatFile.delete();
+			}
+		attributeCatFile.close();
+
+		RecordFile dimensionCatFile = new RecordFile(dimensionCatInfo, tx);
+		while (dimensionCatFile.next())
+			if (dimensionCatFile.getString(STR_ARRAY_NAME).equals(arrayName)) {
+				dimensionCatFile.delete();
+			}
+		dimensionCatFile.close();
+		SuaDB.bufferMgr().flushAll();
+		return true;
+	}
+
+	/**
+	 * Returns the definition of the array.
+	 * @param arrayName
+	 * @return definition
+	 * @throws RemoteException
+	 */
+	public String getDefinition(String arrayName, Schema sch){
+		List<String> attributes = new ArrayList<String>(sch.attributes());
+		List<String> dimensions = new ArrayList<String>(sch.dimensions());
+		int numberOfAttributes = attributes.size();
+		int numberOfDimensions = dimensions.size();
+
+
+		String result = arrayName+"<";
+		//Print attributes.
+		for(int i=0;i<numberOfAttributes;i++){
+			//Attribute Name
+			result += attributes.get(i)+":";
+			//Attribute Type
+			if(sch.type(attributes.get(i)) == INTEGER)
+				result += "int";
+			else if(sch.type(attributes.get(i)) == VARCHAR) {
+				result += "string(";
+				result += sch.length(attributes.get(i))+")";
+			}
+
+			if(i != numberOfAttributes-1)
+				result += ",";
+			else
+				result += "> ";
+		}
+
+		//Print dimensions.
+		result += "[";
+		for(int i=0;i<numberOfDimensions;i++){
+			String dimensionName = dimensions.get(i);
+			result += (dimensionName+"="
+					+sch.start(dimensionName)+":"
+					+sch.end(dimensionName)+","
+					+sch.chunkSize(dimensionName));
+
+			if(i != numberOfDimensions-1)
+				result += ",";
+			else
+				result += "]";
+
+		}
+
+		return result;
 	}
 }

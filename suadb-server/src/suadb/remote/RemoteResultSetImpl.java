@@ -1,10 +1,17 @@
 package suadb.remote;
 
+import suadb.record.CID;
 import suadb.record.Schema;
 import suadb.query.*;
+import suadb.server.SuaDB;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
+
+import static java.sql.Types.INTEGER;
+import static java.sql.Types.VARCHAR;
 
 /**
  * The RMI server-side implementation of RemoteResultSet.
@@ -15,7 +22,8 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 	private Scan s;
 	private Schema sch;
 	private RemoteConnectionImpl rconn;
-
+	private List<String> attributes;
+	private int numberOfAttributes;
 	/**
 	 * Creates a RemoteResultSet object.
 	 * The specified plan is opened, and the scan is saved.
@@ -26,10 +34,13 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 	public RemoteResultSetImpl(Plan plan, RemoteConnectionImpl rconn) throws RemoteException {
 		s = plan.open();
 		sch = plan.schema();
+		attributes = new ArrayList<String>(sch.attributes());
+		numberOfAttributes = attributes.size();
+
 		this.rconn = rconn;
 	}
 
-	public List<Integer> getCurrentDimension() throws RemoteException{
+	public CID getCurrentDimension() throws RemoteException{
 		try{
 			return s.getCurrentDimension();
 		}catch(RuntimeException e){
@@ -53,13 +64,27 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 	}
 
 	/**
+	 * which attribute is null?
+	 * @return boolean[]
+	 * @throws RemoteException
+	 */
+	public NullInfo whichIsNull() throws RemoteException{
+		NullInfo result = new NullInfo(numberOfAttributes);
+		for(int i=0;i<numberOfAttributes;i++)
+			if(result.whichIsNull[i] = s.isNull(attributes.get(i)))
+				result.nullValues++;
+
+		return result;
+	}
+
+
+	/**
 	 * Returns the integer value of the specified field,
 	 * by returning the corresponding value on the saved scan.
 	 * @see suadb.remote.RemoteResultSet#getInt(java.lang.String)
 	 */
 	public int getInt(String fldname) throws RemoteException {
 		try {
-			fldname = fldname.toLowerCase(); // to ensure case-insensitivity
 			return s.getInt(fldname);
 		}
 		catch(RuntimeException e) {
@@ -75,7 +100,6 @@ class RemoteResultSetImpl extends UnicastRemoteObject implements RemoteResultSet
 	 */
 	public String getString(String fldname) throws RemoteException {
 		try {
-			fldname = fldname.toLowerCase(); // to ensure case-insensitivity
 			return s.getString(fldname);
 		}
 		catch(RuntimeException e) {

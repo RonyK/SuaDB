@@ -63,7 +63,7 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 		dimensionvalue.add(0);
 		dimensionvalue.add(0);
 		dimensionvalue.add(0);
-		CID cid = new CID(dimensionvalue, arrayinfo);
+		CID cid = new CID(dimensionvalue);
 
 		arrayfile.beforeFirst();
 
@@ -74,7 +74,7 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 					dimensionvalue.set(0, i);
 					dimensionvalue.set(1, j);
 					dimensionvalue.set(2, k);
-					arrayfile.moveToCid(cid);
+					arrayfile.moveToCidWriteMode(cid);
 					arrayfile.setInt("attA", index);
 					if (k % 2 == 0)//If k is multiples of two,
 						arrayfile.setString("attB", Integer.toString(index));//Set attB values.
@@ -88,13 +88,13 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 		arrayfile.close();
 		tx.commit();
 
-		//ArrayFile.getCurrentDimensionValues() Test
+		//ArrayFile.getCID() Test
 		tx = new Transaction();
 		arrayfile = new ArrayFile(arrayinfo, tx);
 
 		arrayfile.beforeFirst();
 		while(arrayfile.next())
-			System.out.println(arrayfile.getCurrentDimensionValues());
+			System.out.println(arrayfile.getCID());
 
 
 		Schema schema = arrayinfo.schema();
@@ -128,8 +128,8 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 				for (int j = result[1]; j < result[1]+schema.chunkSize(dimensions.get(1)); j++) {
 					for (int k = result[2]; k < result[2]+schema.chunkSize(dimensions.get(2)); k++) {
 						assertTrue(arrayfile.next());
-						CID currentCID = arrayfile.getCurrentDimensionValues();
-						List<Integer> currentDimension = currentCID.dimensionValues();
+						CID currentCID = arrayfile.getCID();
+						List<Integer> currentDimension = currentCID.toList();
 
 						assertTrue(currentDimension.get(0) == i);
 						assertTrue(currentDimension.get(1) == j);
@@ -156,7 +156,7 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 		arrayfile.moveToCid(cid);
 
 		assertTrue(arrayfile.next());
-		List<Integer> dimension = arrayfile.getCurrentDimensionValues().dimensionValues();
+		List<Integer> dimension = arrayfile.getCID().toList();
 		assertTrue(dimension.get(0) == 1);
 		assertTrue(dimension.get(1) == 0);
 		assertTrue(dimension.get(2) == 0);

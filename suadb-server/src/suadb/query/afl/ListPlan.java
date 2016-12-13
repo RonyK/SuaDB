@@ -28,7 +28,7 @@ public class ListPlan implements Plan
 		{
 			// Default : list(arrays)
 			p = new TablePlan(ArrayMgr.TABLE_ARRAY_CATALOG, tx);
-		}else if(targetName.equals("fileds"))
+		}else if(targetName.equals("fields"))
 		{
 			p = new TablePlan(ArrayMgr.TABLE_ATTRIBUTE_CATALOG, tx);
 		}else

@@ -131,7 +131,7 @@ public class IndexJoinScan implements Scan {
 		return ts.getDimension(dimName);
 	}
 	
-	public List<Integer> getCurrentDimension() { return  ts.getCurrentDimension(); }
+	public CID getCurrentDimension() { return  ts.getCurrentDimension(); }
 
 	/** Returns true if the field is in the schema.
 	  * @see suadb.query.Scan#hasField(java.lang.String)
@@ -140,7 +140,7 @@ public class IndexJoinScan implements Scan {
 		return ts.hasField(fldname) || s.hasField(fldname);
 	}
 
-	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
+	public boolean hasDimension(String dimName) { return s.hasDimension(dimName); }
 
 	private void resetIndex() {
 		Constant searchkey = s.getVal(joinfield);

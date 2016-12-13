@@ -1,5 +1,6 @@
 package suadb.remote;
 
+import exception.ArrayInputException;
 import suadb.tx.Transaction;
 import suadb.query.Plan;
 import suadb.server.SuaDB;

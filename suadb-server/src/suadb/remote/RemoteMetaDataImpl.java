@@ -2,9 +2,13 @@ package suadb.remote;
 
 import suadb.record.Schema;
 import static java.sql.Types.INTEGER;
+import static java.sql.Types.VARCHAR;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.sql.Types.*;
+
 
 /**
  * The RMI server-side implementation of RemoteMetaData.
@@ -70,28 +74,4 @@ public class RemoteMetaDataImpl extends UnicastRemoteObject implements RemoteMet
 		return sch.type(attribute);
 	}
 
-
-		/**
-		 * Returns the number of characters required to display the
-		 * specified column.
-		 * For a string-type field, the method simply looks up the
-		 * field's length in the schema and returns that.
-		 * For an int-type field, the method needs to decide how
-		 * large integers can be.
-		 * Here, the method arbitrarily chooses 6 characters,
-		 * which means that integers over 999,999 will
-		 * probably get displayed improperly.
-		 * @see suadb.remote.RemoteMetaData#getColumnDisplaySize(int)
-		 */
-//	public int getColumnDisplaySize(int column) throws RemoteException {
-//		String fldname = getColumnName(column);
-//		int fldtype = sch.type(fldname);
-//		int fldlength = sch.length(fldname);
-//		if (fldtype == INTEGER)
-//			return 6;  // accommodate 6-digit integers
-//		else
-//			return fldlength;
-//	}
-//
-//
 }

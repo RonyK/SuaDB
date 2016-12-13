@@ -48,7 +48,7 @@ public class SelectScan implements UpdateScan
 	public boolean next() {
 		while (s.next())
 			if (pred.isSatisfied(s))
-			return true;
+				return true;
 		return false;
 	}
 
@@ -90,9 +90,9 @@ public class SelectScan implements UpdateScan
 		return s.getDimension(dimName);
 	}
 
-	public boolean hasDimension(String dimname) { return s.hasDimension(dimname); }
+	public boolean hasDimension(String dimName) { return s.hasDimension(dimName); }
 
-	public List<Integer> getCurrentDimension() { return s.getCurrentDimension(); }
+	public CID getCurrentDimension() { return s.getCurrentDimension(); }
 
 	public void moveToCid(CID cid) { s.moveToCid(cid); }
 

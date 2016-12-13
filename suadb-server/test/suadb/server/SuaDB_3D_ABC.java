@@ -18,6 +18,7 @@ import suadb.parse.InputArrayData;
 import suadb.planner.BasicUpdatePlanner;
 import suadb.planner.Planner;
 import suadb.query.Plan;
+import suadb.query.Region;
 import suadb.query.Scan;
 import suadb.record.ArrayInfo;
 import suadb.server.SuaDB;
@@ -54,7 +55,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 	{
 		FILE_PATH = homeDir + "\\" + ARRAY_NAME + ".txt";
 		
-		System.out.println(DummyData.getInputDummy_3A_3D());
+		System.out.println(DummyData.getInputDummy_3A_3D(dummy));
 	}
 
 	@Test
@@ -114,7 +115,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 				"   %s : int," +
 				"   %s : int" +
 				">" +
-				"[%s = 0:1,2, %s = 0:3,4, %s = 0:1,2]",
+				"[%s = 0:1,2, %s = 0:3,4, %s = 0:3,2]",
 				ARRAY_NAME + "_1", ATTR_01, ATTR_02, ATTR_03,
 				DIM_01, DIM_02, DIM_03);
 		
@@ -172,7 +173,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 			upField.setAccessible(true);
 			
 			FileWriter fw = new FileWriter(FILE_PATH);
-			fw.write(DummyData.getInputDummy_3A_3D());
+			fw.write(DummyData.getInputDummy_3A_3D(dummy));
 			fw.close();
 			
 			Transaction tx = new Transaction();
@@ -201,7 +202,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		try
 		{
 			FileWriter fw = new FileWriter(FILE_PATH);
-			fw.write(DummyData.getInputDummy_3A_3D());
+			fw.write(DummyData.getInputDummy_3A_3D(dummy));
 			fw.close();
 			
 			String query = "INPUT(" + ARRAY_NAME + ", \'" + FILE_PATH + "\')";
@@ -256,27 +257,27 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 			System.out.print("(" + dim_01 + ", " + dim_02 + ", " + dim_03 + ") ");
 			System.out.print("a : " + attr_01 + ",\tb : " + attr_02 + ",\tc : " + attr_03);
 			System.out.print(String.format("\tExpect %s", dummy[dim_01][dim_02][dim_03].toString()));
-			
+
 			if(s.isNull(ATTR_01))
 				assertEquals("Check ATTR " + ATTR_01, dummy[dim_01][dim_02][dim_03].a, null);
 			else
 				assertEquals("Check ATTR " + ATTR_01, (int)dummy[dim_01][dim_02][dim_03].a, s.getInt(ATTR_01));
-			
+
 			if(s.isNull(ATTR_02))
 				assertEquals("Check ATTR " + ATTR_02, dummy[dim_01][dim_02][dim_03].b, null);
 			else
 				assertEquals("Check ATTR " + ATTR_02, (int)dummy[dim_01][dim_02][dim_03].b, s.getInt(ATTR_02));
-			
+
 			if(s.isNull(ATTR_03))
 				assertEquals("Check ATTR " + ATTR_03, dummy[dim_01][dim_02][dim_03].c, null);
 			else
 				assertEquals("Check ATTR " + ATTR_03, (int)dummy[dim_01][dim_02][dim_03].c, s.getInt(ATTR_03));
-			
+
 			System.out.println("\tTrue");
 		} catch (Exception e)
 		{
 			System.out.println(String.format("\tFalse : %s", e.getMessage()));
-//				e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	
@@ -374,6 +375,72 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		
 		assertEquals(num, dummyCellNum);
 		tx.commit();
+	}
+
+	@Test
+	public void test_55_between()
+	{
+		Transaction tx = new Transaction();
+
+		try
+		{
+			Region region = new Region(Arrays.asList(0, 1, 1), Arrays.asList(0, 2, 2));
+			String query = String.format("BETWEEN(%s, %s)", ARRAY_NAME, region.toString());
+
+			Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
+			Scan s = scanPlan.open();
+
+			int num = 0;
+			while (s.next())
+			{
+				testValue(s);
+
+				assertEquals(region.compareTo(s.getCurrentDimension()), 0);
+
+				num++;
+			}
+
+			assertEquals(num, 4);
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			tx.commit();
+		}
+	}
+
+	@Test
+	public void test_56_between_naive()
+	{
+		Transaction tx = new Transaction();
+
+		try
+		{
+			Region region = new Region(Arrays.asList(0, 1, 1), Arrays.asList(0, 2, 2));
+			String query = String.format("BETWEENNAIVE(%s, %s)", ARRAY_NAME, region.toString());
+
+			Plan scanPlan = SuaDB.planner().createQueryPlan(query, tx);
+			Scan s = scanPlan.open();
+
+			int num = 0;
+			while (s.next())
+			{
+				testValue(s);
+
+				assertEquals(region.compareTo(s.getCurrentDimension()), 0);
+
+				num++;
+			}
+
+			assertEquals(num, 4);
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+		} finally
+		{
+			tx.commit();
+		}
 	}
 	
 	@Test

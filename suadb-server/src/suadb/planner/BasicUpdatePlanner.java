@@ -1,5 +1,6 @@
 package suadb.planner;
 
+import exception.ArrayInputException;
 import suadb.query.afl.ArrayPlan;
 import suadb.query.afl.ArrayScan;
 import suadb.query.afl.SelectPlan;
@@ -64,7 +65,7 @@ public class BasicUpdatePlanner implements UpdatePlanner {
 		return 0;
 	}
 
-	public int executeInputArray(InputArrayData data, Transaction tx)
+	public int executeInputArray(InputArrayData data, Transaction tx) throws ArrayInputException
 	{
 		Plan p = new ArrayPlan(data.arrayName(), tx);
 		ArrayScan us = (ArrayScan) p.open();

@@ -1,5 +1,6 @@
 package suadb.record;
 
+import exception.ArrayInputException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -7,6 +8,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import suadb.server.SuaDB;
 import suadb.test.DummyData;
+import suadb.test.SuaDBExeTestBase;
 import suadb.test.SuaDBTestBase;
 import suadb.tx.Transaction;
 
@@ -25,7 +27,7 @@ import static java.sql.Types.VARCHAR;
  * homeDir/test.txt
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class InputTest extends SuaDBTestBase
+public class InputTest extends SuaDBExeTestBase
 {
 	private static String FILE_PATH;
 	
@@ -39,18 +41,17 @@ public class InputTest extends SuaDBTestBase
 		FILE_PATH = homeDir+"/test.txt";
 
 		FileWriter fw = new FileWriter(FILE_PATH);
-		fw.write(DummyData.getInputDummy_3A_3D());
+		fw.write(DummyData.getInputDummy_3A_3D(DummyData.getArrayDummy_3A_3D()));
 		fw.close();
-		
-		SuaDB.init(dbName);
 	}
 
 	@Test
 	public void test_00_input()
 	{
 		int start[] = {0, 0,0};
-		int end[] = {1, 3,1};
+		int end[] = {1, 3,3};
 		int chunksize[] = {2, 4,2};
+
 		
 		schema = new Schema();
 
@@ -68,7 +69,11 @@ public class InputTest extends SuaDBTestBase
 		Transaction tx = new Transaction();
 		arrayfile = new ArrayFile(arrayinfo, tx);
 
-		arrayfile.input(homeDir+"/test.txt");
+		try {
+			arrayfile.input(homeDir+"/test.txt");
+		} catch (ArrayInputException e) {
+			e.printStackTrace();
+		}
 
 		arrayfile.printArray();
 
@@ -79,8 +84,6 @@ public class InputTest extends SuaDBTestBase
 	@AfterClass
 	public static void tearDown()
 	{
-		SuaDB.shutDown();
-		
 		eraseFile(FILE_PATH);
 	}
 }

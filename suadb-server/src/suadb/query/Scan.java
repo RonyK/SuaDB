@@ -65,10 +65,10 @@ public interface Scan {
 
 	/**
 	 * Returns true if the scan has the specified dimension.
-	 * @param dimname the name of the field
+	 * @param dimName the name of the field
 	 * @return true if the scan has that field
 	 */
-	boolean hasDimension(String dimname);
+	boolean hasDimension(String dimName);
 	
 	/**
 	 * Returns the value of the dimensions
@@ -79,7 +79,7 @@ public interface Scan {
 
 	int      getDimension(String dimName);
 	
-	List<Integer> getCurrentDimension();
+	CID getCurrentDimension();
 
 	/**
 	 * Positions the scan so that the current suadb.record has
@@ -87,7 +87,4 @@ public interface Scan {
 	 * @param cid the CID of the desired suadb.record
 	 */
 	void moveToCid(CID cid);
-
-
-
 }

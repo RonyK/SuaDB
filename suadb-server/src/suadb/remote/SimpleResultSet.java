@@ -1,9 +1,13 @@
 package suadb.remote;
 
+import java.rmi.RemoteException;
 import java.sql.*;
 import java.util.List;
 
+import suadb.record.CID;
+
 /**
+ * front-end
  * An adapter class that wraps RemoteResultSet.
  * Its methods do nothing except transform RemoteExceptions
  * into SQLExceptions.
@@ -16,7 +20,7 @@ public class SimpleResultSet extends ResultSetAdapter {
 		rrs = s;
 	}
 
-	public List<Integer> getCurrentDimension() throws SQLException{
+	public CID getCurrentDimension() throws SQLException{
 		try {
 			return rrs.getCurrentDimension();
 		}catch(Exception e){
@@ -32,6 +36,15 @@ public class SimpleResultSet extends ResultSetAdapter {
 		catch (Exception e) {
 			throw new SQLException(e);
 		}
+	}
+
+	public NullInfo whichIsNull() throws SQLException{
+		try{
+			return rrs.whichIsNull();
+		}catch(Exception e){
+			throw new SQLException(e);
+		}
+
 	}
 
 	public int getInt(String fldname) throws SQLException {

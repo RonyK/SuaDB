@@ -1,5 +1,6 @@
 package suadb.query.afl;
 
+import exception.ArrayInputException;
 import suadb.parse.Constant;
 import suadb.parse.IntConstant;
 import suadb.parse.IntNullConstant;
@@ -9,7 +10,6 @@ import suadb.query.UpdateScan;
 import suadb.record.*;
 import suadb.tx.Transaction;
 
-import java.util.List;
 import java.util.UnknownFormatConversionException;
 
 import static java.sql.Types.INTEGER;
@@ -88,7 +88,7 @@ public class ArrayScan implements UpdateScan
 		return sch.hasField(fldname);
 	}
 
-	public boolean hasDimension(String dimname) { return sch.hasDimension(dimname); }
+	public boolean hasDimension(String dimName) { return sch.hasDimension(dimName); }
 	
 	// UpdateScan methods
 	/**
@@ -121,7 +121,7 @@ public class ArrayScan implements UpdateScan
 		// TODO :: EMPTY insert - RonyK
 	}
 	
-	public void insert(String fileName)
+	public void insert(String fileName) throws ArrayInputException
 	{
 		rf.input(fileName);
 	}
@@ -139,18 +139,10 @@ public class ArrayScan implements UpdateScan
 	}
 	
 	@Override
-	public List<Integer> getCurrentDimension()
+	public CID getCurrentDimension()
 	{
-		return rf.getCurrentDimensionValues().dimensionValues();
+		return rf.getCID();
 	}
 	
 	public void moveToCid(CID cid) { rf.moveToCid(cid);}
-	
-//	public RID getRid() {
-//		return rf.currentRid();
-//	}
-//
-//	public void moveToRid(RID rid) {
-//		rf.moveToRid(rid);
-//	}
 }
