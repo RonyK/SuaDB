@@ -29,7 +29,9 @@ public class SQLInterpreter {
 						|| cmd.startsWith("project")
 						|| cmd.startsWith("filter")
 						|| cmd.startsWith("list")
-						|| cmd.startsWith("between"))
+						|| cmd.startsWith("between")
+						|| cmd.startsWith("betweennaive")
+						|| cmd.startsWith("join"))
 					doQuery(cmd);
 				else if (cmd.startsWith("create")
 						|| cmd.startsWith("input")

@@ -43,6 +43,8 @@ public class ArrayFile {
 	
 	private List<Schema.DimensionInfo> dInfos;
 	
+	private static Region currentChunkRegion;
+	
 	/**
 	 * sdf
 	 * Constructs an object to manage a suadb.file of records.
@@ -574,8 +576,8 @@ public class ArrayFile {
 
 	public Region calcTargetChunk(int chunkNum)
 	{
-		List<Integer> low = new ArrayList<Integer>(Arrays.asList(new Integer[numberOfDimensions]));
-		List<Integer> high = new ArrayList<Integer>(Arrays.asList(new Integer[numberOfDimensions]));
+		List<Integer> low = new ArrayList<>(Arrays.asList(new Integer[numberOfDimensions]));
+		List<Integer> high = new ArrayList<>(Arrays.asList(new Integer[numberOfDimensions]));
 		
 		for(int i = 0; i < numberOfDimensions; i++)
 		{
@@ -591,21 +593,20 @@ public class ArrayFile {
 	
 	private CID getCIDFrom(CellFile cf)
 	{
-		List<Integer> coor = new ArrayList<Integer>(Arrays.asList(new Integer[numberOfDimensions]));
-		// TODO :: MAKE region to static variable and check chunk nums
-		Region region = calcTargetChunk(cf.currentChunkNum());
-		int offset = cf.currentId();
+		List<Integer> coor = new ArrayList<>(Arrays.asList(new Integer[numberOfDimensions]));
+		if(currentChunkRegion == null || currentChunkNum != cf.currentChunkNum())
+		{
+			currentChunkRegion = calcTargetChunk(cf.currentChunkNum());
+		}
 		
+		int offset = cf.currentId();
 		for(int i = 0; i < numberOfDimensions; i++)
 		{
 			int c = offset / numCellsFollowingDim[i + 1];
-			coor.set(i, region.low().get(i) + c);
-			
+			coor.set(i, currentChunkRegion.low().get(i) + c);
 			offset %= numCellsFollowingDim[i + 1];
 		}
-		
 //		System.out.println(String.format("Chunk : %d, ID : %d, Coor : %s", cf.currentChunkNum(), cf.currentId(), coor.toString()));
-		
 		return new CID(coor);
 	}
 }
