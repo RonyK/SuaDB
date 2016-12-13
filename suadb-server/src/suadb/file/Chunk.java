@@ -50,17 +50,21 @@ public class Chunk
 		this.fileName = fileName;
 		this.chunkNum = chunkNum;
 	}
+	
 	public Chunk(String fileName, int chunkNum,int numOfBlocks) {
 		this(fileName, chunkNum);
 		this.numOfBlocks = numOfBlocks;
 	}
+	
 	public Chunk(String fileName, int chunkNum,int numOfBlocks, int numOfCells){
 		this(fileName, chunkNum,numOfBlocks);
 		this.numOfCells = numOfCells;
 	}
+	
 	public Chunk(Block block){//For wrapping a block.
 		this(block.fileName(),block.number(),1);//one-block-sized chunk.
 	}
+	
 	public Chunk(Block block,boolean treatAsBlock){//For wrapping a block.
 		this(block.fileName(),block.number(),1);//one-block-sized chunk.
 		this.treatAsBlock = treatAsBlock;

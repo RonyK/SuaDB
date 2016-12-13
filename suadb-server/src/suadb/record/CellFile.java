@@ -1,13 +1,12 @@
 package suadb.record;
 
-import suadb.file.Chunk;
-import suadb.file.FileMgr;
-import suadb.server.SuaDB;
-import suadb.tx.Transaction;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import suadb.file.Chunk;
+import suadb.server.SuaDB;
+import suadb.tx.Transaction;
 
 
 /**
@@ -19,25 +18,17 @@ import java.util.List;
 public class CellFile {
 	private ArrayInfo ai;
 	private Transaction tx;
-	private String filename;
-	private String attributename;
+	private String fileName;
+	private String attributeName;
 	private CellPage cp;
-	private int currentchunknum = -1;
-	private int numberofblocks;
-	private int numberofchunks;         // this variable is needed in order to find out if the current chunk is the last one
+	private int currentChunkNum = -1;
+	private int numBlocks;
+	private int numChunks;         // this variable is needed in order to find out if the current chunk is the last one
 
 	private int totalChunkNum = 1; //The total number of chunks in an array.
-	private int numOfCellsInChunk = 1; //The number of cells in a chunk.
-	private int numOfDimensions;
+	private int numCellsInChunk = 1; //The number of cells in a chunk.
+	private int numDimensions;
 	private List<Integer> currentChunk;
-	int[] startDimension;
-
-	/**
-	 * Constructs an object to manage a suadb.file of records.
-	 * If the suadb.file does not exist, it is created.
-	 * @param ai the table suadb.metadata
-	 * @param tx the transaction
-	 */
 
 	/**
 	 * Constructs an object to manage a suadb.file of records.
@@ -45,31 +36,27 @@ public class CellFile {
 	 * @param ai the table suadb.metadata
 	 * @param tx the transaction
 	 * @param chunknum the chunk number of an array
-	 * @param attributename the name of attribute (SuaDB adopts separate storage for each attribute)
+	 * @param attributeName the name of attribute (SuaDB adopts separate storage for each attribute)
 	 */
 
-	public CellFile(ArrayInfo ai, Transaction tx, int chunknum, String attributename, int numberofblocks,int numberofchunks) {
+	public CellFile(ArrayInfo ai, Transaction tx, int chunknum, String attributeName, int numBlocks, int numChunks) {
 		this.ai = ai;
 		this.tx = tx;
-		// this.currentchunknum = chunknum;
-		this.attributename = attributename;
-		this.numberofblocks = numberofblocks;
-		this.numberofchunks = numberofchunks;
-
+		this.attributeName = attributeName;
+		this.numBlocks = numBlocks;
+		this.numChunks = numChunks;
+		
 		List<String> dimensions = new ArrayList<String>(ai.schema().dimensions());
-		numOfDimensions = dimensions.size();
-		startDimension = new int[numOfDimensions];
-		for(int i=0;i<numOfDimensions;i++) {
+		numDimensions = dimensions.size();
+		this.currentChunk = new ArrayList<>(numDimensions);
+		
+		for(int i = 0; i< numDimensions; i++) {
 			totalChunkNum *= ai.schema().getNumOfChunk(dimensions.get(i));
-			numOfCellsInChunk *= ai.schema().chunkSize(dimensions.get(i));
-			startDimension[i] = ai.schema().start(dimensions.get(i));
+			numCellsInChunk *= ai.schema().chunkSize(dimensions.get(i));
 		}
-		currentChunk = new ArrayList<Integer>(numOfDimensions);
 
-
-		// move to the specified chunk , updates itself
+		// move to the specified chunk, updates itself
 		moveTo(chunknum);
-
 	}
 
 	private String assignName(ArrayInfo ai, String attributename, int currentchunknum){
@@ -81,7 +68,7 @@ public class CellFile {
 	 */
 	public void close() throws IOException{
 		cp.close();
-		SuaDB.fileMgr().flushFile(filename);
+		SuaDB.fileMgr().flushFile(fileName);
 	}
 
 	/**
@@ -98,14 +85,19 @@ public class CellFile {
 	 * @return false if there is no next suadb.record.
 	 */
 	public boolean next() {
-		while (true) {
+		while (true)
+		{
 			if (cp.next()) {
 				return true;
-
 			}
+			
 			if (atLaskChunk())
+			{
+//				System.out.println("AtLastChunk");
 				return false;
-			moveTo(currentchunknum + 1);
+			}
+			
+			moveTo(currentChunkNum + 1);
 		}
 	}
 
@@ -156,133 +148,76 @@ public class CellFile {
 		cp.delete();
 	}
 
-
 	/**
 	 * Positions the current suadb.record as indicated by the
 	 * specified RID.
 	 * @param offset a offset of the cell in this chunk
 	 */
 	public void moveToId(int offset) {
-		// moveTo(rid.blockNumber());
 		cp.moveToId(offset);
 	}
 
-	public void moveToId(int offset, int record) {
-		// moveTo(rid.blockNumber());
-		cp.moveToId(offset);
-	}
-
-	/**
-	 * Returns the RID of the current suadb.record.
-	 * @return a suadb.record identifier
-	 */
-	public RID currentRid() {
-		int id = cp.currentId();
-		return new RID(currentchunknum, id);
-	}
-
-	public void moveTo(int c) {
-		if( currentchunknum == c) {
+	public void moveTo(int chunkNum)
+	{
+//		System.out.println(String.format("Move To : %d", chunkNum));
+		if( currentChunkNum == chunkNum)
+		{
 			cp.setCurrentId(-1);//Initialize slot
 			return;
 		}
 
-		if (cp != null) {
+		if (cp != null)
+		{
 			cp.close();
+			
 			try {
-				SuaDB.fileMgr().flushFile(filename);
+				SuaDB.fileMgr().flushFile(fileName);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		currentchunknum = c;
-		// Update filename  - ILHYUN
-		this.filename = assignName(this.ai,this.attributename,currentchunknum);
-		if (tx.size(filename,numberofblocks) == 0)
-			createChunk(c);
-		Chunk blk = new Chunk(filename, currentchunknum,numberofblocks);
-		cp = new CellPage(blk, ai, tx, ai.recordLength(attributename));
+		
+		currentChunkNum = chunkNum;
+		this.fileName = assignName(this.ai, this.attributeName, currentChunkNum);
+		
+		if (tx.size(fileName, numBlocks) == 0)
+		{
+			createChunk(chunkNum);
+		}
+		
+		Chunk chunk = new Chunk(fileName, currentChunkNum, numBlocks);
+		cp = new CellPage(chunk, ai, tx, ai.recordLength(attributeName));
 	}
 
 	private boolean atLaskChunk() {
-		return currentchunknum == (numberofchunks-1);
+		return currentChunkNum >= (numChunks);
 	}
 
-
-	private void createChunk(int chunknum) {
-		CellFormatter fmtr = new CellFormatter(ai,attributename);
-		String filename =assignName(this.ai,this.attributename,chunknum);
-		tx.createNewChunk(filename, fmtr,numberofblocks);
-
+	private void createChunk(int chunkNum) {
+		CellFormatter fmtr = new CellFormatter(ai, attributeName);
+		String filename = assignName(this.ai, this.attributeName, chunkNum);
+		tx.createNewChunk(filename, fmtr, numBlocks);
 	}
-
-
-	/**
-
-	 * Get current CID for identifying dimensions.
-	 * @return CID
-	 */
-	public CID getCurrentCID(){
-		return new CID(getCurrentDimensionValues());
-	}
-
-	/**
-	 * Get current dimension values.
-	 * @return List<Integer> the dimension.
-	 */
-	int previousChunkNum = -1;
-	private List<Integer> getCurrentDimensionValues(){
-		//현재 몇번째 chunk == currentchunknum
-		Schema schema = ai.schema();
-		List<String> dimensions =  new ArrayList<String>(ai.schema().dimensions());
-		List<Integer> result = new ArrayList<Integer>();
-		int temp;
-
-		//Convert logical chunk number to the left bottom cell's coordinate of the chunk.
-		if(previousChunkNum != currentchunknum) {//If the chunk is changed,
-			previousChunkNum = currentchunknum;
-			int chunkNum = currentchunknum;
-			currentChunk.clear();
-			temp = totalChunkNum;
-			for (int i = 0; i < numOfDimensions; i++) {
-				temp /= schema.getNumOfChunk(dimensions.get(i));
-
-				currentChunk.add( startDimension[i] +
-						(chunkNum / temp) * schema.chunkSize(dimensions.get(i)));
-				chunkNum %= temp;
-			}
-		}
-
-		//Calculate the coordinate of the slot in the chunk.
-		temp = numOfCellsInChunk;
-		int currentSlotNum = cp.currentId();
-		for(int i=0;i<numOfDimensions;i++){
-			temp /= schema.chunkSize(dimensions.get(i));
-
-			result.add(i,
-					currentChunk.get(i) + (currentSlotNum/temp));
-			currentSlotNum %= temp;
-		}
-
-		return result;
-	}
-
+	
 	/**
 	 * Get current chunk number.
 	 * @return
 	 */
-	public int getCurrentchunknum() {
-		return currentchunknum;
+	public int currentChunkNum() {
+		return cp.chunk().getChunkNum();
+	}
+	
+	public int currentId()
+	{
+		return cp.currentId();
 	}
 
 	/**
 	 * If current position is null, return true.
 	 */
-	public boolean isNull(){
-		if (cp.isNull())
-			return true;
-		else
-			return false;
+	public boolean isNull()
+	{
+		return cp.isNull();
 	}
 }
 
