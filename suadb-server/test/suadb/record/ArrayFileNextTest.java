@@ -88,13 +88,13 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 		arrayfile.close();
 		tx.commit();
 
-		//ArrayFile.getCIDFrom() Test
+		//ArrayFile.getCID() Test
 		tx = new Transaction();
 		arrayfile = new ArrayFile(arrayinfo, tx);
 
 		arrayfile.beforeFirst();
 		while(arrayfile.next())
-			System.out.println(arrayfile.getCIDFrom());
+			System.out.println(arrayfile.getCID());
 
 
 		Schema schema = arrayinfo.schema();
@@ -128,7 +128,7 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 				for (int j = result[1]; j < result[1]+schema.chunkSize(dimensions.get(1)); j++) {
 					for (int k = result[2]; k < result[2]+schema.chunkSize(dimensions.get(2)); k++) {
 						assertTrue(arrayfile.next());
-						CID currentCID = arrayfile.getCIDFrom();
+						CID currentCID = arrayfile.getCID();
 						List<Integer> currentDimension = currentCID.toList();
 
 						assertTrue(currentDimension.get(0) == i);
@@ -156,7 +156,7 @@ public class ArrayFileNextTest extends SuaDBTestBase {
 		arrayfile.moveToCid(cid);
 
 		assertTrue(arrayfile.next());
-		List<Integer> dimension = arrayfile.getCIDFrom().toList();
+		List<Integer> dimension = arrayfile.getCID().toList();
 		assertTrue(dimension.get(0) == 1);
 		assertTrue(dimension.get(1) == 0);
 		assertTrue(dimension.get(2) == 0);

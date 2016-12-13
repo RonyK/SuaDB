@@ -277,7 +277,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 		} catch (Exception e)
 		{
 			System.out.println(String.format("\tFalse : %s", e.getMessage()));
-//				e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	

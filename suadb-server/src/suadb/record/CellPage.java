@@ -79,8 +79,32 @@ public class CellPage {
      * @return false if there is no next suadb.record.
      */
     public boolean next() {
-        return searchFor(INUSE);
+	    if(isValidSlot())
+	    {
+		    return true;
+	    }
+	    
+	    return false;
     }
+//
+//	public boolean next() {
+//		return searchFor(INUSE);
+//	}
+//
+	
+	private boolean searchFor(int flag) {
+		currentId++;
+		while (isValidSlot())
+		{
+			if(cellFlag[currentId] == flag)
+			{
+				return true;
+			}
+			currentId++;
+		}
+		
+		return false;
+	}
 
     /**
      * Returns the integer value stored for the
@@ -167,20 +191,6 @@ public class CellPage {
 
     private boolean isValidSlot() {
         return currentpos() + slotSize <= BLOCK_SIZE * chunk.getNumOfBlocks();
-    }
-
-    private boolean searchFor(int flag) {
-        currentId++;
-        while (isValidSlot())
-        {
-            if(cellFlag[currentId] == flag)
-            {
-	            return true;
-            }
-            currentId++;
-        }
-        
-        return false;
     }
 
 	/**

@@ -66,4 +66,17 @@ public class Region
 		
 		return 0;
 	}
+	
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj instanceof Region)
+		{
+			Region o = (Region)obj;
+			return low.equals(o.low) && high.equals(o.high);
+		}
+		
+		return false;
+	}
 }

@@ -20,7 +20,8 @@ public class CID implements Serializable{
      */
     public CID(List<Integer> dimensionValues)
     {
-        this.dimensionValues = new ArrayList<>(dimensionValues);
+//        this.dimensionValues = new ArrayList<>(dimensionValues);
+	    this.dimensionValues = dimensionValues;
     }
 
 	public CID(int[] vales)
