@@ -93,9 +93,10 @@ public class CellFile {
 			
 			if (atLaskChunk())
 			{
+//				System.out.println("AtLastChunk");
 				return false;
 			}
-				
+			
 			moveTo(currentChunkNum + 1);
 		}
 	}
@@ -156,7 +157,9 @@ public class CellFile {
 		cp.moveToId(offset);
 	}
 
-	public void moveTo(int chunkNum) {
+	public void moveTo(int chunkNum)
+	{
+//		System.out.println(String.format("Move To : %d", chunkNum));
 		if( currentChunkNum == chunkNum)
 		{
 			cp.setCurrentId(-1);//Initialize slot
@@ -175,8 +178,6 @@ public class CellFile {
 		}
 		
 		currentChunkNum = chunkNum;
-		
-		// Update fileName  - ILHYUN
 		this.fileName = assignName(this.ai, this.attributeName, currentChunkNum);
 		
 		if (tx.size(fileName, numBlocks) == 0)
@@ -189,7 +190,7 @@ public class CellFile {
 	}
 
 	private boolean atLaskChunk() {
-		return currentChunkNum >= (numChunks - 1);
+		return currentChunkNum >= (numChunks);
 	}
 
 	private void createChunk(int chunkNum) {

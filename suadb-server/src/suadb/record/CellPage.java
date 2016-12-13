@@ -81,30 +81,16 @@ public class CellPage {
     public boolean next() {
 	    if(isValidSlot())
 	    {
-		    return true;
+		    currentId++;
+		
+		    if(isValidSlot())
+		    {
+			    return true;
+		    }
 	    }
 	    
 	    return false;
     }
-//
-//	public boolean next() {
-//		return searchFor(INUSE);
-//	}
-//
-	
-	private boolean searchFor(int flag) {
-		currentId++;
-		while (isValidSlot())
-		{
-			if(cellFlag[currentId] == flag)
-			{
-				return true;
-			}
-			currentId++;
-		}
-		
-		return false;
-	}
 
     /**
      * Returns the integer value stored for the
@@ -190,21 +176,22 @@ public class CellPage {
     }
 
     private boolean isValidSlot() {
-        return currentpos() + slotSize <= BLOCK_SIZE * chunk.getNumOfBlocks();
+        return currentId < numCellsInChunk;
     }
 
 	/**
      * If current position is null, return true.
      * @return
      */
-    public boolean isNull(){
-	    if(cellFlag[currentId] == EMPTY)
-	    {
-		    return true;
-	    }else
-	    {
-		    return false;
-	    }
+    public boolean isNull()
+    {
+	    if(isValidSlot())
+		    if(cellFlag[currentId] == EMPTY)
+		    	return true;
+		    else
+		    	return false;
+	    else
+	    	return true;
     }
 
 	/**

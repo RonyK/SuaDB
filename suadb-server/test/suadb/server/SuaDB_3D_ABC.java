@@ -115,7 +115,7 @@ public class SuaDB_3D_ABC extends SuaDBExeTestBase
 				"   %s : int," +
 				"   %s : int" +
 				">" +
-				"[%s = 0:1,2, %s = 0:3,4, %s = 0:1,2]",
+				"[%s = 0:1,2, %s = 0:3,4, %s = 0:3,2]",
 				ARRAY_NAME + "_1", ATTR_01, ATTR_02, ATTR_03,
 				DIM_01, DIM_02, DIM_03);
 		

@@ -40,7 +40,6 @@ public class ArrayFile {
 	private int numberOfAttributes;
 
 	private int currentDimensionValues[];       //Keep current coordinates of the array.
-	private boolean[] rearestAttribute;         //Manage rearest attributes. true == rearest
 	
 	private List<Schema.DimensionInfo> dInfos;
 	
@@ -65,12 +64,15 @@ public class ArrayFile {
 		currentDimensionValues = ai.schema().dimensionInfo().values().stream().mapToInt(d -> d.start()).toArray();
 		chunkSizes = ai.schema().dimensionInfo().values().stream().mapToInt(d -> d.chunkSize()).toArray();
 		numberOfChunksPerDimension = ai.schema().dimensionInfo().values().stream().mapToInt(d -> d.numOfChunk()).toArray();
-
+		
+		numChunksFollowingDim = new int[numberOfDimensions + 1];
+		Arrays.fill(numChunksFollowingDim, 1);
+		numCellsFollowingDim = new int[numberOfDimensions + 1];
+		Arrays.fill(numCellsFollowingDim, 1);
+		
 		int factor = 1;
 		int cellFactor = 1;
-		numChunksFollowingDim = new int[numberOfDimensions];
-		numCellsFollowingDim = new int[numberOfDimensions];
-		for (int i = 0; i < numberOfDimensions; i++)
+		for (int i = numberOfDimensions - 1; i >= 0; i--)
 		{
 			numberOfChunks *= numberOfChunksPerDimension[i];
 			factor *= numberOfChunksPerDimension[i];
@@ -80,7 +82,7 @@ public class ArrayFile {
 			numCellsFollowingDim[i] = cellFactor;
 		}
 		
-		numberOfCellsInChunk = numCellsFollowingDim[numberOfDimensions - 1];
+		numberOfCellsInChunk = numCellsFollowingDim[0];
 		
 		this.dInfos = new ArrayList<>();
 		for (Schema.DimensionInfo dInfo : ai.schema().dimensionInfo().values())
@@ -90,11 +92,9 @@ public class ArrayFile {
 
 		// set up CellFiles that corresponds to the array ( for each attribute )
 		currentCFiles = new CellFile[numberOfAttributes];
-		rearestAttribute = new boolean[this.numberOfAttributes];        //Manage rearest attributes.
 		int j = 0;
 		for (String attributename : attributes) {
 			currentCFiles[j] = new CellFile(ai, tx, 0, attributename, getNumberOfBlocksPerChunk(attributename), numberOfChunks);
-			rearestAttribute[j] = true;//Initialize rearestAttribute.
 			j++;
 		}
 	}
@@ -158,7 +158,6 @@ public class ArrayFile {
 	public void beforeFirst() {
 		for (int j = 0; j < numberOfAttributes; j++) {
 			currentCFiles[j].beforeFirst();
-			rearestAttribute[j] = true;//Initialize rearestAttributes to True.
 		}
 	}
 
@@ -167,7 +166,6 @@ public class ArrayFile {
 		if (index < 0)
 			return;
 		currentCFiles[index].beforeFirst();
-		rearestAttribute[index] = true;//Initialize rearestAttributes to True.
 	}
 
 	/**
@@ -177,11 +175,11 @@ public class ArrayFile {
 	 * @return
 	 */
 	private boolean isNull(int attIndex) {
-		return !rearestAttribute[attIndex];
+		return currentCFiles[attIndex].isNull();
 	}
 
 	public boolean isNull(String attrName) {
-		return !rearestAttribute[attributes.indexOf(attrName)];
+		return isNull(attributes.indexOf(attrName));
 	}
 
 	/**
@@ -206,47 +204,29 @@ public class ArrayFile {
 	}
 
 	public boolean next(List<String> attributesName) {
-		boolean result = false;
-		int currentChunk[] = new int[attributesName.size()];
-		int currentID[] = new int[attributesName.size()];
+		boolean result;
+		boolean isNull = true;
 		
-		for(int i = 0; i < attributesName.size(); i++)
+		// TODO ::Reset All attribute at same current position
+//		for(int i = 0; i < attributesName.size(); i++)
+//		{
+//
+//		}
+//
+		do
 		{
-			if(rearestAttribute[i])
+			result = false;
+			
+			for(int i = 0; i < attributesName.size(); i++)
 			{
 				result |= next(attributes.get(i));
+				isNull &= currentCFiles[i].isNull();
 			}
-			
-			currentID[i] = currentCFiles[i].currentId();
-			currentChunk[i] = currentCFiles[i].currentChunkNum();
-		}
-		
-		int minChunk = Arrays.asList(currentChunk).stream().min((x, y) -> Integer.compare(x[0], y[0]) ).get()[0];
-		int minID = numberOfCellsInChunk + 1;
-		for (int i = 0; i < attributes.size(); i++)
-		{
-			if(currentChunk[i] == minChunk && minID > currentID[i])
-			{
-				minID = currentID[i];
-			}
-		}
-		
-		boolean isFirst = true;
-		for (int i = 0; i < numberOfAttributes; i++)
-		{
-			rearestAttribute[i] = false;
-			if(currentCFiles[i].currentChunkNum() == minChunk && currentCFiles[i].currentId() == minID);
-			{
-				rearestAttribute[i] = true;
-				
-				if(isFirst)
-				{
-					currentDimensionValues = getCIDFrom(currentCFiles[i]).toArray();
-					currentChunkNum = currentCFiles[i].currentChunkNum();
-					isFirst = false;
-				}
-			}
-		}
+		} while (isNull && result);
+
+		int index = attributes.indexOf(attributesName.get(0));
+		currentDimensionValues = getCIDFrom(currentCFiles[index]).toArray();
+		currentChunkNum = currentCFiles[index].currentChunkNum();
 		
 		return result;
 	}
@@ -370,7 +350,6 @@ public class ArrayFile {
 		}
 
 		currentDimensionValues = cid.toArray();
-		updateRearest(mode);
 	}
 	
 	private void moveToCid(String attributename, CID cid, char mode) {
@@ -381,7 +360,6 @@ public class ArrayFile {
 		currentCFiles[index].moveToId(calcCellOffsetInChunk(cid));
 		
 		currentDimensionValues = cid.toArray();
-		updateRearest(mode);
 	}
 
 	public int getDimension(String dimName) {
@@ -557,54 +535,6 @@ public class ArrayFile {
 		return count;
 	}
 
-	public void updateRearest(char mode)
-	{
-		boolean isNull = true;
-		for(int i = 0; i<numberOfAttributes; i++)
-		{
-			if(currentCFiles[i].isNull())
-			{
-				rearestAttribute[i] = false;
-				if(mode == 'r')
-				{
-					next(attributes.get(i));
-				}
-			}
-			else
-			{
-				isNull = false;
-				rearestAttribute[i] = true;
-			}
-		}
-
-		if(isNull)
-		{
-			next();
-		}
-	}
-
-	private CID getCIDFrom(CellFile cf)
-	{
-		List<Integer> coor = new ArrayList<Integer>(Arrays.asList(new Integer[numberOfDimensions]));
-
-		Region region = calcTargetChunk(cf.currentChunkNum());
-		int offset = cf.currentId();
-
-		for(int i = numberOfDimensions - 1, j = 0; i > 0; i--, j++)
-		{
-			int c = offset / numCellsFollowingDim[i - 1];
-			coor.set(j, region.low().get(i) + c);
-
-			offset %= numCellsFollowingDim[i - 1];
-		}
-
-		coor.set(numberOfDimensions - 1, region.low().get(0) + offset);
-		
-		System.out.println(String.format("Chunk : %d, ID : %d, Coor : %s", cf.currentChunkNum(), cf.currentId(), coor.toString()));
-
-		return new CID(coor);
-	}
-
 	private int getChunknumber(CID cid) {
 		int chunkindex[] = new int[numberOfDimensions];
 		int chunkOffset = 0;
@@ -646,19 +576,36 @@ public class ArrayFile {
 	{
 		List<Integer> low = new ArrayList<Integer>(Arrays.asList(new Integer[numberOfDimensions]));
 		List<Integer> high = new ArrayList<Integer>(Arrays.asList(new Integer[numberOfDimensions]));
-
-		for(int i = numberOfDimensions - 1, j = 0; i > 0; i--, j++)
+		
+		for(int i = 0; i < numberOfDimensions; i++)
 		{
-			int coor = (chunkNum) / numChunksFollowingDim[i - 1];
-			low.set(j, dInfos.get(j).start() + coor * dInfos.get(j).chunkSize());
-			high.set(j, low.get(j) + dInfos.get(j).chunkSize() - 1);
+			int coor = (chunkNum) / numChunksFollowingDim[i + 1];
+			low.set(i, dInfos.get(i).start() + coor * dInfos.get(i).chunkSize());
+			high.set(i, low.get(i) + dInfos.get(i).chunkSize() - 1);
 
-			chunkNum %= numChunksFollowingDim[i - 1];
+			chunkNum %= numChunksFollowingDim[i + 1];
 		}
-		int last = numberOfDimensions - 1;
-		low.set(last, dInfos.get(last).start() + chunkNum * dInfos.get(last).chunkSize());
-		high.set(last, low.get(last) + dInfos.get(last).chunkSize() - 1);
 
 		return new Region(low, high);
+	}
+	
+	private CID getCIDFrom(CellFile cf)
+	{
+		List<Integer> coor = new ArrayList<Integer>(Arrays.asList(new Integer[numberOfDimensions]));
+		// TODO :: MAKE region to static variable and check chunk nums
+		Region region = calcTargetChunk(cf.currentChunkNum());
+		int offset = cf.currentId();
+		
+		for(int i = 0; i < numberOfDimensions; i++)
+		{
+			int c = offset / numCellsFollowingDim[i + 1];
+			coor.set(i, region.low().get(i) + c);
+			
+			offset %= numCellsFollowingDim[i + 1];
+		}
+		
+//		System.out.println(String.format("Chunk : %d, ID : %d, Coor : %s", cf.currentChunkNum(), cf.currentId(), coor.toString()));
+		
+		return new CID(coor);
 	}
 }

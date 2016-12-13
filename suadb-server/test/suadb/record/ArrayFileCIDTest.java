@@ -60,9 +60,34 @@ public class ArrayFileCIDTest extends SuaDBTestBase
 	public void test_00_chunkSizeTest() throws Exception
 	{
 		Schema schema = new Schema();
-		schema.addDimension("x", 0, 3, 2);
+		schema.addDimension("x", 0, 7, 2);
 		schema.addDimension("y", 0, 5, 2);
-		schema.addDimension("z", 0, 7, 2);
+		schema.addDimension("z", 0, 3, 2);
+		
+		schema.addField("a", Types.INTEGER, 4);
+		ArrayInfo ai = new ArrayInfo(ARRAY_NAME, schema);
+		ArrayFile af = new ArrayFile(ai, tx);
+		
+		Region region0 = af.calcTargetChunk(0);
+		assertEquals(new Region(new ArrayList<>(Arrays.asList(0, 0, 0, 1, 1, 1))), region0);
+		
+		Region region1 = af.calcTargetChunk(1);
+		assertEquals(new Region(new ArrayList<>(Arrays.asList(0, 0, 2, 1, 1, 3))), region1);
+		
+		Region region2 = af.calcTargetChunk(2);
+		assertEquals(new Region(new ArrayList<>(Arrays.asList(0, 2, 0, 1, 3, 1))), region2);
+		
+		Region region3 = af.calcTargetChunk(3);
+		assertEquals(new Region(new ArrayList<>(Arrays.asList(0, 2, 2, 1, 3, 3))), region3);
+	}
+	
+	@Test
+	public void test_01_chunkSizeTest() throws Exception
+	{
+		Schema schema = new Schema();
+		schema.addDimension("x", 0, 1, 2);
+		schema.addDimension("y", 0, 3, 2);
+		schema.addDimension("z", 0, 3, 2);
 		
 		schema.addField("a", Types.INTEGER, 4);
 		ArrayInfo ai = new ArrayInfo(ARRAY_NAME, schema);
